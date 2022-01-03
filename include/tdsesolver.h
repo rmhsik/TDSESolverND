@@ -1,0 +1,42 @@
+#ifndef TDSESOLVER_H
+#define TDSESOLVER_H
+
+#define cdouble std::complex<double>
+#define I std::complex<double>(0.0,1.0)
+
+#include <complex>
+#include "parameters.h"
+#include "fields.h"
+#include "wavefunction.h"
+
+    class TDSESolver{
+        private:
+            Parameters _param;
+
+            Field Afield_i;
+            Field Afield_k;
+            Field Bfield_i;
+            Field Bfield_k;
+            
+            WF _wf;
+
+            cdouble *_accmask;
+            cdouble *_imask;
+            cdouble *_kmask;
+
+            double *_t, _dt;
+            double *_i, _di;
+            double *_k, _dk;
+
+        public:
+            TDSESolver();
+            TDSESolver(Parameters param);
+            void setup_time();
+            void setup_geometry();
+            void setup_fields();
+            void setup_masks();
+            void setup_wf();
+    };
+
+
+#endif
