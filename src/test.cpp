@@ -5,4 +5,6 @@
 int main(){
     Parameters param;
     TDSESolver tdse(param);
+    tdse.ipropagate();
+    tdse.propagate();
 }

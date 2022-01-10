@@ -15,7 +15,7 @@
         public:
             //Geometry
             int geometry    = X;            
-            int ni          = 5000;
+            int ni          = 10000;
             double imin     = -120.0;
             double imax     = 120.0;
             int nk          = 5000;
@@ -26,12 +26,13 @@
             double w0       = 0.057;
             double period   = 2.0*M_PI/w0;
             double tmax_ev  = 4.0*period;
-            double tmax_sim = 7.0*period;
+            double tmax_sim = 5.0*period;
             double dt       = 0.02;
+            double dt_ITP   = 0.002;
             int nt          = tmax_sim/dt;
 
             //Fields
-            int env         = TRAP;
+            int env         = SIN2;
             double w0Ei     = w0;
             double w0Ek     = w0;
             double w0Bi     = w0;

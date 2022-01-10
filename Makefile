@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -lm -O3 -fopenmp -ffast-math
+CFLAGS = -lm -O3 -fopenmp -ffast-math -g
 
 SRC = ./src/*
 INCLUDE = ./include/

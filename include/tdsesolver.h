@@ -8,6 +8,7 @@
 #include "parameters.h"
 #include "fields.h"
 #include "wavefunction.h"
+#include "hamiltonian.h"
 
     class TDSESolver{
         private:
@@ -19,6 +20,7 @@
             Field Bfield_k;
             
             WF _wf;
+            Hamiltonian _ham;
 
             cdouble *_accmask;
             cdouble *_imask;
@@ -36,6 +38,9 @@
             void setup_fields();
             void setup_masks();
             void setup_wf();
+            void setup_ham();
+            void propagate();
+            void ipropagate();
     };
 
 

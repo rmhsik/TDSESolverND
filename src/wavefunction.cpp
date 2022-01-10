@@ -9,18 +9,17 @@ WF::WF(){
         
 }
 
-WF::WF(Parameters param,double *i, double *k, const double di, const double dk ){
+WF::WF(Parameters param){
     _param = param;
-    
+}
+
+void WF::set_geometry( double *i, double *k, const double di, const double dk){    
     _ni = _param.ni;
-    if(_param.geometry == X){
-        _nk=1;
-    }
-    else{
-        _nk = _param.nk;
-    }
+    _nk = _param.nk;
 
     _wf = new cdouble*[_ni];
+    _row = new cdouble[_ni];
+    _col = new cdouble[_nk];
     for (int i=0;i<_ni;i++){
         _wf[i] = new cdouble[_nk];
     }
@@ -32,7 +31,7 @@ WF::WF(Parameters param,double *i, double *k, const double di, const double dk )
     }
 
     _i = i; _k = k; _di = di; _dk = dk;
-
+    
 }
 
 void WF::gaussian(double i0, double k0, double sigma){
@@ -113,8 +112,48 @@ cdouble WF::norm(){
     return sqrt(integral);
 }
 
+void WF::apply_mask(cdouble *imask, cdouble *kmask){
+    for(int i=0; i<_ni; i++){
+        _wf[i][0] = _wf[i][0]*imask[i];
+    }
+}
+
 cdouble** WF::get(){
     return _wf;
+}
+
+cdouble* WF::row(int k){
+    for(int i=0; i<_ni; i++){
+        _row[i] = _wf[i][k];
+    }
+    return _row;
+}
+
+cdouble* WF::col(int i){
+    for(int k=0; k<_nk; k++){
+        _col[k] = _wf[i][k];
+    }
+    return _col;
+}
+
+void WF::set_row(cdouble* row, int k){
+    for(int i=0; i<_ni; i++){
+        _wf[i][k] = row[i];
+    }
+}
+
+void WF::set_col(cdouble* col, int i){
+    for(int k=0; k<_nk;k++){
+        _wf[i][k] = col[k];
+    }
+}
+
+void WF::set(cdouble** arr){
+    for(int i=0; i<_ni;i++){
+        for(int j=0;j<_nk;j++){
+            _wf[i][j] = arr[i][j];
+        }
+    }
 }
 
 cdouble WF::operator()(int i, int j){
@@ -127,4 +166,56 @@ void WF::operator/=(cdouble val){
             _wf[i][j] /= val;
         }
     }
+}
+
+cdouble WF::dipole(){
+    cdouble sum = 0.0;
+    switch(_param.geometry){
+        case X:
+            for(int i=0; i<_ni; i++){
+                sum += conj(_wf[i][0])*_i[i]*_wf[i][0]*_di;
+            }
+            break;
+
+        case XZ:
+            for(int i=0; i<_ni; i++){
+                for(int j=0; j<_nk; j++){
+                    sum += conj(_wf[i][j])*_k[j]*_wf[i][j]*_di*_dk;
+                }
+            }
+        case RZ:
+            for(int i=0; i<_ni; i++){
+                for(int j=0; j<_nk;j++){
+                    sum += 2*M_PI*_i[i]*conj(_wf[i][j])*_k[j]*_wf[i][j]*_di*_dk;
+                }
+            }
+    }   
+
+    return sum; 
+}
+
+cdouble WF::acc(cdouble **dV){
+    cdouble sum = cdouble(0.0,0.0);
+    switch(_param.geometry){
+        case X:
+            for(int i=0; i<_ni; i++){
+                sum += conj(_wf[i][0])*(-1.0*dV[i][0])*_wf[i][0]*_di;
+            }
+            break;
+
+        case XZ:
+            for(int i=0; i<_ni; i++){
+                for(int j=0; j<_nk; j++){
+                    sum += conj(_wf[i][j])*(-1.0*dV[i][j])*_wf[i][j]*_di*_dk;
+                }
+            }
+        case RZ:
+            for(int i=0; i<_ni; i++){
+                for(int j=0; j<_nk;j++){
+                    sum += 2*M_PI*_i[i]*conj(_wf[i][j])*(-1.0*dV[i][j])*_wf[i][j]*_di*_dk;
+                }
+            }
+    }   
+
+    return sum; 
 }
