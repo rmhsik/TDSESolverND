@@ -1,6 +1,9 @@
 venv/
 *.dat
 *.o
+*.swp
 .ipynb_checkpoints/
-
+TDSESolver*/
+results/
+data/
 TDSESolver
