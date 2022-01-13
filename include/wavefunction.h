@@ -10,7 +10,7 @@
 
 class WF{
     private:
-        cdouble **_wf;
+        cdouble *_wf;
         cdouble *_row;
         cdouble *_col;
         Parameters _param;
@@ -22,10 +22,10 @@ class WF{
         void set_geometry(double *i, double *k, const double di, const double dk);
         void gaussian(double i0, double k0, double sigma);
         void exponential(double i0, double k0, double sigma);
-        cdouble** get();
+        cdouble* get();
         cdouble* row(int i);
         cdouble* col(int i); 
-        void set(cdouble** arr);
+        void set(cdouble* arr);
         void set_row(cdouble* row, int k);
         void set_col(cdouble* col, int i);
         cdouble norm();
@@ -36,7 +36,7 @@ class WF{
         void operator/= (cdouble val);        
 
         cdouble dipole();
-        cdouble acc(cdouble **dV);
+        cdouble acc(cdouble *dV);
 };
 
 

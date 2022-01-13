@@ -12,10 +12,12 @@ Hamiltonian::Hamiltonian(Parameters param){
                 step_i = &Hamiltonian::step_i_X;
                 step_k = NULL;
                 ener = &Hamiltonian::ener_X;
+		break;
             case RZ:
                 //step_i = &Hamiltonian::step_i_RZ;
                 //step_k = &Hamiltonian::step_k_RZ;
                 ener = &Hamiltonian::ener_RZ;
+		break;
         }    
     _nk = _param.nk;
 }
@@ -25,44 +27,38 @@ void Hamiltonian::set_geometry(double *i, double *k, const double di, const doub
 }
 
 void Hamiltonian::set_potential(){
-    _potential = new cdouble*[_ni];
-    for (int i=0; i<_ni;i++){
-        _potential[i] = new cdouble[_nk];
-    }
+    _potential = new cdouble[_ni*_nk];
 
     potential();
     
 }
 
 void Hamiltonian::set_dpotential(){
-    _dpotential = new cdouble*[_ni];
-    for(int i=0; i<_ni;i++){
-        _dpotential[i] = new cdouble[_nk];
-    }
+    _dpotential = new cdouble[_ni*_nk];
     dpotential();
 }
 
 void Hamiltonian::potential(){
     for(int i=0; i<_ni;i++){
         for (int j=0; j<_nk;j++){
-            _potential[i][j] = -1.0/sqrt(_i[i]*_i[i] + 2.0);
+            _potential[i*_nk + j] = -1.0/sqrt(_i[i]*_i[i] + 2.0);
         }
     }
 }
 
 void Hamiltonian::dpotential(){
-    _dpotential[0][0] = (_potential[1][0] - _potential[0][0])/_di;
-    _dpotential[_ni-1][0] = (_potential[_ni-1][0]-_potential[_ni-2][0])/_di;
+    _dpotential[0*_nk + 0] = (_potential[1*_nk + 0] - _potential[0*_nk + 0])/_di;
+    _dpotential[(_ni-1)*_nk + 0] = (_potential[(_ni-1)*_nk + 0]-_potential[(_ni-2)*_nk + 0])/_di;
     for(int i=1; i<_ni-1;i++){
-        _dpotential[i][0] = (_potential[i+1][0]-_potential[i-1][0])/(2.0*_di);
+        _dpotential[i*_nk + 0] = (_potential[(i+1)*_nk + 0]-_potential[(i-1)*_nk + 0])/(2.0*_di);
     }
 }
 
-cdouble** Hamiltonian::get_potential(){
+cdouble* Hamiltonian::get_potential(){
     return _potential;
 }
 
-cdouble** Hamiltonian::get_dpotential(){
+cdouble* Hamiltonian::get_dpotential(){
     return _dpotential;
 }
 
@@ -89,9 +85,9 @@ void Hamiltonian::step_i_X(cdouble *psi, double afield_i, double bfield_i, const
     cdouble a = 1.0/(_di*_di);
     cdouble b = 1.0/(2.0*_di*_di); 
     for(int i=0;i<_ni;i++){
-        H_du = -b + I*1.0/(2.0*c*_di)*afield_i;
-        H_d  =  a + _potential[i][0] + 0.5*afield_i*afield_i/(c*c);
-        H_dl = -b - I*1.0/(2.0*c*_di)*afield_i;
+        H_du = -b + I*1.0/(2.0*C*_di)*afield_i;
+        H_d  =  a + _potential[i*_nk + 0] + 0.5*afield_i*afield_i/(C*C);
+        H_dl = -b - I*1.0/(2.0*C*_di)*afield_i;
 
         M_du[i] = I*H_du*dt/2.0;
         M_d[i]  = 1.0 + I*H_d*dt/2.0;
@@ -116,7 +112,7 @@ void Hamiltonian::step_i_X(cdouble *psi, double afield_i, double bfield_i, const
     delete res;
 }
 
-cdouble Hamiltonian::ener_X(cdouble **psi){
+cdouble Hamiltonian::ener_X(cdouble *psi){
     cdouble integral=0.0;
 
     cdouble *temp;
@@ -133,9 +129,9 @@ cdouble Hamiltonian::ener_X(cdouble **psi){
     
     for(int i=0;i<_ni;i++){
         H_du[i] = -b;
-        H_d[i]  =  a + _potential[i][0];
+        H_d[i]  =  a + _potential[i*_nk + 0];
         H_dl[i] = -b;
-        row[i] = psi[i][0];
+        row[i] = psi[i*_nk + 0];
     }
     tridot(H_dl, H_d, H_du, row, temp, _ni);
     
@@ -150,7 +146,7 @@ cdouble Hamiltonian::ener_X(cdouble **psi){
     return integral; 
 }
 
-cdouble Hamiltonian::ener_RZ(cdouble **psi){
+cdouble Hamiltonian::ener_RZ(cdouble *psi){
     cdouble integral=0.0;
 
     cdouble *temp;
@@ -158,6 +154,8 @@ cdouble Hamiltonian::ener_RZ(cdouble **psi){
     cdouble *col;
     cdouble *Hr_du, *Hr_dl, *Hr_d;
     cdouble *Hz_du, *Hz_dl, *Hz_d; 
+    cdouble *wf_temp;
+
     temp = new cdouble[_ni];
     row = new cdouble[_ni];
     Hr_dl = new cdouble[_ni];
@@ -167,17 +165,29 @@ cdouble Hamiltonian::ener_RZ(cdouble **psi){
     Hz_d = new cdouble[_nk];
     Hz_du = new cdouble[_nk];
 
+    wf_temp = new cdouble[_ni*_nk];
+
+    // Apply Hr to wavefunction
     cdouble a = 1.0/(_di*_di);
-    cdouble b = 1.0/(2.0*_di*_di); 
-    
-    for(int i=0;i<_ni;i++){
-        Hr_du[i] = -b;
-        Hr_d[i]  =  a + _potential[i][0];
-        Hr_dl[i] = -b;
-        row[i] = psi[i][0];
+    cdouble b = 1.0/(_di);
+    cdouble c = 1.0/(2.0*_di);
+        
+    for(int k=0;k<_nk;k++){
+        for(int i=0;i<_ni;i++){
+            Hr_du[i] = -c*(a+0.5*1.0/(_i[i]));
+            Hr_d[i]  =  a + 0.5*_potential[i*_nk + 0];
+            Hr_dl[i] = -c*(a-0.5*1.0/(_i[i]));;
+            row[i] = psi[i*_nk + k];
+        }
+        tridot(Hr_dl, Hr_d, Hr_du, row, temp, _ni);
+
+        for(int i=0; i<_ni; i++){
+            wf_temp[i*_nk + k] = temp[i];
+        }
     }
-    tridot(Hr_dl, Hr_d, Hr_du, row, temp, _ni);
-    
+
+
+
     for(int i=0; i<_ni; i++){
         integral += conj(row[i])*temp[i]*_di;
     }

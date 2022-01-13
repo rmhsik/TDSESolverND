@@ -34,7 +34,7 @@ void Field::calc_pot(){
         for (int j=0; j<=i; j++){
             temp[i] += _field[j];
         }
-        temp[i] *= -c*_dt;
+        temp[i] *= -C*_dt;
     }
     for(int i=0; i<_nt;i++){
         _field[i] = temp[i];

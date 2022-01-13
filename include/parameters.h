@@ -8,7 +8,7 @@
 #define RZ   2
 #define SIN2 0
 #define TRAP 1
-#define c  137.04
+#define C  137.04
 
     class Parameters{
         private:

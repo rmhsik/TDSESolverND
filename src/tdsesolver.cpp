@@ -239,7 +239,7 @@ void TDSESolver::ipropagate(){
         norm = _wf.norm();
         _wf/=norm;
         if(i%100 ==0){
-            std::cout<<(_ham.*(_ham.ener))(_wf.get())<<"\n";
+            std::cout<<"Norm:"<<norm<<" "<<(_ham.*(_ham.ener))(_wf.get())<<"\n";
         }
     }
 
@@ -270,7 +270,7 @@ void TDSESolver::propagate(){
         if(i%100 ==0){
             //norm_vec_idx = (int)(i/100);
             //norm_vec[norm_vec_idx] = _wf.norm();
-            //std::cout<<norm_vec[int(i/100)]<<" "<<_ham.ener(psi_row)<<"\n";
+            //std::cout<<"Ener: "<<(_ham.*(_ham.ener))(psi_row)<<"\n";
         }
     }
 
@@ -290,9 +290,14 @@ void TDSESolver::propagate(){
     cdouble *temp;
     temp = new cdouble[_param.ni];
     for(int i=0; i<_param.ni; i++){
-        temp[i] = _ham.get_dpotential()[i][0];
+        temp[i] = _ham.get_dpotential()[i*_param.nk + 0];
     }
     path = "results/dpotential.dat";
+    write_array(temp,_param.ni,path);
+    for(int i=0; i<_param.ni; i++){
+        temp[i] = _ham.get_potential()[i*_param.nk + 0];
+    }
+    path = "results/potential.dat";
     write_array(temp,_param.ni,path);
     delete temp;
 
