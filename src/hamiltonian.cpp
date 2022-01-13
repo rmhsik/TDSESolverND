@@ -149,15 +149,16 @@ cdouble Hamiltonian::ener_X(cdouble *psi){
 cdouble Hamiltonian::ener_RZ(cdouble *psi){
     cdouble integral=0.0;
 
-    cdouble *temp;
-    cdouble *row;
-    cdouble *col;
+    cdouble *temp_r, *temp_z;
+    cdouble *row, *col;
     cdouble *Hr_du, *Hr_dl, *Hr_d;
     cdouble *Hz_du, *Hz_dl, *Hz_d; 
-    cdouble *wf_temp;
+    cdouble *wf_temp_r, *wf_temp_z;
 
-    temp = new cdouble[_ni];
+    temp_r = new cdouble[_ni];
+    temp_z = new cdouble[_nk];
     row = new cdouble[_ni];
+    col = new cdouble[_nk];
     Hr_dl = new cdouble[_ni];
     Hr_d = new cdouble[_ni];
     Hr_du = new cdouble[_ni];
@@ -165,40 +166,65 @@ cdouble Hamiltonian::ener_RZ(cdouble *psi){
     Hz_d = new cdouble[_nk];
     Hz_du = new cdouble[_nk];
 
-    wf_temp = new cdouble[_ni*_nk];
+    wf_temp_r = new cdouble[_ni*_nk];
+    wf_temp_z = new cdouble[_ni*_nk];
+    
+    // Apply Hz to wavefunction
+    {
+    cdouble a = 1.0/(_dk*_dk);
+    cdouble b = 1.0/(2.0*_dk*_dk); 
+    for(int i=0;i<_ni;i++){
+        for(int k=0;k<_nk;k++){
+            Hz_du[k] = -b;
+            Hz_d[k]  =  a + 0.5*_potential[i*_nk + k];
+            Hz_dl[k] = -b;
+            col[k] = psi[i*_nk + k];
+        }
+        tridot(Hr_dl, Hr_d, Hr_du, col, temp_z, _nk);
 
+        for(int k=0; k<_nk; k++){
+            wf_temp_z[i*_nk + k] = temp_z[k];
+        }
+    }
+    }
     // Apply Hr to wavefunction
+    {
     cdouble a = 1.0/(_di*_di);
     cdouble b = 1.0/(_di);
     cdouble c = 1.0/(2.0*_di);
-        
+    
     for(int k=0;k<_nk;k++){
         for(int i=0;i<_ni;i++){
             Hr_du[i] = -c*(a+0.5*1.0/(_i[i]));
-            Hr_d[i]  =  a + 0.5*_potential[i*_nk + 0];
+            Hr_d[i]  =  a + 0.5*_potential[i*_nk + k];
             Hr_dl[i] = -c*(a-0.5*1.0/(_i[i]));;
             row[i] = psi[i*_nk + k];
         }
-        tridot(Hr_dl, Hr_d, Hr_du, row, temp, _ni);
+        tridot(Hr_dl, Hr_d, Hr_du, row, temp_r, _ni);
 
         for(int i=0; i<_ni; i++){
-            wf_temp[i*_nk + k] = temp[i];
+            wf_temp_r[i*_nk + k] = temp_r[i];
         }
     }
-
-
+    }
+    // Integrate 
 
     for(int i=0; i<_ni; i++){
-        integral += conj(row[i])*temp[i]*_di;
+	for(int k=0;k<_nk;k++)
+            integral += 2.0*M_PI*_i[i]*conj(psi[i*_nk+k])*(wf_temp_z[i*_nk+k] + wf_temp_r[i*_nk+k])*_di*_dk;
     }
-    delete temp;
+    delete temp_r;
+    delete temp_z;
     delete row;
+    delete col;
     delete Hr_du;
     delete Hr_d;
     delete Hr_dl;
     delete Hz_du;
     delete Hz_d;
     delete Hz_dl; 
+    delete wf_temp_r;
+    delete wf_temp_z;
     return integral; 
 }
 

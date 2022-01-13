@@ -41,7 +41,11 @@ void WF::gaussian(double i0, double k0, double sigma){
 }
 
 void WF::exponential(double i0, double k0, double sigma){
-    //TODO
+    for(int i=0; i<_ni; i++){
+        for(int j=0; j<_nk;j++){
+            _wf[i*_nk + j] = exp(-(_i[i]-i0)/sigma - (_k[j]-k0)/sigma);
+        }
+    }
 }
 
 
