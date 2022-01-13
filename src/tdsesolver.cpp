@@ -228,18 +228,16 @@ void TDSESolver::setup_masks(){
 
 void TDSESolver::ipropagate(){
     debug3("[TDSESolver->ipropagate] Start imaginary propagation...");
+    cdouble *psi_row;
     cdouble norm;    
     for(int i=0; i<5000; i++){
-        cdouble *psi_row;
         psi_row = _wf.row(0);
-
-        (_ham.*(_ham.step_i))(psi_row,0.0,0.0,0,1);
-        //(_ham).*(_ham.step_i)(psi_row,0.0,0.0,1);
+        _ham.step_i(psi_row,0.0,0.0,1);
         _wf.set_row(psi_row,0);
         norm = _wf.norm();
         _wf/=norm;
         if(i%100 ==0){
-            std::cout<<(_ham.*(_ham.ener))(_wf.get())<<"\n";
+            std::cout<<_ham.ener(psi_row)<<"\n";
         }
     }
 
@@ -263,7 +261,7 @@ void TDSESolver::propagate(){
     //norm_vec = new cdouble[norm_vec_size];
     for(int i=0; i<_param.nt; i++){
         psi_row = _wf.row(0);
-        (_ham.*(_ham.step_i))(psi_row,Afield_i[i],0.0,0,0);
+        _ham.step_i(psi_row,Afield_i[i],0.0,0);
         _wf.set_row(psi_row,0);
         _wf.apply_mask(_imask,_kmask);
         acc_vec[i] = _wf.acc(_ham.get_dpotential());
