@@ -30,6 +30,9 @@
             double *_i, _di;
             double *_k, _dk;
 
+	    void (TDSESolver::*_propagate)();
+	    void (TDSESolver::*_ipropagate)();
+
         public:
             TDSESolver();
             TDSESolver(Parameters param);
@@ -39,8 +42,12 @@
             void setup_masks();
             void setup_wf();
             void setup_ham();
-            void propagate();
-            void ipropagate();
+	    void propagate();
+	    void ipropagate();
+            void propagate_X();
+            void ipropagate_X();
+	    void propagate_RZ();
+	    void ipropagate_RZ();
     };
 
 

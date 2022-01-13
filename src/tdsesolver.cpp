@@ -35,6 +35,8 @@ void TDSESolver::setup_geometry(){
         case X:
             std::tie(_i,_di) = linspace<double>(_param.imin,_param.imax,_param.ni);
             std::tie(_k,_dk) = linspace<double>(_param.kmin,_param.kmax,_param.nk);
+	    _propagate = &TDSESolver::propagate_X;
+	    _ipropagate = &TDSESolver::ipropagate_X;
             break;
         case XZ:
             std::tie(_i,_di) = linspace<double>(_param.imin,_param.imax,_param.ni);
@@ -47,6 +49,9 @@ void TDSESolver::setup_geometry(){
             for(int i=0; i<_param.ni;i++){
                 _i[i] += 0.5;
             }
+
+	    _propagate = &TDSESolver::propagate_RZ;
+	    _ipropagate = &TDSESolver::ipropagate_RZ;
             break;
     }
     path = "results/i.dat";
@@ -97,7 +102,15 @@ void TDSESolver::setup_fields(){
 void TDSESolver::setup_wf(){
     _wf = WF(_param);
     _wf.set_geometry(_i,_k,_di,_dk);
-    _wf.gaussian(0.0,0.0,1.0);
+   
+    switch(_param.init_wf){
+    	case GAUS:
+            _wf.gaussian(0.0,0.0,1.0);
+	    break;
+	case EXPO:
+	    _wf.exponential(0.0,0.0,1.0);
+	    break;
+    } 
     cdouble norm = _wf.norm();
     std::cout<<norm<<std::endl;
     _wf /= norm;
@@ -227,6 +240,14 @@ void TDSESolver::setup_masks(){
 }
 
 void TDSESolver::ipropagate(){
+    (this->*(this->_ipropagate))();
+}
+
+void TDSESolver::propagate(){
+    (this->*(this->_propagate))();
+}
+
+void TDSESolver::ipropagate_X(){
     debug3("[TDSESolver->ipropagate] Start imaginary propagation...");
     cdouble norm;    
     for(int i=0; i<5000; i++){
@@ -252,7 +273,7 @@ void TDSESolver::ipropagate(){
 
 }
 
-void TDSESolver::propagate(){
+void TDSESolver::propagate_X(){
     debug3("[TDSESolver->propagate] Start propagate...");
     cdouble *psi_row, *acc_vec;
     cdouble *norm_vec;
@@ -303,3 +324,16 @@ void TDSESolver::propagate(){
 
     debug3("[TDSESolver->propagate] End propagate");
 }
+
+void TDSESolver::ipropagate_RZ(){
+    //TODO
+    cdouble ener = 0.0;
+    ener = (_ham.*(_ham.ener))(_wf.get());
+    std::cout<<"Ener: "<<ener<<"\n";
+}
+
+void TDSESolver::propagate_RZ(){
+    //TODO
+}
+
+
