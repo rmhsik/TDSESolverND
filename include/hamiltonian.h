@@ -39,13 +39,13 @@ class Hamiltonian{
         cdouble (Hamiltonian::*ener)(cdouble *psi);
 
         // Hamiltonian for X 
-        void step_i_X(cdouble *psi_row, double afield_i, double bfield_i, const int j ,const int imag);
-        void step_k_X(cdouble *psi_col, double afield_k, double bfield_k, const int i, const int imag);
+        void step_i_X(cdouble *psi, double afield_i, double bfield_i, const int j ,const int imag);
+        void step_k_X(cdouble *psi, double afield_k, double bfield_k, const int i, const int imag);
         cdouble ener_X(cdouble* psi);
 
         // Hamiltonian for RZ 
-        void step_i_RZ(cdouble *psi_row, double afield_i, double bfield_i, const int j ,const int imag);
-        void step_k_RZ(cdouble *psi_col, double afield_k, double bfield_k, const int i, const int imag);
+        void step_i_RZ(cdouble *psi, double afield_i, double bfield_i, const int j ,const int imag);
+        void step_k_RZ(cdouble *psi, double afield_k, double bfield_k, const int i, const int imag);
         cdouble ener_RZ(cdouble* psi);
 };
 

@@ -171,10 +171,108 @@ cdouble Hamiltonian::ener_X(cdouble *psi){
 }
 
 
-void Hamiltonian::step_i_RZ(cdouble *psi_row, double afield_i, double bfield_i, const int j, const int imag ){
+void Hamiltonian::step_i_RZ(cdouble *psi_row, double afield_i, double bfield_i, const int k, const int imag ){
+    cdouble Hr_du;
+    cdouble Hr_d;
+    cdouble Hr_dl;
+    cdouble dt = imag==0 ? cdouble(1.0,0.0)*_param.dt: cdouble(0.0,-1.0)*_param.dt_ITP;
 
+    cdouble *Mr_du, *Mpr_du;
+    cdouble *Mr_d, *Mpr_d;
+    cdouble *Mr_dl, *Mpr_dl;
+    cdouble *lhs, *res;
+     
+    Mr_du = new cdouble[_ni];
+    Mr_d  = new cdouble[_ni];
+    Mr_dl = new cdouble[_ni];
+    Mpr_du = new cdouble[_ni];
+    Mpr_d  = new cdouble[_ni];
+    Mpr_dl = new cdouble[_ni];
+    lhs = new cdouble[_ni];
+    res = new cdouble[_ni];
+
+    cdouble a = 1.0/(_di*_di);
+    cdouble b = 1.0/(_di);
+    cdouble c = 1.0/(2.0*_di); 
+    for(int i=0;i<_ni;i++){
+        Hr_du = -c*(b+0.5*1.0/(_i[i]));
+        Hr_d  =  a + _potential[i*_nk + k];
+        Hr_dl = -c*(b-0.5*1.0/(_i[i]));
+
+        Mr_du[i] = I*Hr_du*dt/2.0;
+        Mr_d[i]  = 1.0 + I*Hr_d*dt/2.0;
+        Mr_dl[i] = I*Hr_dl*dt/2.0;
+        Mpr_du[i] = -I*Hr_du*dt/2.0;
+        Mpr_d[i]  = 1.0 - I*Hr_d*dt/2.0;
+        Mpr_dl[i] = -I*Hr_dl*dt/2.0;
+    }
+    tridot(Mpr_du,Mpr_d,Mpr_dl,psi_row,lhs,_ni); 
+    tdma(Mr_du,Mr_d,Mr_dl,lhs,res,_ni);
+    for(int i=0; i<_ni; i++){
+        psi_row[i] = res[i];
+    }
     
+    delete Mr_du;
+    delete Mr_d;
+    delete Mr_dl;
+    delete Mpr_du;
+    delete Mpr_d;
+    delete Mpr_dl;
+    delete lhs;
+    delete res;
 }
+
+void Hamiltonian::step_k_RZ(cdouble *psi_col, double afield_k, double bfield_k, const int i, const int imag ){
+    cdouble Hz_du;
+    cdouble Hz_d;
+    cdouble Hz_dl;
+    cdouble dt = imag==0 ? cdouble(1.0,0.0)*_param.dt: cdouble(0.0,-1.0)*_param.dt_ITP;
+
+    cdouble *Mz_du, *Mpz_du;
+    cdouble *Mz_d, *Mpz_d;
+    cdouble *Mz_dl, *Mpz_dl;
+    cdouble *lhs, *res;
+     
+    Mz_du = new cdouble[_nk];
+    Mz_d  = new cdouble[_nk];
+    Mz_dl = new cdouble[_nk];
+    Mpz_du = new cdouble[_nk];
+    Mpz_d  = new cdouble[_nk];
+    Mpz_dl = new cdouble[_nk];
+    lhs = new cdouble[_nk];
+    res = new cdouble[_nk];
+
+    cdouble a = 1.0/(_dk*_dk);
+    cdouble b = 1.0/(2.0*_dk*_dk);
+    for(int k=0;k<_nk;k++){
+        Hz_du = -b + I*1.0/(2.0*C*_dk)*afield_k;
+        Hz_d  =  a + 0.5*_potential[i*_nk + k]+0.5*afield_k/(C*C);
+        Hz_dl = -b - I*1.0/(2.0*C*_dk)*afield_k;
+
+        Mz_du[i] = I*Hz_du*dt/4.0;
+        Mz_d[i]  = 1.0 + I*Hz_d*dt/4.0;
+        Mz_dl[i] = I*Hz_dl*dt/4.0;
+        Mpz_du[i] = -I*Hz_du*dt/4.0;
+        Mpz_d[i]  = 1.0 - I*Hz_d*dt/4.0;
+        Mpz_dl[i] = -I*Hz_dl*dt/4.0;
+    }
+    tridot(Mpz_du,Mpz_d,Mpz_dl,psi_col,lhs,_nk); 
+    tdma(Mz_du,Mz_d,Mz_dl,lhs,res,_nk);
+    for(int k=0; k<_nk; k++){
+        psi_col[k] = res[k];
+    }
+    
+    delete Mz_du;
+    delete Mz_d;
+    delete Mz_dl;
+    delete Mpz_du;
+    delete Mpz_d;
+    delete Mpz_dl;
+    delete lhs;
+    delete res;
+}
+
+
 
 cdouble Hamiltonian::ener_RZ(cdouble *psi){
     cdouble integral=0.0;

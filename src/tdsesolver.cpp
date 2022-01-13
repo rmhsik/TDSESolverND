@@ -328,12 +328,36 @@ void TDSESolver::propagate_X(){
 void TDSESolver::ipropagate_RZ(){
     //TODO
     cdouble ener = 0.0;
-    ener = (_ham.*(_ham.ener))(_wf.get());
+    cdouble norm;
+    for(int j=0; j<500;j++){
+        for(int i=0;i<_param.ni;i++){
+            cdouble *psi_col;
+            psi_col = _wf.col(i);
+            (_ham.*(_ham.step_k))(psi_col,0.0,0.0,i,1);
+            _wf.set_col(psi_col,i);
+            std::cout<<i<<"\n";
+        }
+        for(int k=0;k<_param.nk;k++){
+            cdouble *psi_row;
+            psi_row = _wf.row(k);
+            (_ham.*(_ham.step_i))(psi_row,0.0,0.0,k,1);
+            _wf.set_row(psi_row,k);
+        }
+        for(int i=0;i<_param.ni;i++){
+            cdouble *psi_col;
+            psi_col = _wf.col(i);
+            (_ham.*(_ham.step_k))(psi_col,0.0,0.0,i,1);
+            _wf.set_col(psi_col,i);
+        }
+        norm = _wf.norm();
+        _wf /= norm;
+        if(j%100 == 0){
+            ener = (_ham.*(_ham.ener))(_wf.get());
+            std::cout<<"Norm: "<< norm<<" Ener: "<<ener<<"\n";
+        }
+
+    }
     std::cout<<"Ener: "<<ener<<"\n";
-    std::string path;
-   
-    path = "results/potential.dat";
-    write_array(_ham.get_potential(),_param.ni*_param.nk,path);
 }
 
 void TDSESolver::propagate_RZ(){
