@@ -137,7 +137,7 @@ void TDSESolver::setup_masks(){
             _accmask[i] = 1.0;
         }
         else{
-            _accmask[i] = exp(-pow(_t[i]-tmax_mask,2)/100.0);
+            _accmask[i] = exp(-pow(_t[i]-tmax_mask,2)/600.0);
         }
     }
     path = "results/accmask.dat";
@@ -253,11 +253,12 @@ void TDSESolver::ipropagate(){
 void TDSESolver::propagate(){
     debug3("[TDSESolver->propagate] Start propagate...");
     cdouble *psi_row, *acc_vec;
-    cdouble *norm_vec;
+    cdouble *norm_vec, *dipole_vec;
     int norm_vec_size = (int)(_param.nt/100);
     int norm_vec_idx;
 
     acc_vec = new cdouble[_param.nt];
+    dipole_vec = new cdouble[_param.nt];
     //norm_vec = new cdouble[norm_vec_size];
     for(int i=0; i<_param.nt; i++){
         psi_row = _wf.row(0);
@@ -265,6 +266,7 @@ void TDSESolver::propagate(){
         _wf.set_row(psi_row,0);
         _wf.apply_mask(_imask,_kmask);
         acc_vec[i] = _wf.acc(_ham.get_dpotential());
+	dipole_vec[i] = _wf.dipole();
         if(i%100 ==0){
             //norm_vec_idx = (int)(i/100);
             //norm_vec[norm_vec_idx] = _wf.norm();
@@ -278,10 +280,12 @@ void TDSESolver::propagate(){
     
     for(int i=0; i<_param.nt;i++){
         acc_vec[i] *= _accmask[i];
+	dipole_vec[i] *= _accmask[i];
     }
     path = "results/acc.dat";
     write_array(acc_vec,_param.nt,path);
-    path = "results/norm.dat";
+    path = "results/dipole.dat";
+    write_array(dipole_vec,_param.nt,path);
     //write_array(norm_vec,norm_vec_size,path);
     delete acc_vec;
     //delete norm_vec;
