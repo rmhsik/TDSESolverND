@@ -3,4 +3,4 @@ venv/
 *.o
 .ipynb_checkpoints/
 
-TDSESolver
+TDSESolver*
