@@ -18,8 +18,11 @@ class Hamiltonian{
         
                
 
-        void potential();
-        void dpotential();
+        void potential_X();
+        void dpotential_X();
+        void potential_RZ();
+        void dpotential_RZ();
+
         void tridot(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* vec, cdouble* out, const int n);
         void tdma(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* dd, cdouble* out,  const int n);
     public:

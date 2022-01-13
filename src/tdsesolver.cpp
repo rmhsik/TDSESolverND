@@ -35,8 +35,8 @@ void TDSESolver::setup_geometry(){
         case X:
             std::tie(_i,_di) = linspace<double>(_param.imin,_param.imax,_param.ni);
             std::tie(_k,_dk) = linspace<double>(_param.kmin,_param.kmax,_param.nk);
-	    _propagate = &TDSESolver::propagate_X;
-	    _ipropagate = &TDSESolver::ipropagate_X;
+	        _propagate = &TDSESolver::propagate_X;
+	        _ipropagate = &TDSESolver::ipropagate_X;
             break;
         case XZ:
             std::tie(_i,_di) = linspace<double>(_param.imin,_param.imax,_param.ni);
@@ -47,11 +47,11 @@ void TDSESolver::setup_geometry(){
             std::tie(_k,_dk) = linspace<double>(_param.kmin,_param.kmax, _param.nk);
             
             for(int i=0; i<_param.ni;i++){
-                _i[i] += 0.5;
+                _i[i] += 0.5*_di;
             }
 
-	    _propagate = &TDSESolver::propagate_RZ;
-	    _ipropagate = &TDSESolver::ipropagate_RZ;
+	        _propagate = &TDSESolver::propagate_RZ;
+	        _ipropagate = &TDSESolver::ipropagate_RZ;
             break;
     }
     path = "results/i.dat";
@@ -118,7 +118,7 @@ void TDSESolver::setup_wf(){
     std::cout<<norm<<std::endl;
 
     std::string path = "results/init_psi2.dat";
-    _wf.save_wf2(path);
+    write_array(_wf.get(),_param.ni*_param.nk,path);
 }
 
 void TDSESolver::setup_ham(){
@@ -330,6 +330,10 @@ void TDSESolver::ipropagate_RZ(){
     cdouble ener = 0.0;
     ener = (_ham.*(_ham.ener))(_wf.get());
     std::cout<<"Ener: "<<ener<<"\n";
+    std::string path;
+   
+    path = "results/potential.dat";
+    write_array(_ham.get_potential(),_param.ni*_param.nk,path);
 }
 
 void TDSESolver::propagate_RZ(){

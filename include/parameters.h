@@ -61,10 +61,9 @@
                 kmin = 0.0;
                 kmax = 0.0;
             }
-	    else if(geometry == RZ){
-	    	imin = 0.0;
-	    }
- 
+            else if(geometry == RZ){
+                imin = 0.0;
+            }
         }       
     };
 
