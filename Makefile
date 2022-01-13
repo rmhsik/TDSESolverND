@@ -1,13 +1,4 @@
-
-detected_OS := $(shell uname)
-
-ifeq ($(detected_OS),Linux)
-	CC = g++
-endif
-ifeq ($(detected_OS), Darwin)
-	CC = g++-11
-endif
-
+CC = g++
 CFLAGS = -lm -O3 -fopenmp -ffast-math -g
 
 SRC = ./src/*
