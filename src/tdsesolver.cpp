@@ -254,7 +254,7 @@ void TDSESolver::ipropagate_X(){
         cdouble *psi_row;
         psi_row = _wf.row(0);
 
-        (_ham.*(_ham.step_i))(psi_row,0.0,0.0,0,1);
+        (_ham.*(_ham.step_i))(psi_row,0.0,0.0,0,1,0);
         //(_ham).*(_ham.step_i)(psi_row,0.0,0.0,1);
         _wf.set_row(psi_row,0);
         norm = _wf.norm();
@@ -284,7 +284,7 @@ void TDSESolver::propagate_X(){
     //norm_vec = new cdouble[norm_vec_size];
     for(int i=0; i<_param.nt; i++){
         psi_row = _wf.row(0);
-        (_ham.*(_ham.step_i))(psi_row,Afield_i[i],0.0,0,0);
+        (_ham.*(_ham.step_i))(psi_row,Afield_i[i],0.0,0,0,0);
         _wf.set_row(psi_row,0);
         _wf.apply_mask(_imask,_kmask);
         acc_vec[i] = _wf.acc(_ham.get_dpotential());
@@ -328,83 +328,93 @@ void TDSESolver::propagate_X(){
 void TDSESolver::ipropagate_RZ(){
     cdouble ener = 0.0;
     cdouble norm;
+    cdouble *psi_col, *psi_row;
+    const int ni = _param.ni;
+    const int nk = _param.nk;
+    psi_col = new cdouble [_param.nk*n_threads];
+    psi_row = new cdouble [_param.ni*n_threads];
+
     for(int j=0; j<500;j++){
-        for(int i=0;i<_param.ni;i++){
-            cdouble *psi_col;
-            psi_col = new cdouble[_param.nk];
-            for(int k=0;k<_param.nk;k++)
-                psi_col[k] = _wf.get()[i*_param.nk+k];
-            (_ham.*(_ham.step_k))(psi_col,0.0,0.0,i,1);
-            _wf.set_col(psi_col,i);
-            delete psi_col;
+        #pragma omp parallel for schedule(dynamic)
+        for(int i=0;i<ni;i++){
+            int id_thread = omp_get_thread_num();
+            for(int k=0;k<nk;k++)
+                psi_col[id_thread*nk + k] = _wf.get()[i*nk+k];
+            (_ham.*(_ham.step_k))(&psi_col[id_thread*nk],0.0,0.0,i,1,id_thread);
+            _wf.set_col(&psi_col[id_thread*nk],i);
         }
         
-        for(int k=0;k<_param.nk;k++){
-            cdouble *psi_row;
-            psi_row = new cdouble[_param.nk];
-            for(int i=0;i<_param.ni;i++)
-                psi_row[i] = _wf.get()[i*_param.nk+k];
-            (_ham.*(_ham.step_i))(psi_row,0.0,0.0,k,1);
-            _wf.set_row(psi_row,k);
-            delete psi_row;
+        #pragma omp parallel for schedule(dynamic)
+        for(int k=0;k<nk;k++){
+            int id_thread = omp_get_thread_num();
+            for(int i=0;i<ni;i++)
+                psi_row[id_thread*ni + i] = _wf.get()[i*nk+k];
+            (_ham.*(_ham.step_i))(&psi_row[id_thread*ni],0.0,0.0,k,1,id_thread);
+            _wf.set_row(&psi_row[id_thread*ni],k);
         }
         
-        for(int i=0;i<_param.ni;i++){
-            cdouble *psi_col;
-            psi_col = new cdouble[_param.nk];
-            for(int k=0;k<_param.nk;k++)
-                psi_col[k] = _wf.get()[i*_param.nk+k];
-            (_ham.*(_ham.step_k))(psi_col,0.0,0.0,i,1);
-            _wf.set_col(psi_col,i);
-            delete psi_col;
+        #pragma omp parallel for schedule(dynamic)
+        for(int i=0;i<ni;i++){
+            int id_thread = omp_get_thread_num();
+            for(int k=0;k<nk;k++)
+                psi_col[id_thread*nk + k] = _wf.get()[i*nk+k];
+            (_ham.*(_ham.step_k))(&psi_col[id_thread*nk],0.0,0.0,i,1,id_thread);
+            _wf.set_col(&psi_col[id_thread*nk],i);
         }
 
         norm = _wf.norm();
         _wf /= norm;
-        ener = (_ham.*(_ham.ener))(_wf.get());
-        std::cout<<"Norm: "<< norm<<" Ener: "<<ener<<"\n";
-
+        if(j%50==0){
+            ener = (_ham.*(_ham.ener))(_wf.get());
+            std::cout<<"Norm: "<< norm<<" Ener: "<<ener<<"\n";
+        }
     }
     std::cout<<"Ener: "<<ener<<"\n";
+    delete psi_col;
+     delete psi_row;
+
 }
 
 void TDSESolver::propagate_RZ(){
     cdouble norm, ener;
     cdouble *acc_vec, *dip_vec;
+    cdouble *psi_col, *psi_row;
+    const int ni = _param.ni;
+    const int nk = _param.nk;
     std::string path;
 
     acc_vec = new cdouble [_param.nt];
     dip_vec = new cdouble [_param.nt];
-
+   
+    psi_col = new cdouble [_param.nk*n_threads];
+    psi_row = new cdouble [_param.ni*n_threads];
+ 
     for(int j=0; j<_param.nt;j++){
-        for(int i=0;i<_param.ni;i++){
-            cdouble *psi_col;
-            psi_col = new cdouble[_param.nk];
-            for(int k=0;k<_param.nk;k++)
-                psi_col[k] = _wf.get()[i*_param.nk+k];
-            (_ham.*(_ham.step_k))(psi_col,0.0,0.0,i,0);
-            _wf.set_col(psi_col,i);
-            delete psi_col;
+        #pragma omp parallel for schedule(dynamic)
+        for(int i=0;i<ni;i++){
+            int id_thread = omp_get_thread_num();
+            for(int k=0;k<nk;k++)
+                psi_col[id_thread*nk + k] = _wf.get()[i*nk+k];
+            (_ham.*(_ham.step_k))(&psi_col[id_thread*nk],0.0,0.0,i,0,id_thread);
+            _wf.set_col(&psi_col[id_thread*nk],i);
         }
         
-        for(int k=0;k<_param.nk;k++){
-            cdouble *psi_row;
-            psi_row = new cdouble[_param.nk];
-            for(int i=0;i<_param.ni;i++)
-                psi_row[i] = _wf.get()[i*_param.nk+k];
-            (_ham.*(_ham.step_i))(psi_row,0.0,0.0,k,0);
-            _wf.set_row(psi_row,k);
-            delete psi_row;
+        #pragma omp parallel for schedule(dynamic)
+        for(int k=0;k<nk;k++){
+            int id_thread = omp_get_thread_num();
+            for(int i=0;i<ni;i++)
+                psi_row[id_thread*ni + i] = _wf.get()[i*nk+k];
+            (_ham.*(_ham.step_i))(&psi_row[id_thread*ni],0.0,0.0,k,0,id_thread);
+            _wf.set_row(&psi_row[id_thread*ni],k);
         }
         
-        for(int i=0;i<_param.ni;i++){
-            cdouble *psi_col;
-            psi_col = new cdouble[_param.nk];
-            for(int k=0;k<_param.nk;k++)
-                psi_col[k] = _wf.get()[i*_param.nk+k];
-            (_ham.*(_ham.step_k))(psi_col,0.0,0.0,i,0);
-            _wf.set_col(psi_col,i);
-            delete psi_col;
+        #pragma omp parallel for schedule(dynamic)
+        for(int i=0;i<ni;i++){
+            int id_thread = omp_get_thread_num();
+            for(int k=0;k<nk;k++)
+                psi_col[id_thread*nk + k] = _wf.get()[i*nk+k];
+            (_ham.*(_ham.step_k))(&psi_col[id_thread*nk],0.0,0.0,i,0,id_thread);
+            _wf.set_col(&psi_col[id_thread*nk],i);
         }
         acc_vec[j] = _wf.acc(_ham.get_potential());
         dip_vec[j] = _wf.dipole();

@@ -15,6 +15,7 @@
 
 #define C  137.04
 
+const int n_threads = 4;
     class Parameters{
         private:
         public:
