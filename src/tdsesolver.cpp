@@ -369,7 +369,65 @@ void TDSESolver::ipropagate_RZ(){
 }
 
 void TDSESolver::propagate_RZ(){
-    //TODO
+    cdouble norm, ener;
+    cdouble *acc_vec, *dip_vec;
+    std::string path;
+
+    acc_vec = new cdouble [_param.nt];
+    dip_vec = new cdouble [_param.nt];
+
+    for(int j=0; j<_param.nt;j++){
+        for(int i=0;i<_param.ni;i++){
+            cdouble *psi_col;
+            psi_col = new cdouble[_param.nk];
+            for(int k=0;k<_param.nk;k++)
+                psi_col[k] = _wf.get()[i*_param.nk+k];
+            (_ham.*(_ham.step_k))(psi_col,0.0,0.0,i,0);
+            _wf.set_col(psi_col,i);
+            delete psi_col;
+        }
+        
+        for(int k=0;k<_param.nk;k++){
+            cdouble *psi_row;
+            psi_row = new cdouble[_param.nk];
+            for(int i=0;i<_param.ni;i++)
+                psi_row[i] = _wf.get()[i*_param.nk+k];
+            (_ham.*(_ham.step_i))(psi_row,0.0,0.0,k,0);
+            _wf.set_row(psi_row,k);
+            delete psi_row;
+        }
+        
+        for(int i=0;i<_param.ni;i++){
+            cdouble *psi_col;
+            psi_col = new cdouble[_param.nk];
+            for(int k=0;k<_param.nk;k++)
+                psi_col[k] = _wf.get()[i*_param.nk+k];
+            (_ham.*(_ham.step_k))(psi_col,0.0,0.0,i,0);
+            _wf.set_col(psi_col,i);
+            delete psi_col;
+        }
+        acc_vec[j] = _wf.acc(_ham.get_potential());
+        dip_vec[j] = _wf.dipole();
+        if (j%100==0){ 
+            norm = _wf.norm();
+            ener = (_ham.*(_ham.ener))(_wf.get());
+            std::cout<<j<<" Norm: "<< norm<<" Ener: "<<ener<<"\n";
+        }
+    }
+
+    cdouble valaccmask;
+    for(int j=0; j<_param.nt; j++){
+        valaccmask = _accmask[j];
+        acc_vec[j] *= valaccmask;
+        dip_vec[j] *= valaccmask;
+    }
+    path = "results/acc.dat";
+    write_array(acc_vec,_param.nt,path);
+    path = "results//dip.dat";
+    write_array(dip_vec,_param.nt,path);
+
+    delete acc_vec;
+    delete dip_vec;
 }
 
 
