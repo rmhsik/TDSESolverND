@@ -206,8 +206,8 @@ void Hamiltonian::step_i_RZ(cdouble *psi_row, double afield_i, double bfield_i, 
         Mpr_d[i]  = 1.0 - I*Hr_d*dt/2.0;
         Mpr_dl[i] = -I*Hr_dl*dt/2.0;
     }
-    tridot(Mpr_du,Mpr_d,Mpr_dl,psi_row,lhs,_ni); 
-    tdma(Mr_du,Mr_d,Mr_dl,lhs,res,_ni);
+    tridot(Mpr_dl,Mpr_d,Mpr_du,psi_row,lhs,_ni); 
+    tdma(Mr_dl,Mr_d,Mr_du,lhs,res,_ni);
     for(int i=0; i<_ni; i++){
         psi_row[i] = res[i];
     }
@@ -242,12 +242,13 @@ void Hamiltonian::step_k_RZ(cdouble *psi_col, double afield_k, double bfield_k, 
     lhs = new cdouble[_nk];
     res = new cdouble[_nk];
 
-    cdouble a = 1.0/(_dk*_dk);
+    cdouble a = 1.0/(_dk*_dk)+0.5*afield_k*afield_k/(C*C);
     cdouble b = 1.0/(2.0*_dk*_dk);
+    Hz_du = -b + I*1.0/(2.0*C*_dk)*afield_k;
+    Hz_dl = -b - I*1.0/(2.0*C*_dk)*afield_k;
     for(int k=0;k<_nk;k++){
-        Hz_du = -b + I*1.0/(2.0*C*_dk)*afield_k;
-        Hz_d  =  a + 0.5*_potential[i*_nk + k]+0.5*afield_k/(C*C);
-        Hz_dl = -b - I*1.0/(2.0*C*_dk)*afield_k;
+        Hz_d  =  a + 0.5*_potential[i*_nk + k];
+
         Mz_du[k] = I*Hz_du*dt/4.0;
         Mz_d[k]  = 1.0 + I*Hz_d*dt/4.0;
         Mz_dl[k] = I*Hz_dl*dt/4.0;
@@ -255,8 +256,8 @@ void Hamiltonian::step_k_RZ(cdouble *psi_col, double afield_k, double bfield_k, 
         Mpz_d[k]  = 1.0 - I*Hz_d*dt/4.0;
         Mpz_dl[k] = -I*Hz_dl*dt/4.0;
     }
-    tridot(Mpz_du,Mpz_d,Mpz_dl,psi_col,lhs,_nk); 
-    tdma(Mz_du,Mz_d,Mz_dl,lhs,res,_nk);
+    tridot(Mpz_dl,Mpz_d,Mpz_du,psi_col,lhs,_nk); 
+    tdma(Mz_dl,Mz_d,Mz_du,lhs,res,_nk);
     for(int k=0; k<_nk; k++){
         psi_col[k] = res[k];
     }

@@ -326,7 +326,6 @@ void TDSESolver::propagate_X(){
 }
 
 void TDSESolver::ipropagate_RZ(){
-    //TODO
     cdouble ener = 0.0;
     cdouble norm;
     for(int j=0; j<500;j++){
@@ -349,6 +348,7 @@ void TDSESolver::ipropagate_RZ(){
             _wf.set_row(psi_row,k);
             delete psi_row;
         }
+        
         for(int i=0;i<_param.ni;i++){
             cdouble *psi_col;
             psi_col = new cdouble[_param.nk];
@@ -358,6 +358,7 @@ void TDSESolver::ipropagate_RZ(){
             _wf.set_col(psi_col,i);
             delete psi_col;
         }
+
         norm = _wf.norm();
         _wf /= norm;
         ener = (_ham.*(_ham.ener))(_wf.get());
