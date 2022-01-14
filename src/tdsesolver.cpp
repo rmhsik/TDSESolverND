@@ -118,7 +118,7 @@ void TDSESolver::setup_wf(){
     std::cout<<norm<<std::endl;
 
     std::string path = "results/init_psi2.dat";
-    write_array(_wf.get(),_param.ni*_param.nk,path);
+    //write_array(_wf.get(),_param.ni*_param.nk,path);
 }
 
 void TDSESolver::setup_ham(){
@@ -332,29 +332,36 @@ void TDSESolver::ipropagate_RZ(){
     for(int j=0; j<500;j++){
         for(int i=0;i<_param.ni;i++){
             cdouble *psi_col;
-            psi_col = _wf.col(i);
+            psi_col = new cdouble[_param.nk];
+            for(int k=0;k<_param.nk;k++)
+                psi_col[k] = _wf.get()[i*_param.nk+k];
             (_ham.*(_ham.step_k))(psi_col,0.0,0.0,i,1);
             _wf.set_col(psi_col,i);
-            std::cout<<i<<"\n";
+            delete psi_col;
         }
+        
         for(int k=0;k<_param.nk;k++){
             cdouble *psi_row;
-            psi_row = _wf.row(k);
+            psi_row = new cdouble[_param.nk];
+            for(int i=0;i<_param.ni;i++)
+                psi_row[i] = _wf.get()[i*_param.nk+k];
             (_ham.*(_ham.step_i))(psi_row,0.0,0.0,k,1);
             _wf.set_row(psi_row,k);
+            delete psi_row;
         }
         for(int i=0;i<_param.ni;i++){
             cdouble *psi_col;
-            psi_col = _wf.col(i);
+            psi_col = new cdouble[_param.nk];
+            for(int k=0;k<_param.nk;k++)
+                psi_col[k] = _wf.get()[i*_param.nk+k];
             (_ham.*(_ham.step_k))(psi_col,0.0,0.0,i,1);
             _wf.set_col(psi_col,i);
+            delete psi_col;
         }
         norm = _wf.norm();
         _wf /= norm;
-        if(j%100 == 0){
-            ener = (_ham.*(_ham.ener))(_wf.get());
-            std::cout<<"Norm: "<< norm<<" Ener: "<<ener<<"\n";
-        }
+        ener = (_ham.*(_ham.ener))(_wf.get());
+        std::cout<<"Norm: "<< norm<<" Ener: "<<ener<<"\n";
 
     }
     std::cout<<"Ener: "<<ener<<"\n";
