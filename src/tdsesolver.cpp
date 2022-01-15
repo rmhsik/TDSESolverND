@@ -416,12 +416,13 @@ void TDSESolver::propagate_RZ(){
             (_ham.*(_ham.step_k))(&psi_col[id_thread*nk],0.0,0.0,i,0,id_thread);
             _wf.set_col(&psi_col[id_thread*nk],i);
         }
-        acc_vec[j] = _wf.acc(_ham.get_potential());
+        _wf.apply_mask(_imask,_kmask);
+        acc_vec[j] = _wf.acc(_ham.get_dpotential());
         dip_vec[j] = _wf.dipole();
         if (j%100==0){ 
             norm = _wf.norm();
             ener = (_ham.*(_ham.ener))(_wf.get());
-            std::cout<<j<<" Norm: "<< norm<<" Ener: "<<ener<<"\n";
+            std::cout<<j<<" Norm: "<< norm<<" Ener: "<<ener<<" Acc: "<<acc_vec[j] <<"\n";
         }
     }
 

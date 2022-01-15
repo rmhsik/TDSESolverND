@@ -28,7 +28,15 @@ void WF::set_geometry( double *i, double *k, const double di, const double dk){
     }
 
     _i = i; _k = k; _di = di; _dk = dk;
-    
+
+    switch(_param.geometry){
+        case X:
+            _apply_mask = &WF::apply_mask_X;
+            break;
+        case RZ:
+            _apply_mask = &WF::apply_mask_RZ;
+            break;
+    }
 }
 
 void WF::gaussian(double i0, double k0, double sigma){
@@ -114,8 +122,19 @@ cdouble WF::norm(){
 }
 
 void WF::apply_mask(cdouble *imask, cdouble *kmask){
+    (this->*(this->_apply_mask))(imask, kmask);
+}
+
+void WF::apply_mask_X(cdouble *imask, cdouble *kmask){
     for(int i=0; i<_ni; i++){
         _wf[i*_nk + 0] = _wf[i*_nk + 0]*imask[i];
+    }
+}
+
+void WF::apply_mask_RZ(cdouble *imask, cdouble *kmask){
+    for(int i=0; i<_ni; i++){
+        for(int k=0; k<_nk;k++)
+            _wf[i*_nk + k] = _wf[i*_nk + k]*imask[i]*kmask[k];
     }
 }
 
@@ -186,10 +205,10 @@ cdouble WF::dipole(){
                 }
             }
         case RZ:
-            #pragma parallel for schedule(dynamic) collapse(2) reduction(+: sum)
+            #pragma parallel for schedule(dynamic) reduction(+: sum)
             for(int i=0; i<_ni; i++){
-                for(int j=0; j<_nk;j++){
-                    sum += 2*M_PI*_i[i]*conj(_wf[i*_nk + j])*_k[j]*_wf[i*_nk+j]*_di*_dk;
+                for(int k=0; k<_nk; k++){
+                    sum += 2*M_PI*_i[i]*conj(_wf[i*_nk + k])*_k[k]*_wf[i*_nk + k]*_di*_dk;
                 }
             }
     }   
@@ -214,10 +233,10 @@ cdouble WF::acc(cdouble *dV){
                 }
             }
         case RZ:
-            #pragma parallel for schedule(dynamic) collapse(2) reduction(+: sum)
+            #pragma parallel for schedule(dynamic) reduction(+: sum)
             for(int i=0; i<_ni; i++){
-                for(int j=0; j<_nk;j++){
-                    sum += 2*M_PI*_i[i]*conj(_wf[i*_nk + j])*(-1.0*dV[i*_nk + j])*_wf[i*_nk + j]*_di*_dk;
+                for(int k=0; k<_nk;k++){
+                    sum += 2*M_PI*_i[i]*conj(_wf[i*_nk + k])*(-1.0*dV[i*_nk + k])*_wf[i*_nk + k]*_di*_dk;
                 }
             }
     }   

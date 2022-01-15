@@ -16,6 +16,7 @@ class WF{
         Parameters _param;
         int _ni, _nk;
         double *_i, *_k, _di, _dk;
+        void (WF::*_apply_mask)(cdouble*,cdouble*);
     public:
         WF();
         WF(Parameters param);
@@ -30,6 +31,8 @@ class WF{
         void set_col(cdouble* col, int i);
         cdouble norm();
         void apply_mask(cdouble* imask, cdouble *kmask);
+        void apply_mask_X(cdouble* imask, cdouble *kmask);
+        void apply_mask_RZ(cdouble* imask, cdouble *kmask);
         void save_wf(std::string path);
         void save_wf2(std::string path);
         cdouble operator()(int i, int j);

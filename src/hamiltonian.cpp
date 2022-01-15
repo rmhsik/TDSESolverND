@@ -103,7 +103,14 @@ void Hamiltonian::dpotential_X(){
 }
 
 void Hamiltonian::dpotential_RZ(){
-    //TODO
+    for(int i=0; i<_ni;i++){
+        _dpotential[i*_nk + 0] = (_potential[i*_nk + 1] - _potential[i*_nk + 0])/_dk;
+        _dpotential[i*_nk + _nk-1] = (_potential[i*_nk + _nk-1]-_potential[i*_nk + _nk-2])/_dk;
+    }
+    for(int i=0; i<_ni;i++){
+        for(int k=0;k<_nk-1;k++)
+            _dpotential[i*_nk + k] = (_potential[i*_nk + k+1]-_potential[i*_nk + k-1])/(2.0*_dk);
+    }
 }
 
 cdouble* Hamiltonian::get_potential(){
@@ -283,8 +290,8 @@ void Hamiltonian::step_k_RZ(cdouble *psi_col, double afield_k, double bfield_k, 
 
     cdouble a = 1.0/(_dk*_dk)+0.5*afield_k*afield_k/(C*C);
     cdouble b = 1.0/(2.0*_dk*_dk);
-    Hz_du = -b + I*1.0/(2.0*C*_dk)*afield_k;
-    Hz_dl = -b - I*1.0/(2.0*C*_dk)*afield_k;
+    Hz_du = -b - I*1.0/(2.0*C*_dk)*afield_k;
+    Hz_dl = -b + I*1.0/(2.0*C*_dk)*afield_k;
     for(int k=0;k<_nk;k++){
         Hz_d  =  a + 0.5*_potential[i*_nk + k];
 
