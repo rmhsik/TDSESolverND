@@ -386,6 +386,7 @@ void TDSESolver::propagate_RZ(){
     cdouble norm, ener;
     cdouble *acc_vec, *dip_vec;
     cdouble *psi_col, *psi_row;
+    int idx;
     const int ni = _param.ni;
     const int nk = _param.nk;
     std::string path;
@@ -427,22 +428,23 @@ void TDSESolver::propagate_RZ(){
         _wf.set_to_buf(j%_param.nt_diag);
         //acc_vec[j] = _wf.acc();
         //dip_vec[j] = _wf.dipole();
-        if (j%_param.nt_diag==0 && j<(_param.nt-_param.nt%_param.nt_diag)){ 
+        if ((j+1)%_param.nt_diag==0 && j<(_param.nt-_param.nt%_param.nt_diag)){ 
+            idx = j - _param.nt_diag + 1;
             _wf.dipole_buf();
-            std::memcpy(&dip_vec[j], _wf.get_diag_buf(), _param.nt_diag*sizeof(cdouble));
+            std::memcpy(&dip_vec[idx], _wf.get_diag_buf(), _param.nt_diag*sizeof(cdouble));
             _wf.acc_buf();
-            std::memcpy(&acc_vec[j], _wf.get_diag_buf(), _param.nt_diag*sizeof(cdouble));
+            std::memcpy(&acc_vec[idx], _wf.get_diag_buf(), _param.nt_diag*sizeof(cdouble));
 
             norm = _wf.norm();
             //ener = (_ham.*(_ham.ener))(_wf.get());
             std::cout<<j<<" Norm: "<< norm<<"\n";
         }
     }
-    // Get last batch of diagnostics from _param.nt-_param.nt%_param.nt_diag up to _paran.nt
+    // Get last batch of diagnostics from last idx up to _paran.nt
     _wf.dipole_buf();
-    std::memcpy(&dip_vec[_param.nt-_param.nt%_param.nt_diag],_wf.get_diag_buf(),_param.nt%_param.nt_diag*sizeof(cdouble));
+    std::memcpy(&dip_vec[idx+1],_wf.get_diag_buf(),(_param.nt%_param.nt_diag-1)*sizeof(cdouble));
     _wf.acc_buf();
-    std::memcpy(&acc_vec[_param.nt-_param.nt%_param.nt_diag],_wf.get_diag_buf(),_param.nt%_param.nt_diag*sizeof(cdouble));
+    std::memcpy(&acc_vec[idx+1],_wf.get_diag_buf(),(_param.nt%_param.nt_diag-1)*sizeof(cdouble));
 
     cdouble valaccmask;
     for(int j=0; j<_param.nt; j++){
