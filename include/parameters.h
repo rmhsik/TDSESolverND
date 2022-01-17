@@ -49,7 +49,7 @@ const int n_threads = 4;
             double E0i      = 0.067;
             double E0k      = 0.067;
             double B0i      = 0.0;
-            double B0k      = 0.0;
+            double B0k      = 0.12;
 
             double phiEi    = 0.0;
             double phiEk    = 0.0;

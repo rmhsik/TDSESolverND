@@ -89,6 +89,8 @@ void TDSESolver::setup_fields(){
 
         case RZ:
             Afield_k = Field(_param.E0k, _param.w0Ek, _param.phiEk, _param.env, _param.tmax_ev, _t, _param.nt);
+            path = "results/Efield_k.dat";
+            write_array(Afield_k.get(),_param.nt,path);
             Bfield_k = Field(_param.B0k, _param.w0Bk, _param.phiBk, _param.env, _param.tmax_ev, _t, _param.nt);
             Afield_k.calc_pot();
             path = "results/Afield_k.dat";

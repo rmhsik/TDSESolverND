@@ -10,8 +10,7 @@ Field::Field(){
 
 Field::Field(double amp, double w, double phi, int env, double tmax,  double *t, int nt){
     _nt = nt; _tmax = tmax; _w = w; _t = t;
-    _dt = _tmax/(double)_nt;
-
+    _dt = _t[_nt-1]/(double)(_nt);
     _field = new double[_nt];
 
     for(int i=0; i<_nt; i++){
