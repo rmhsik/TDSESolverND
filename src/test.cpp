@@ -7,6 +7,6 @@ int main(){
     omp_set_num_threads(n_threads);
     Parameters param;
     TDSESolver tdse(param);
-    //tdse.ipropagate();
-    //tdse.propagate();
+    tdse.ipropagate();
+    tdse.propagate();
 }
