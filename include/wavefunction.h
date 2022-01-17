@@ -11,8 +11,11 @@
 class WF{
     private:
         cdouble *_wf;
+        cdouble *_wf_buf;
+        cdouble *_diag_buf;
         cdouble *_row;
         cdouble *_col;
+        cdouble *_dV;
         Parameters _param;
         int _ni, _nk;
         double *_i, *_k, _di, _dk;
@@ -29,7 +32,12 @@ class WF{
         void set(cdouble* arr);
         void set_row(cdouble* row, int k);
         void set_col(cdouble* col, int i);
+        void set_to_buf(const int idx);
+        void get_from_buf(cdouble* arr, const int idx);
+        cdouble* get_buf();
+        cdouble* get_diag_buf();
         cdouble norm();
+        void set_dpotential(cdouble *dV);
         void apply_mask(cdouble* imask, cdouble *kmask);
         void apply_mask_X(cdouble* imask, cdouble *kmask);
         void apply_mask_RZ(cdouble* imask, cdouble *kmask);
@@ -39,7 +47,11 @@ class WF{
         void operator/= (cdouble val);        
 
         cdouble dipole();
-        cdouble acc(cdouble *dV);
+        cdouble acc();
+        
+        void dipole_buf();
+        void acc_buf();
+
 };
 
 

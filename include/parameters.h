@@ -38,6 +38,8 @@ const int n_threads = 4;
             double dt       = 0.02;
             double dt_ITP   = 0.002;
             int nt          = tmax_sim/dt;
+            int nt_ITP      = 500;
+            int nt_diag     = 100;
 
             //Fields
             int env         = SIN2;

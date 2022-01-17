@@ -2,6 +2,7 @@
 #include <tuple>
 #include <string>
 #include <cstdint>
+#include <cstring>
 #include <omp.h>
 #include "tdsesolver.h"
 #include "debug.h"
@@ -17,8 +18,8 @@ TDSESolver::TDSESolver(Parameters param){
 
     setup_geometry();
     setup_fields();
-    setup_wf();
     setup_ham();
+    setup_wf();
     setup_masks();
     }
 
@@ -104,7 +105,7 @@ void TDSESolver::setup_fields(){
 void TDSESolver::setup_wf(){
     _wf = WF(_param);
     _wf.set_geometry(_i,_k,_di,_dk);
-   
+    _wf.set_dpotential(_ham.get_dpotential()); 
     switch(_param.init_wf){
     	case GAUS:
             _wf.gaussian(0.0,0.0,1.0);
@@ -289,8 +290,12 @@ void TDSESolver::propagate_X(){
         (_ham.*(_ham.step_i))(psi_row,Afield_i[i],0.0,0,0,0);
         _wf.set_row(psi_row,0);
         _wf.apply_mask(_imask,_kmask);
-        acc_vec[i] = _wf.acc(_ham.get_dpotential());
-        if(i%100 ==0){
+        
+        _wf.set_to_buf(i%_param.nt_diag);
+        //acc_vec[i] = _wf.acc();
+        if(i%_param.nt_diag == 0){
+            _wf.acc_buf();
+            std::memcpy(&acc_vec[i],_wf.get_diag_buf(),_param.nt_diag*sizeof(cdouble));
             //norm_vec_idx = (int)(i/100);
             //norm_vec[norm_vec_idx] = _wf.norm();
             //std::cout<<"Ener: "<<(_ham.*(_ham.ener))(psi_row)<<"\n";
@@ -419,14 +424,25 @@ void TDSESolver::propagate_RZ(){
             _wf.set_col(&psi_col[id_thread*nk],i);
         }
         _wf.apply_mask(_imask,_kmask);
-        acc_vec[j] = _wf.acc(_ham.get_dpotential());
-        dip_vec[j] = _wf.dipole();
-        if (j%100==0){ 
+        _wf.set_to_buf(j%_param.nt_diag);
+        //acc_vec[j] = _wf.acc();
+        //dip_vec[j] = _wf.dipole();
+        if (j%_param.nt_diag==0 && j<(_param.nt-_param.nt%_param.nt_diag)){ 
+            _wf.dipole_buf();
+            std::memcpy(&dip_vec[j], _wf.get_diag_buf(), _param.nt_diag*sizeof(cdouble));
+            _wf.acc_buf();
+            std::memcpy(&acc_vec[j], _wf.get_diag_buf(), _param.nt_diag*sizeof(cdouble));
+
             norm = _wf.norm();
-            ener = (_ham.*(_ham.ener))(_wf.get());
-            std::cout<<j<<" Norm: "<< norm<<" Ener: "<<ener<<" Acc: "<<acc_vec[j] <<"\n";
+            //ener = (_ham.*(_ham.ener))(_wf.get());
+            std::cout<<j<<" Norm: "<< norm<<"\n";
         }
     }
+    // Get last batch of diagnostics from _param.nt-_param.nt%_param.nt_diag up to _paran.nt
+    _wf.dipole_buf();
+    std::memcpy(&dip_vec[_param.nt-_param.nt%_param.nt_diag],_wf.get_diag_buf(),_param.nt%_param.nt_diag*sizeof(cdouble));
+    _wf.acc_buf();
+    std::memcpy(&acc_vec[_param.nt-_param.nt%_param.nt_diag],_wf.get_diag_buf(),_param.nt%_param.nt_diag*sizeof(cdouble));
 
     cdouble valaccmask;
     for(int j=0; j<_param.nt; j++){
@@ -436,7 +452,7 @@ void TDSESolver::propagate_RZ(){
     }
     path = "results/acc.dat";
     write_array(acc_vec,_param.nt,path);
-    path = "results//dip.dat";
+    path = "results/dip.dat";
     write_array(dip_vec,_param.nt,path);
 
     delete acc_vec;
