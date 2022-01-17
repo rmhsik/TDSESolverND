@@ -403,7 +403,7 @@ void TDSESolver::propagate_RZ(){
             int id_thread = omp_get_thread_num();
             for(int k=0;k<nk;k++)
                 psi_col[id_thread*nk + k] = _wf.get()[i*nk+k];
-            (_ham.*(_ham.step_k))(&psi_col[id_thread*nk],Afield_k[j],0.0,i,0,id_thread);
+            (_ham.*(_ham.step_k))(&psi_col[id_thread*nk],Afield_k[j],Bfield_k[j],i,0,id_thread);
             _wf.set_col(&psi_col[id_thread*nk],i);
         }
         
@@ -412,7 +412,7 @@ void TDSESolver::propagate_RZ(){
             int id_thread = omp_get_thread_num();
             for(int i=0;i<ni;i++)
                 psi_row[id_thread*ni + i] = _wf.get()[i*nk+k];
-            (_ham.*(_ham.step_i))(&psi_row[id_thread*ni],Afield_k[j],0.0,k,0,id_thread);
+            (_ham.*(_ham.step_i))(&psi_row[id_thread*ni],Afield_k[j],Bfield_k[j],k,0,id_thread);
             _wf.set_row(&psi_row[id_thread*ni],k);
         }
         
@@ -421,7 +421,7 @@ void TDSESolver::propagate_RZ(){
             int id_thread = omp_get_thread_num();
             for(int k=0;k<nk;k++)
                 psi_col[id_thread*nk + k] = _wf.get()[i*nk+k];
-            (_ham.*(_ham.step_k))(&psi_col[id_thread*nk],Afield_k[j],0.0,i,0,id_thread);
+            (_ham.*(_ham.step_k))(&psi_col[id_thread*nk],Afield_k[j],Bfield_k[j],i,0,id_thread);
             _wf.set_col(&psi_col[id_thread*nk],i);
         }
         _wf.apply_mask(_imask,_kmask);
