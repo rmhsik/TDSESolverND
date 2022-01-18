@@ -408,7 +408,7 @@ void TDSESolver::propagate_RZ(){
             for(int k=0;k<nk;k++)
                 psi_col[id_thread*nk + k] = wf_ptr[j%_param.nt_diag*ni*nk+i*nk+k];
             (_ham.*(_ham.step_k))(&psi_col[id_thread*nk],Afield_k[j],Bfield_k[j],i,0,id_thread);
-            _wf.set_col_buf(&psi_col[id_thread*nk],i,(j+1)%_param.nt_diag);
+            _wf.set_col_buf_mask(&psi_col[id_thread*nk],_kmask, i,(j+1)%_param.nt_diag);
         }
         
         #pragma omp parallel for schedule(dynamic)
@@ -419,7 +419,7 @@ void TDSESolver::propagate_RZ(){
             for(int i=0;i<ni;i++)
                 psi_row[id_thread*ni + i] = wf_ptr[(j+1)%_param.nt_diag*ni*nk+i*nk+k];
             (_ham.*(_ham.step_i))(&psi_row[id_thread*ni],Afield_k[j],Bfield_k[j],k,0,id_thread);
-            _wf.set_row_buf(&psi_row[id_thread*ni],k,(j+1)%_param.nt_diag);
+            _wf.set_row_buf_mask(&psi_row[id_thread*ni],_imask,k,(j+1)%_param.nt_diag);
         }
         
         #pragma omp parallel for schedule(dynamic)
@@ -430,9 +430,9 @@ void TDSESolver::propagate_RZ(){
             for(int k=0;k<nk;k++)
                 psi_col[id_thread*nk + k] = wf_ptr[(j+1)%_param.nt_diag*ni*nk+i*nk+k];
             (_ham.*(_ham.step_k))(&psi_col[id_thread*nk],Afield_k[j],Bfield_k[j],i,0,id_thread);
-            _wf.set_col_buf(&psi_col[id_thread*nk],i,(j+1)%_param.nt_diag);
+            _wf.set_col_buf_mask(&psi_col[id_thread*nk],_kmask,i,(j+1)%_param.nt_diag);
         }
-        _wf.apply_mask_buf_RZ(_imask,_kmask,(j+1)%_param.nt_diag);
+        //_wf.apply_mask_buf_RZ(_imask,_kmask,(j+1)%_param.nt_diag);
         //_wf.set_to_buf(j%_param.nt_diag);
         //acc_vec[j] = _wf.acc();
         //dip_vec[j] = _wf.dipole();
@@ -443,9 +443,9 @@ void TDSESolver::propagate_RZ(){
             _wf.acc_buf();
             std::memcpy(&acc_vec[idx], _wf.get_diag_buf(), _param.nt_diag*sizeof(cdouble));
  
-            norm = _wf.norm();
+            //norm = _wf.norm();
             //ener = (_ham.*(_ham.ener))(_wf.get());
-            std::cout<<j<<" Norm: "<< norm<<"\n";
+            //std::cout<<j<<" Norm: "<< norm<<"\n";
         }
     }
     // Get last batch of diagnostics from last idx up to _paran.nt

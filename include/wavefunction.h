@@ -35,6 +35,8 @@ class WF{
         void set_to_buf(const int idx);
         void set_col_buf(cdouble* col, const int i, const int idx);
         void set_row_buf(cdouble* row, const int k, const int idx);
+        void set_col_buf_mask(cdouble* col, cdouble* kmask, const int i, const int idx);
+        void set_row_buf_mask(cdouble* row, cdouble* imask, const int k, const int idx);
         void get_from_buf(cdouble* arr, const int idx);
         cdouble* get_buf();
         cdouble* get_diag_buf();
