@@ -23,10 +23,10 @@ const int n_threads = 4;
 	    int init_wf	    = EXPO;
             //Geometry
             int geometry    = RZ;            
-            int ni          = 500/5;
+            int ni          = 500/1;
             double imin     = 0.0;
             double imax     = 100.0;
-            int nk          = 1200/5;
+            int nk          = 1200/1;
             double kmin     = -120.0;
             double kmax     = 120.0;
 
@@ -51,7 +51,7 @@ const int n_threads = 4;
             double E0i      = 0.067;
             double E0k      = 0.067;
             double B0i      = 0.0;
-            double B0k      = 0.12;
+            double B0k      = 0.00;
 
             double phiEi    = 0.0;
             double phiEk    = 0.0;

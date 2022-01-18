@@ -140,6 +140,13 @@ void WF::apply_mask_RZ(cdouble *imask, cdouble *kmask){
     }
 }
 
+void WF::apply_mask_buf_RZ(cdouble *imask, cdouble *kmask,const int idx){
+    for(int i=0; i<_ni; i++){
+        for(int k=0; k<_nk;k++)
+            _wf_buf[idx*_ni*_nk + i*_nk + k] *= imask[i]*kmask[k];
+    }
+}
+
 cdouble* WF::get(){
     return _wf;
 }
@@ -180,6 +187,16 @@ void WF::set(cdouble* arr){
 
 void WF::set_to_buf(const int idx){
     std::memcpy(&_wf_buf[idx*_ni*_nk],_wf,_ni*_nk*sizeof(cdouble));
+}
+
+void WF::set_col_buf(cdouble* col, const int i, const int idx){
+    for(int k=0; k<_nk; k++)
+        _wf_buf[idx*_ni*_nk + i*_nk + k] = col[k];
+}
+
+void WF::set_row_buf(cdouble *row, const int k, const int idx){
+    for(int i=0;i<_ni;i++)
+        _wf_buf[idx*_ni*_nk + i*_nk +k] = row[i];
 }
 
 void WF::get_from_buf(cdouble* arr, const int idx){
