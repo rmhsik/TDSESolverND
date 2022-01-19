@@ -2,6 +2,7 @@
 #define PARAMETERS_H
 
 #include <cmath>
+#include <string>
 
 #define X    0
 #define XZ   1
@@ -23,10 +24,10 @@ const int n_threads = 4;
 	    int init_wf	    = EXPO;
             //Geometry
             int geometry    = RZ;            
-            int ni          = 500/1;
+            int ni          = 500/5;
             double imin     = 0.0;
             double imax     = 100.0;
-            int nk          = 1200/1;
+            int nk          = 1200/5;
             double kmin     = -120.0;
             double kmax     = 120.0;
 
@@ -58,6 +59,9 @@ const int n_threads = 4;
             double phiBi    = 0.0;
             double phiBk    = 0.0;
 
+	    //File paths
+	    std::string acc_path = "results/acc0.dat";
+	    std::string dip_path = "results/dip0.dat";
         Parameters(){
             if(geometry==X){
                 nk = 1;

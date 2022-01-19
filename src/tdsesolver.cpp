@@ -460,10 +460,10 @@ void TDSESolver::propagate_RZ(){
         acc_vec[j] *= valaccmask;
         dip_vec[j] *= valaccmask;
     }
-    path = "results/acc.dat";
-    write_array(acc_vec,_param.nt,path);
-    path = "results/dip.dat";
-    write_array(dip_vec,_param.nt,path);
+    //path = "results/acc.dat";
+    write_array(acc_vec,_param.nt,_param.acc_path);
+    //path = "results/dip.dat";
+    write_array(dip_vec,_param.nt,_param.dip_path);
 
     delete acc_vec;
     delete dip_vec;
