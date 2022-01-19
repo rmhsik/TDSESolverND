@@ -46,6 +46,8 @@ class WF{
         void apply_mask_X(cdouble* imask, cdouble *kmask);
         void apply_mask_RZ(cdouble* imask, cdouble *kmask);
         void apply_mask_buf_RZ(cdouble* imask, cdouble* kmask, const int idx);
+        void apply_mask_XZ(cdouble* imask, cdouble *kmask);
+        void apply_mask_buf_XZ(cdouble* imask, cdouble* kmask, const int idx);
         void save_wf(std::string path);
         void save_wf2(std::string path);
         cdouble operator()(int i, int j);

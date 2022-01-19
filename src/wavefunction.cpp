@@ -35,6 +35,9 @@ void WF::set_geometry( double *i, double *k, const double di, const double dk){
         case X:
             _apply_mask = &WF::apply_mask_X;
             break;
+        case XZ:
+            _apply_mask = &WF::apply_mask_XZ;
+            break;
         case RZ:
             _apply_mask = &WF::apply_mask_RZ;
             break;
@@ -133,10 +136,24 @@ void WF::apply_mask_X(cdouble *imask, cdouble *kmask){
     }
 }
 
+void WF::apply_mask_XZ(cdouble *imask, cdouble *kmask){
+    for(int i=0; i<_ni; i++){
+        for(int k=0; k<_nk;k++)
+            _wf[i*_nk + k] = _wf[i*_nk + k]*imask[i]*kmask[k];
+    }
+}
+
 void WF::apply_mask_RZ(cdouble *imask, cdouble *kmask){
     for(int i=0; i<_ni; i++){
         for(int k=0; k<_nk;k++)
             _wf[i*_nk + k] = _wf[i*_nk + k]*imask[i]*kmask[k];
+    }
+}
+
+void WF::apply_mask_buf_XZ(cdouble *imask, cdouble *kmask,const int idx){
+    for(int i=0; i<_ni; i++){
+        for(int k=0; k<_nk;k++)
+            _wf_buf[idx*_ni*_nk + i*_nk + k] *= imask[i]*kmask[k];
     }
 }
 
@@ -248,7 +265,7 @@ cdouble WF::dipole(){
             break;
 
         case XZ:
-            #pragma parallel for schedule(dynamic) collapse(2) reduction(+: sum)
+            #pragma parallel for schedule(dynamic) reduction(+: sum)
             for(int i=0; i<_ni; i++){
                 for(int j=0; j<_nk; j++){
                     sum += conj(_wf[i*_nk + j])*_k[j]*_wf[i*_nk + j]*_di*_dk;
@@ -276,7 +293,7 @@ cdouble WF::acc(){
             break;
 
         case XZ:
-            #pragma parallel for schedule(dynamic) collapse(2) reduction(+: sum)
+            #pragma parallel for schedule(dynamic) reduction(+: sum)
             for(int i=0; i<_ni; i++){
                 for(int j=0; j<_nk; j++){
                     sum += conj(_wf[i*_nk + j])*(-1.0*_dV[i*_nk + j])*_wf[i*_nk + j]*_di*_dk;

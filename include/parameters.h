@@ -20,12 +20,12 @@ const int n_threads = 4;
         private:
         public:
 	    //Inital WF
-	    int init_wf	    = EXPO;
+	    int init_wf	    = GAUS;
             //Geometry
-            int geometry    = RZ;            
+            int geometry    = XZ;            
             int ni          = 500/1;
-            double imin     = 0.0;
-            double imax     = 100.0;
+            double imin     = -50.0;
+            double imax     = 50.0;
             int nk          = 1200/1;
             double kmin     = -120.0;
             double kmax     = 120.0;
@@ -38,7 +38,7 @@ const int n_threads = 4;
             double dt       = 0.02;
             double dt_ITP   = 0.002;
             int nt          = tmax_sim/dt;
-            int nt_ITP      = 500;
+            int nt_ITP      = 1500;
             int nt_diag     = 100;
 
             //Fields
@@ -48,12 +48,12 @@ const int n_threads = 4;
             double w0Bi     = w0;
             double w0Bk     = w0;
             
-            double E0i      = 0.067;
-            double E0k      = 0.067;
+            double E0i      = 0.047;
+            double E0k      = 0.047;
             double B0i      = 0.0;
-            double B0k      = 0.00;
+            double B0k      = 0.0;
 
-            double phiEi    = 0.0;
+            double phiEi    = 0.5*M_PI;
             double phiEk    = 0.0;
             double phiBi    = 0.0;
             double phiBk    = 0.0;
