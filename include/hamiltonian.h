@@ -27,6 +27,8 @@ class Hamiltonian{
         void dpotential_X();
         void potential_RZ();
         void dpotential_RZ();
+        void potential_XZ();
+        void dpotential_XZ();
 
         void tridot(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* vec, cdouble* out, const int n);
         void tdma(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* dd, cdouble* out,  const int n);
@@ -48,10 +50,17 @@ class Hamiltonian{
         void step_k_X(cdouble *psi, double afield_k, double bfield_k, const int i, const int imag, const int id_thread);
         cdouble ener_X(cdouble* psi);
 
+        // Hamiltonian for XZ 
+        void step_i_XZ(cdouble *psi, double afield_i, double bfield_k, const int j ,const int imag, const int id_thread);
+        void step_k_XZ(cdouble *psi, double afield_k, double bfield_k, const int i, const int imag, const int id_thread);
+        cdouble ener_XZ(cdouble* psi);
+
         // Hamiltonian for RZ 
         void step_i_RZ(cdouble *psi, double afield_i, double bfield_k, const int j ,const int imag, const int id_thread);
         void step_k_RZ(cdouble *psi, double afield_k, double bfield_k, const int i, const int imag, const int id_thread);
         cdouble ener_RZ(cdouble* psi);
+
+        
 };
 
 #endif

@@ -42,12 +42,14 @@
             void setup_masks();
             void setup_wf();
             void setup_ham();
-	    void propagate();
-	    void ipropagate();
+            void propagate();
+            void ipropagate();
             void propagate_X();
             void ipropagate_X();
-	    void propagate_RZ();
-	    void ipropagate_RZ();
+            void propagate_XZ();
+            void ipropagate_XZ();
+            void propagate_RZ();
+            void ipropagate_RZ();
     };
 
 

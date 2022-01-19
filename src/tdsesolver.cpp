@@ -42,6 +42,9 @@ void TDSESolver::setup_geometry(){
         case XZ:
             std::tie(_i,_di) = linspace<double>(_param.imin,_param.imax,_param.ni);
             std::tie(_k,_dk) = linspace<double>(_param.kmin,_param.kmax,_param.nk);
+            _propagate = &TDSESolver::propagate_XZ;
+	        _ipropagate = &TDSESolver::ipropagate_XZ;
+
             break;
         case RZ:
             std::tie(_i,_di) = linspace<double>(0.0,_param.imax,_param.ni);
@@ -184,9 +187,14 @@ void TDSESolver::setup_masks(){
             for(int i=0; i<_param.ni;i++){
                 if(_i[i]<_i[0]+ib){
                     _imask[i] = pow(cos(M_PI*(_i[i] - (_i[0]+ib))*gamma/(2*ib)),1.0/8.0);
+                    if(_imask[i].real()<0.0)
+                        _imask[i] =0.0;
                 }
                 else if (_i[i]>(_i[_param.ni-1]-ib)){
                     _imask[i] = pow(cos(M_PI*(_i[i] - (_i[_param.ni-1]-ib))*gamma/(2*ib)),1.0/8.0);
+                    if(_imask[i].real()<0.0)
+                        _imask[i] =0.0;
+
                 }
                 else{
                     _imask[i] = 1.0;
@@ -253,7 +261,7 @@ void TDSESolver::propagate(){
 void TDSESolver::ipropagate_X(){
     debug3("[TDSESolver->ipropagate] Start imaginary propagation...");
     cdouble norm;    
-    for(int i=0; i<5000; i++){
+    for(int i=0; i<_param.nt_ITP; i++){
         cdouble *psi_row;
         psi_row = _wf.row(0);
 
@@ -332,6 +340,123 @@ void TDSESolver::propagate_X(){
     debug3("[TDSESolver->propagate] End propagate");
 }
 
+void TDSESolver::ipropagate_XZ(){
+    cdouble ener = 0.0;
+    cdouble norm;
+    cdouble *psi_col, *psi_row;
+    const int ni = _param.ni;
+    const int nk = _param.nk;
+    psi_col = new cdouble [_param.nk*n_threads];
+    psi_row = new cdouble [_param.ni*n_threads];
+
+    for(int j=0; j<_param.nt_ITP;j++){
+        #pragma omp parallel for schedule(dynamic)
+        for(int i=0;i<ni;i++){
+            int id_thread = omp_get_thread_num();
+            for(int k=0;k<nk;k++)
+                psi_col[id_thread*nk + k] = _wf.get()[i*nk+k];
+            (_ham.*(_ham.step_k))(&psi_col[id_thread*nk],0.0,0.0,i,1,id_thread);
+            _wf.set_col(&psi_col[id_thread*nk],i);
+        }
+        
+        #pragma omp parallel for schedule(dynamic)
+        for(int k=0;k<nk;k++){
+            int id_thread = omp_get_thread_num();
+            for(int i=0;i<ni;i++)
+                psi_row[id_thread*ni + i] = _wf.get()[i*nk+k];
+            (_ham.*(_ham.step_i))(&psi_row[id_thread*ni],0.0,0.0,k,1,id_thread);
+            _wf.set_row(&psi_row[id_thread*ni],k);
+        }
+        
+        norm = _wf.norm();
+        _wf /= norm;
+        if(j%50==0){
+            ener = (_ham.*(_ham.ener))(_wf.get());
+            std::cout<<"Norm: "<< norm<<" Ener: "<<ener<<"\n";
+        }
+    }
+    std::cout<<"Ener: "<<ener<<"\n";
+    delete psi_col;
+     delete psi_row;
+}
+
+void TDSESolver::propagate_XZ(){
+    cdouble norm, ener;
+    cdouble *acc_vec, *dip_vec;
+    cdouble *psi_col, *psi_row;
+    int idx;
+    const int ni = _param.ni;
+    const int nk = _param.nk;
+    std::string path;
+
+    acc_vec = new cdouble [_param.nt];
+    dip_vec = new cdouble [_param.nt];
+   
+    psi_col = new cdouble [_param.nk*n_threads];
+    psi_row = new cdouble [_param.ni*n_threads];
+
+    //wf_ptr = _wf.get_buf();
+    _wf.set_to_buf(0); 
+    for(int j=0; j<_param.nt;j++){
+        #pragma omp parallel for schedule(dynamic)
+        for(int i=0;i<ni;i++){
+            cdouble *wf_ptr;
+            wf_ptr = _wf.get_buf();
+            int id_thread = omp_get_thread_num();
+            for(int k=0;k<nk;k++)
+                psi_col[id_thread*nk + k] = wf_ptr[j%_param.nt_diag*ni*nk+i*nk+k];
+            (_ham.*(_ham.step_k))(&psi_col[id_thread*nk],Afield_k[j],Bfield_k[j],i,0,id_thread);
+            _wf.set_col_buf_mask(&psi_col[id_thread*nk],_kmask, i,(j+1)%_param.nt_diag);
+        }
+        
+        #pragma omp parallel for schedule(dynamic)
+        for(int k=0;k<nk;k++){
+            cdouble *wf_ptr;
+            wf_ptr = _wf.get_buf();
+            int id_thread = omp_get_thread_num();
+            for(int i=0;i<ni;i++)
+                psi_row[id_thread*ni + i] = wf_ptr[(j+1)%_param.nt_diag*ni*nk+i*nk+k];
+            (_ham.*(_ham.step_i))(&psi_row[id_thread*ni],Afield_i[j],Bfield_k[j],k,0,id_thread);
+            _wf.set_row_buf_mask(&psi_row[id_thread*ni],_imask,k,(j+1)%_param.nt_diag);
+        }
+        //_wf.apply_mask_buf_RZ(_imask,_kmask,(j+1)%_param.nt_diag);
+        //_wf.set_to_buf(j%_param.nt_diag);
+        //acc_vec[j] = _wf.acc();
+        //dip_vec[j] = _wf.dipole();
+        if ((j+2)%_param.nt_diag==0 && j<(_param.nt-_param.nt%_param.nt_diag)){ 
+            idx = j - _param.nt_diag + 2;
+            _wf.dipole_buf();
+            std::memcpy(&dip_vec[idx], _wf.get_diag_buf(), _param.nt_diag*sizeof(cdouble));
+            _wf.acc_buf();
+            std::memcpy(&acc_vec[idx], _wf.get_diag_buf(), _param.nt_diag*sizeof(cdouble));
+ 
+            //norm = _wf.norm();
+            //ener = (_ham.*(_ham.ener))(_wf.get());
+            //std::cout<<j<<" ACC: "<< acc_vec[j]<<"\n";
+        }
+    }
+    // Get last batch of diagnostics from last idx up to _paran.nt
+    _wf.dipole_buf();
+    std::memcpy(&dip_vec[idx+1],_wf.get_diag_buf(),(_param.nt%_param.nt_diag-1)*sizeof(cdouble));
+    _wf.acc_buf();
+    std::memcpy(&acc_vec[idx+1],_wf.get_diag_buf(),(_param.nt%_param.nt_diag-1)*sizeof(cdouble));
+
+    cdouble valaccmask;
+    for(int j=0; j<_param.nt; j++){
+        valaccmask = _accmask[j];
+        acc_vec[j] *= valaccmask;
+        dip_vec[j] *= valaccmask;
+    }
+    path = "results/acc.dat";
+    write_array(acc_vec,_param.nt,path);
+    path = "results/dip.dat";
+    write_array(dip_vec,_param.nt,path);
+
+    delete acc_vec;
+    delete dip_vec;
+}
+
+
 void TDSESolver::ipropagate_RZ(){
     cdouble ener = 0.0;
     cdouble norm;
@@ -341,7 +466,7 @@ void TDSESolver::ipropagate_RZ(){
     psi_col = new cdouble [_param.nk*n_threads];
     psi_row = new cdouble [_param.ni*n_threads];
 
-    for(int j=0; j<500;j++){
+    for(int j=0; j<_param.nt_ITP;j++){
         #pragma omp parallel for schedule(dynamic)
         for(int i=0;i<ni;i++){
             int id_thread = omp_get_thread_num();
@@ -379,7 +504,6 @@ void TDSESolver::ipropagate_RZ(){
     std::cout<<"Ener: "<<ener<<"\n";
     delete psi_col;
      delete psi_row;
-
 }
 
 void TDSESolver::propagate_RZ(){
