@@ -5,6 +5,7 @@
 
 int main(){
     Parameters param;
+	param.n_threads = 4; 
     param.print();
     omp_set_num_threads(param.n_threads);
     TDSESolver tdse(param);
