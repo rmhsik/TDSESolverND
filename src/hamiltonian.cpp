@@ -28,23 +28,23 @@ Hamiltonian::Hamiltonian(Parameters param){
             step_k = &Hamiltonian::step_k_XZ;
             ener = &Hamiltonian::ener_XZ;
 
-            _Mk_du = new cdouble[n_threads*_nk];
-            _Mk_d  = new cdouble[n_threads*_nk];
-            _Mk_dl = new cdouble[n_threads*_nk];
-            _Mpk_du = new cdouble[n_threads*_nk];
-            _Mpk_d  = new cdouble[n_threads*_nk];
-            _Mpk_dl = new cdouble[n_threads*_nk];
-            _lhs_k = new cdouble[n_threads*_nk];
-            _res_k = new cdouble[n_threads*_nk];
+            _Mk_du = new cdouble[_param.n_threads*_nk];
+            _Mk_d  = new cdouble[_param.n_threads*_nk];
+            _Mk_dl = new cdouble[_param.n_threads*_nk];
+            _Mpk_du = new cdouble[_param.n_threads*_nk];
+            _Mpk_d  = new cdouble[_param.n_threads*_nk];
+            _Mpk_dl = new cdouble[_param.n_threads*_nk];
+            _lhs_k = new cdouble[_param.n_threads*_nk];
+            _res_k = new cdouble[_param.n_threads*_nk];
             
-            _Mi_du = new cdouble[n_threads*_ni];
-            _Mi_d  = new cdouble[n_threads*_ni];
-            _Mi_dl = new cdouble[n_threads*_ni];
-            _Mpi_du = new cdouble[n_threads*_ni];
-            _Mpi_d  = new cdouble[n_threads*_ni];
-            _Mpi_dl = new cdouble[n_threads*_ni];
-            _lhs_i = new cdouble[n_threads*_ni];
-            _res_i = new cdouble[n_threads*_ni];
+            _Mi_du = new cdouble[_param.n_threads*_ni];
+            _Mi_d  = new cdouble[_param.n_threads*_ni];
+            _Mi_dl = new cdouble[_param.n_threads*_ni];
+            _Mpi_du = new cdouble[_param.n_threads*_ni];
+            _Mpi_d  = new cdouble[_param.n_threads*_ni];
+            _Mpi_dl = new cdouble[_param.n_threads*_ni];
+            _lhs_i = new cdouble[_param.n_threads*_ni];
+            _res_i = new cdouble[_param.n_threads*_ni];
             break;
 
         case RZ:
@@ -52,23 +52,23 @@ Hamiltonian::Hamiltonian(Parameters param){
             step_k = &Hamiltonian::step_k_RZ;
             ener = &Hamiltonian::ener_RZ;
 
-            _Mk_du = new cdouble[n_threads*_nk];
-            _Mk_d  = new cdouble[n_threads*_nk];
-            _Mk_dl = new cdouble[n_threads*_nk];
-            _Mpk_du = new cdouble[n_threads*_nk];
-            _Mpk_d  = new cdouble[n_threads*_nk];
-            _Mpk_dl = new cdouble[n_threads*_nk];
-            _lhs_k = new cdouble[n_threads*_nk];
-            _res_k = new cdouble[n_threads*_nk];
+            _Mk_du = new cdouble[_param.n_threads*_nk];
+            _Mk_d  = new cdouble[_param.n_threads*_nk];
+            _Mk_dl = new cdouble[_param.n_threads*_nk];
+            _Mpk_du = new cdouble[_param.n_threads*_nk];
+            _Mpk_d  = new cdouble[_param.n_threads*_nk];
+            _Mpk_dl = new cdouble[_param.n_threads*_nk];
+            _lhs_k = new cdouble[_param.n_threads*_nk];
+            _res_k = new cdouble[_param.n_threads*_nk];
             
-            _Mi_du = new cdouble[n_threads*_ni];
-            _Mi_d  = new cdouble[n_threads*_ni];
-            _Mi_dl = new cdouble[n_threads*_ni];
-            _Mpi_du = new cdouble[n_threads*_ni];
-            _Mpi_d  = new cdouble[n_threads*_ni];
-            _Mpi_dl = new cdouble[n_threads*_ni];
-            _lhs_i = new cdouble[n_threads*_ni];
-            _res_i = new cdouble[n_threads*_ni];
+            _Mi_du = new cdouble[_param.n_threads*_ni];
+            _Mi_d  = new cdouble[_param.n_threads*_ni];
+            _Mi_dl = new cdouble[_param.n_threads*_ni];
+            _Mpi_du = new cdouble[_param.n_threads*_ni];
+            _Mpi_d  = new cdouble[_param.n_threads*_ni];
+            _Mpi_dl = new cdouble[_param.n_threads*_ni];
+            _lhs_i = new cdouble[_param.n_threads*_ni];
+            _res_i = new cdouble[_param.n_threads*_ni];
             break;
         }    
 }

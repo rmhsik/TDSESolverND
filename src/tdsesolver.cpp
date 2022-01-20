@@ -346,8 +346,8 @@ void TDSESolver::ipropagate_XZ(){
     cdouble *psi_col, *psi_row;
     const int ni = _param.ni;
     const int nk = _param.nk;
-    psi_col = new cdouble [_param.nk*n_threads];
-    psi_row = new cdouble [_param.ni*n_threads];
+    psi_col = new cdouble [_param.nk*_param.n_threads];
+    psi_row = new cdouble [_param.ni*_param.n_threads];
 
     for(int j=0; j<_param.nt_ITP;j++){
         #pragma omp parallel for schedule(dynamic)
@@ -392,8 +392,8 @@ void TDSESolver::propagate_XZ(){
     acc_vec = new cdouble [_param.nt];
     dip_vec = new cdouble [_param.nt];
    
-    psi_col = new cdouble [_param.nk*n_threads];
-    psi_row = new cdouble [_param.ni*n_threads];
+    psi_col = new cdouble [_param.nk*_param.n_threads];
+    psi_row = new cdouble [_param.ni*_param.n_threads];
 
     //wf_ptr = _wf.get_buf();
     _wf.set_to_buf(0); 
@@ -461,8 +461,8 @@ void TDSESolver::ipropagate_RZ(){
     cdouble *psi_col, *psi_row;
     const int ni = _param.ni;
     const int nk = _param.nk;
-    psi_col = new cdouble [_param.nk*n_threads];
-    psi_row = new cdouble [_param.ni*n_threads];
+    psi_col = new cdouble [_param.nk*_param.n_threads];
+    psi_row = new cdouble [_param.ni*_param.n_threads];
 
     for(int j=0; j<_param.nt_ITP;j++){
         #pragma omp parallel for schedule(dynamic)
@@ -516,8 +516,8 @@ void TDSESolver::propagate_RZ(){
     acc_vec = new cdouble [_param.nt];
     dip_vec = new cdouble [_param.nt];
    
-    psi_col = new cdouble [_param.nk*n_threads];
-    psi_row = new cdouble [_param.ni*n_threads];
+    psi_col = new cdouble [_param.nk*_param.n_threads];
+    psi_row = new cdouble [_param.ni*_param.n_threads];
 
     //wf_ptr = _wf.get_buf();
     _wf.set_to_buf(0); 

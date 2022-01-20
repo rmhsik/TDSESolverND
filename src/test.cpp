@@ -4,8 +4,9 @@
 #include "parameters.h"
 
 int main(){
-    omp_set_num_threads(n_threads);
     Parameters param;
+    param.print();
+    omp_set_num_threads(param.n_threads);
     TDSESolver tdse(param);
     tdse.ipropagate();
     tdse.propagate();
