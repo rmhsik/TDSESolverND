@@ -4,12 +4,12 @@
 Hamiltonian::Hamiltonian(){
 }
 
-Hamiltonian::Hamiltonian(Parameters param){
+Hamiltonian::Hamiltonian(Parameters *param){
     _param = param;
-    _ni = _param.ni;
-    _nk = _param.nk;
+    _ni = _param->ni;
+    _nk = _param->nk;
 
-    switch(_param.geometry){
+    switch(_param->geometry){
         case X:
             step_i = &Hamiltonian::step_i_X;
             step_k = NULL;
@@ -28,23 +28,23 @@ Hamiltonian::Hamiltonian(Parameters param){
             step_k = &Hamiltonian::step_k_XZ;
             ener = &Hamiltonian::ener_XZ;
 
-            _Mk_du = new cdouble[_param.n_threads*_nk];
-            _Mk_d  = new cdouble[_param.n_threads*_nk];
-            _Mk_dl = new cdouble[_param.n_threads*_nk];
-            _Mpk_du = new cdouble[_param.n_threads*_nk];
-            _Mpk_d  = new cdouble[_param.n_threads*_nk];
-            _Mpk_dl = new cdouble[_param.n_threads*_nk];
-            _lhs_k = new cdouble[_param.n_threads*_nk];
-            _res_k = new cdouble[_param.n_threads*_nk];
+            _Mk_du = new cdouble[_param->n_threads*_nk];
+            _Mk_d  = new cdouble[_param->n_threads*_nk];
+            _Mk_dl = new cdouble[_param->n_threads*_nk];
+            _Mpk_du = new cdouble[_param->n_threads*_nk];
+            _Mpk_d  = new cdouble[_param->n_threads*_nk];
+            _Mpk_dl = new cdouble[_param->n_threads*_nk];
+            _lhs_k = new cdouble[_param->n_threads*_nk];
+            _res_k = new cdouble[_param->n_threads*_nk];
             
-            _Mi_du = new cdouble[_param.n_threads*_ni];
-            _Mi_d  = new cdouble[_param.n_threads*_ni];
-            _Mi_dl = new cdouble[_param.n_threads*_ni];
-            _Mpi_du = new cdouble[_param.n_threads*_ni];
-            _Mpi_d  = new cdouble[_param.n_threads*_ni];
-            _Mpi_dl = new cdouble[_param.n_threads*_ni];
-            _lhs_i = new cdouble[_param.n_threads*_ni];
-            _res_i = new cdouble[_param.n_threads*_ni];
+            _Mi_du = new cdouble[_param->n_threads*_ni];
+            _Mi_d  = new cdouble[_param->n_threads*_ni];
+            _Mi_dl = new cdouble[_param->n_threads*_ni];
+            _Mpi_du = new cdouble[_param->n_threads*_ni];
+            _Mpi_d  = new cdouble[_param->n_threads*_ni];
+            _Mpi_dl = new cdouble[_param->n_threads*_ni];
+            _lhs_i = new cdouble[_param->n_threads*_ni];
+            _res_i = new cdouble[_param->n_threads*_ni];
             break;
 
         case RZ:
@@ -52,23 +52,23 @@ Hamiltonian::Hamiltonian(Parameters param){
             step_k = &Hamiltonian::step_k_RZ;
             ener = &Hamiltonian::ener_RZ;
 
-            _Mk_du = new cdouble[_param.n_threads*_nk];
-            _Mk_d  = new cdouble[_param.n_threads*_nk];
-            _Mk_dl = new cdouble[_param.n_threads*_nk];
-            _Mpk_du = new cdouble[_param.n_threads*_nk];
-            _Mpk_d  = new cdouble[_param.n_threads*_nk];
-            _Mpk_dl = new cdouble[_param.n_threads*_nk];
-            _lhs_k = new cdouble[_param.n_threads*_nk];
-            _res_k = new cdouble[_param.n_threads*_nk];
+            _Mk_du = new cdouble[_param->n_threads*_nk];
+            _Mk_d  = new cdouble[_param->n_threads*_nk];
+            _Mk_dl = new cdouble[_param->n_threads*_nk];
+            _Mpk_du = new cdouble[_param->n_threads*_nk];
+            _Mpk_d  = new cdouble[_param->n_threads*_nk];
+            _Mpk_dl = new cdouble[_param->n_threads*_nk];
+            _lhs_k = new cdouble[_param->n_threads*_nk];
+            _res_k = new cdouble[_param->n_threads*_nk];
             
-            _Mi_du = new cdouble[_param.n_threads*_ni];
-            _Mi_d  = new cdouble[_param.n_threads*_ni];
-            _Mi_dl = new cdouble[_param.n_threads*_ni];
-            _Mpi_du = new cdouble[_param.n_threads*_ni];
-            _Mpi_d  = new cdouble[_param.n_threads*_ni];
-            _Mpi_dl = new cdouble[_param.n_threads*_ni];
-            _lhs_i = new cdouble[_param.n_threads*_ni];
-            _res_i = new cdouble[_param.n_threads*_ni];
+            _Mi_du = new cdouble[_param->n_threads*_ni];
+            _Mi_d  = new cdouble[_param->n_threads*_ni];
+            _Mi_dl = new cdouble[_param->n_threads*_ni];
+            _Mpi_du = new cdouble[_param->n_threads*_ni];
+            _Mpi_d  = new cdouble[_param->n_threads*_ni];
+            _Mpi_dl = new cdouble[_param->n_threads*_ni];
+            _lhs_i = new cdouble[_param->n_threads*_ni];
+            _res_i = new cdouble[_param->n_threads*_ni];
             break;
         }    
 }
@@ -80,7 +80,7 @@ _i = i; _k = k; _di = di; _dk = dk;
 void Hamiltonian::set_potential(){
 _potential = new cdouble[_ni*_nk];
 
-    switch(_param.geometry){
+    switch(_param->geometry){
         case X:
             potential_X();
             break;
@@ -96,7 +96,7 @@ _potential = new cdouble[_ni*_nk];
 
 void Hamiltonian::set_dpotential(){
     _dpotential = new cdouble[_ni*_nk];
-    switch(_param.geometry){
+    switch(_param->geometry){
         case X:
             dpotential_X();
             break;
@@ -173,7 +173,7 @@ void Hamiltonian::step_i_X(cdouble *psi, double afield_i, double bfield_i, const
     cdouble H_du;
     cdouble H_d;
     cdouble H_dl;
-    cdouble dt = imag==0 ? cdouble(1.0,0.0)*_param.dt: cdouble(0.0,-1.0)*_param.dt_ITP;
+    cdouble dt = imag==0 ? cdouble(1.0,0.0)*_param->dt: cdouble(0.0,-1.0)*_param->dt_ITP;
 
     cdouble a = 1.0/(_di*_di);
     cdouble b = 1.0/(2.0*_di*_di); 
@@ -234,7 +234,7 @@ void Hamiltonian::step_i_XZ(cdouble *psi_row, double afield_i, double bfield_k, 
     cdouble Hx_du;
     cdouble Hx_d;
     cdouble Hx_dl;
-    cdouble dt = imag==0 ? cdouble(1.0,0.0)*_param.dt: cdouble(0.0,-1.0)*_param.dt_ITP;
+    cdouble dt = imag==0 ? cdouble(1.0,0.0)*_param->dt: cdouble(0.0,-1.0)*_param->dt_ITP;
 
 
     cdouble a = 1.0/(_di*_di) + 0.5*afield_i*afield_i/(C*C);
@@ -268,7 +268,7 @@ void Hamiltonian::step_k_XZ(cdouble *psi_col, double afield_k, double bfield_k, 
     cdouble Hz_du;
     cdouble Hz_d;
     cdouble Hz_dl;
-    cdouble dt = imag==0 ? cdouble(1.0,0.0)*_param.dt: cdouble(0.0,-1.0)*_param.dt_ITP;
+    cdouble dt = imag==0 ? cdouble(1.0,0.0)*_param->dt: cdouble(0.0,-1.0)*_param->dt_ITP;
     
     cdouble a = 1.0/(_dk*_dk)+0.5*afield_k*afield_k/(C*C);
     cdouble b = 1.0/(2.0*_dk*_dk);
@@ -382,7 +382,7 @@ void Hamiltonian::step_i_RZ(cdouble *psi_row, double afield_i, double bfield_k, 
     cdouble Hr_du;
     cdouble Hr_d;
     cdouble Hr_dl;
-    cdouble dt = imag==0 ? cdouble(1.0,0.0)*_param.dt: cdouble(0.0,-1.0)*_param.dt_ITP;
+    cdouble dt = imag==0 ? cdouble(1.0,0.0)*_param->dt: cdouble(0.0,-1.0)*_param->dt_ITP;
 
 
     cdouble a = 1.0/(_di*_di);
@@ -417,7 +417,7 @@ void Hamiltonian::step_k_RZ(cdouble *psi_col, double afield_k, double bfield_k, 
     cdouble Hz_du;
     cdouble Hz_d;
     cdouble Hz_dl;
-    cdouble dt = imag==0 ? cdouble(1.0,0.0)*_param.dt: cdouble(0.0,-1.0)*_param.dt_ITP;
+    cdouble dt = imag==0 ? cdouble(1.0,0.0)*_param->dt: cdouble(0.0,-1.0)*_param->dt_ITP;
     
     cdouble a = 1.0/(_dk*_dk)+0.5*afield_k*afield_k/(C*C);
     cdouble b = 1.0/(2.0*_dk*_dk);

@@ -10,19 +10,19 @@ WF::WF(){
         
 }
 
-WF::WF(Parameters param){
+WF::WF(Parameters *param){
     _param = param;
 }
 
 void WF::set_geometry( double *i, double *k, const double di, const double dk){    
-    _ni = _param.ni;
-    _nk = _param.nk;
+    _ni = _param->ni;
+    _nk = _param->nk;
 
     _wf = new cdouble[_ni*_nk];
     _row = new cdouble[_ni];
     _col = new cdouble[_nk];
-    _wf_buf = new cdouble[_param.nt_diag*_ni*_nk];
-    _diag_buf = new cdouble[_param.nt_diag];
+    _wf_buf = new cdouble[_param->nt_diag*_ni*_nk];
+    _diag_buf = new cdouble[_param->nt_diag];
     for(int i=0; i<_ni; i++){
         for(int j=0; j<_nk;j++){
             _wf[i*_nk + j] = cdouble(0.0,0.0);
@@ -31,7 +31,7 @@ void WF::set_geometry( double *i, double *k, const double di, const double dk){
 
     _i = i; _k = k; _di = di; _dk = dk;
 
-    switch(_param.geometry){
+    switch(_param->geometry){
         case X:
             _apply_mask = &WF::apply_mask_X;
             break;
@@ -102,7 +102,7 @@ void WF::save_wf2(std::string path){
 
 cdouble WF::norm(){
     cdouble integral = 0.0;
-    switch(_param.geometry){
+    switch(_param->geometry){
         case X:
             for(int i=0; i<_ni;i++){
                 integral += _wf[i*_nk + 0]*conj(_wf[i*_nk + 0])*_di;
@@ -257,7 +257,7 @@ void WF::operator/=(cdouble val){
 
 cdouble WF::dipole(){
     cdouble sum = 0.0;
-    switch(_param.geometry){
+    switch(_param->geometry){
         case X:
             for(int i=0; i<_ni; i++){
                 sum += conj(_wf[i*_nk + 0])*_i[i]*_wf[i*_nk + 0]*_di;
@@ -285,7 +285,7 @@ cdouble WF::dipole(){
 
 cdouble WF::acc(){
     cdouble sum = cdouble(0.0,0.0);
-    switch(_param.geometry){
+    switch(_param->geometry){
         case X:
             for(int i=0; i<_ni; i++){
                 sum += conj(_wf[i*_nk + 0])*(-1.0*_dV[i*_nk + 0])*_wf[i*_nk + 0]*_di;
@@ -312,9 +312,9 @@ cdouble WF::acc(){
 }
 
 void WF::dipole_buf(){
-    switch(_param.geometry){
+    switch(_param->geometry){
         case X:
-            for(int n=0; n<_param.nt_diag;n++){
+            for(int n=0; n<_param->nt_diag;n++){
                 cdouble sum = 0.0;
                 for(int i=0; i<_ni; i++){
                     sum += conj(_wf_buf[n*_nk*_ni + i*_nk + 0])*_i[i]*_wf_buf[n*_nk*_ni + i*_nk + 0]*_di;
@@ -325,7 +325,7 @@ void WF::dipole_buf(){
 
         case XZ:
             #pragma omp parallel for schedule(dynamic)
-            for(int n=0; n<_param.nt_diag;n++){
+            for(int n=0; n<_param->nt_diag;n++){
                 cdouble sum = 0.0;
                 for(int i=0; i<_ni; i++){
                     for(int j=0; j<_nk; j++){
@@ -337,7 +337,7 @@ void WF::dipole_buf(){
             break;
         case RZ:
             #pragma omp parallel for schedule(dynamic)
-            for(int n=0; n<_param.nt_diag; n++){
+            for(int n=0; n<_param->nt_diag; n++){
                 cdouble sum = 0.0;
                 for(int i=0; i<_ni; i++){
                     for(int k=0; k<_nk; k++){
@@ -352,9 +352,9 @@ void WF::dipole_buf(){
 }
 
 void WF::acc_buf(){
-    switch(_param.geometry){
+    switch(_param->geometry){
         case X:
-            for(int n=0;n<_param.nt_diag;n++){ 
+            for(int n=0;n<_param->nt_diag;n++){ 
                 cdouble sum = 0.0;
                 for(int i=0; i<_ni; i++){
                     sum += conj(_wf_buf[n*_ni*_nk + i*_nk + 0])*(-1.0*_dV[i*_nk + 0])*_wf_buf[n*_ni*_nk + i*_nk + 0]*_di;
@@ -365,7 +365,7 @@ void WF::acc_buf(){
 
         case XZ:
             #pragma omp parallel for schedule(dynamic)
-            for(int n=0;n<_param.nt_diag;n++){
+            for(int n=0;n<_param->nt_diag;n++){
                 cdouble sum = 0.0;
                 for(int i=0; i<_ni; i++){
                     for(int j=0; j<_nk; j++){
@@ -377,7 +377,7 @@ void WF::acc_buf(){
             break;
         case RZ:
             #pragma omp parallel for schedule(dynamic)
-            for(int n=0;n<_param.nt_diag;n++){
+            for(int n=0;n<_param->nt_diag;n++){
                 cdouble sum=0.0;
                 for(int i=0; i<_ni; i++){
                     for(int k=0; k<_nk;k++){

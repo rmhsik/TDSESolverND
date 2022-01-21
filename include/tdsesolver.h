@@ -12,7 +12,7 @@
 
     class TDSESolver{
         private:
-            Parameters _param;
+            Parameters *_param;
 
             Field Afield_i;
             Field Afield_k;
@@ -35,7 +35,7 @@
 
         public:
             TDSESolver();
-            TDSESolver(Parameters param);
+            TDSESolver(Parameters *param);
             void setup_time();
             void setup_geometry();
             void setup_fields();

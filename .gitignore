@@ -6,3 +6,4 @@ venv/
 TDSESolver*
 lib/
 build/
+__pycache__/

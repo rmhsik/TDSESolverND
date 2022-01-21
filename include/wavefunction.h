@@ -16,13 +16,13 @@ class WF{
         cdouble *_row;
         cdouble *_col;
         cdouble *_dV;
-        Parameters _param;
+        Parameters *_param;
         int _ni, _nk;
         double *_i, *_k, _di, _dk;
         void (WF::*_apply_mask)(cdouble*,cdouble*);
     public:
         WF();
-        WF(Parameters param);
+        WF(Parameters *param);
         void set_geometry(double *i, double *k, const double di, const double dk);
         void gaussian(double i0, double k0, double sigma);
         void exponential(double i0, double k0, double sigma);

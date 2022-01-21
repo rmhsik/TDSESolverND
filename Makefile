@@ -22,7 +22,7 @@ TDSESolver: $(LIB)libtdsesolver.so
 	mkdir -p results
 	$(CC) -L$(LIB) -ltdsesolver -I$(INCLUDE) $(CFLAGS) $(SRC)/main.cpp -o TDSESolver
 
-$(LIB)libtdsesolver.so: $(BUILD)fields.o $(BUILD)hamiltonian.o $(BUILD)parameters.o $(BUILD)tdsesolver.o $(BUILD)utils.o $(BUILD)wavefunction.o
+$(LIB)libtdsesolver.so: $(BUILD)fields.o $(BUILD)hamiltonian.o $(BUILD)parameters.o $(BUILD)tdsesolver.o $(BUILD)utils.o $(BUILD)wavefunction.o $(BUILD)cwrapper.o
 	mkdir -p $(LIB)
 	$(CC) -shared $(BUILD)*.o -fopenmp -o $(LIB)libtdsesolver.so
 
@@ -42,6 +42,9 @@ $(BUILD)utils.o: $(SRC)/utils.cpp
 	mkdir -p ./build/
 	$(CC) -c -fPIC -I$(INCLUDE) $(CFLAGS) $^ -o $@
 $(BUILD)wavefunction.o: $(SRC)/wavefunction.cpp
+	mkdir -p ./build/
+	$(CC) -c -fPIC -I$(INCLUDE) $(CFLAGS) $^ -o $@
+$(BUILD)cwrapper.o: $(SRC)/cwrapper.cpp
 	mkdir -p ./build/
 	$(CC) -c -fPIC -I$(INCLUDE) $(CFLAGS) $^ -o $@
 

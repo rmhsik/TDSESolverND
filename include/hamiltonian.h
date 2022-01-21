@@ -9,7 +9,7 @@
 
 class Hamiltonian{
     private:
-        Parameters _param;
+        Parameters *_param;
         cdouble *_potential;
         cdouble *_dpotential;
         double *_i, *_k;
@@ -34,7 +34,7 @@ class Hamiltonian{
         void tdma(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* dd, cdouble* out,  const int n);
     public:
         Hamiltonian();
-        Hamiltonian(Parameters param);
+        Hamiltonian(Parameters *param);
         void set_geometry(double *i, double *k, const double di, const double dk);
         void set_potential();
         void set_dpotential();

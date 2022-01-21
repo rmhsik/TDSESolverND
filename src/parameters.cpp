@@ -63,6 +63,13 @@ void Parameters::check_param(){
     }
 }
 
+void Parameters::set_acc_path(char *val){
+    acc_path = std::string(val);
+}
+
+void Parameters::set_dip_path(char *val){
+    dip_path = std::string(val);
+}
 void Parameters::print(){
     std::cout<<"Parameters:\n";
     std::cout<<"------------------------\n";
@@ -93,4 +100,7 @@ void Parameters::print(){
     std::cout<<"\tphiEk: "<<phiEk<<std::endl;
     std::cout<<"\tphiBi: "<<phiBi<<std::endl;
     std::cout<<"\tphiBk: "<<phiBk<<std::endl;
+    std::cout<<"\tacc_path: "<<acc_path<<std::endl;
+    std::cout<<"\tdip_path: "<<dip_path<<std::endl;
+    std::cout<<std::endl;
 }

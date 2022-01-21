@@ -41,13 +41,17 @@ int main(){
     param.phiEk = 0.0;
     param.phiBi = 0.0;
     param.phiBk = 0.0;
-											
-    param.acc_path = "results/acc7.dat";
-    param.dip_path = "results/dip7.dat"; 
+
+    char *acc_path= "results/acc8.dat";
+    param.set_acc_path(acc_path);
+    char *dip_path = "results/dip8.dat";
+    param.set_dip_path(dip_path); 
+    //param.acc_path = "results/acc7.dat";
+    //param.dip_path = "results/dip7.dat"; 
 
     param.print();
     omp_set_num_threads(param.n_threads);
-    TDSESolver tdse(param);
+    TDSESolver tdse(&param);
     tdse.ipropagate();
     tdse.propagate();
 }

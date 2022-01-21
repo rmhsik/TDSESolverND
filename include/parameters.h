@@ -56,6 +56,8 @@
         Parameters();
        	void check_param();	
 	void print();
+	void set_acc_path(char *val);
+	void set_dip_path(char* val);
     };
 
 #endif
