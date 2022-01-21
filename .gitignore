@@ -7,3 +7,4 @@ TDSESolver*
 lib/
 build/
 __pycache__/
+!tdsesolver.py
