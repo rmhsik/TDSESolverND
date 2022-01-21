@@ -5,6 +5,19 @@ path = '../lib/libtdsesolver.so'
 
 lib = ct.cdll.LoadLibrary(path)
 
+
+class TDSESolver:
+    def __init__(self,param_class):
+        lib.TDSESolver_new.argtypes = [ct.c_void_p]
+        lib.TDSESolver_new.restype = ct.c_void_p
+        lib.TDSESolver_ipropagate.argtypes = [ct.c_void_p]
+        lib.TDSESolver_ipropagate.restype = ct.c_void_p
+
+        lib.TDSESolver_propagate.argtypes = [ct.c_void_p]
+        lib.TDSESolver_propagate.restype = ct.c_void_p
+
+        self._obj = lib.TDSESolver_new(param_class)
+
 class Parameters:
     def __init__(self):
         lib.Parameters_new.argtypes = []
@@ -96,7 +109,7 @@ class Parameters:
         self.tmax_ev(param["tmax_ev"])
         self.tmax_sim(param["tmax_sim"])
         self.dt(param["dt"])
-        self.dt_ITP(parm["dt_ITP"])
+        self.dt_ITP(param["dt_ITP"])
         self.nt(param["nt"])
         self.nt_ITP(param["nt_ITP"])
         self.nt_diag(param["nt_diag"])
@@ -112,7 +125,7 @@ class Parameters:
         self.phiEi(param["phiEi"])
         self.phiEk(param["phiEk"])
         self.phiBi(param["phiBi"])
-        self.phiBk(param["PhiBk"])
+        self.phiBk(param["phiBk"])
         self.acc_path(param["acc_path"])
         self.dip_path(param["dip_path"])
     
@@ -161,7 +174,7 @@ class Parameters:
     def w0Bi(self, val):
         lib.Parameters_w0Bi(self._obj, val)
     def w0Bk(self, val):
-        lib.Parameters_init_w0Bk(self._obj, val)
+        lib.Parameters_w0Bk(self._obj, val)
     def E0i(self, val):
         lib.Parameters_E0i(self._obj, val)
     def E0k(self, val):
@@ -176,7 +189,7 @@ class Parameters:
         lib.Parameters_phiEk(self._obj, val)
     def phiBi(self, val):
         lib.Parameters_phiBi(self._obj, val)
-    def PhiBk(self, val):
+    def phiBk(self, val):
         lib.Parameters_phiBk(self._obj, val)
     def acc_path(self, val):
         lib.Parameters_acc_path(self._obj, val.encode("utf-8"))
