@@ -24,7 +24,7 @@ TDSESolver: $(LIB)libtdsesolver.so
 
 $(LIB)libtdsesolver.so: $(BUILD)fields.o $(BUILD)hamiltonian.o $(BUILD)parameters.o $(BUILD)tdsesolver.o $(BUILD)utils.o $(BUILD)wavefunction.o
 	mkdir -p $(LIB)
-	$(CC) -shared $(BUILD)*.o -o $(LIB)libtdsesolver.so
+	$(CC) -shared $(BUILD)*.o -fopenmp -o $(LIB)libtdsesolver.so
 
 $(BUILD)fields.o: $(SRC)/fields.cpp
 	mkdir -p ./build/
