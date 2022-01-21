@@ -16,6 +16,7 @@ TDSESolver::TDSESolver(Parameters *param){
     _param = param;
     setup_time();
 
+    omp_set_num_threads(_param->n_threads);
     setup_geometry();
     setup_fields();
     setup_ham();

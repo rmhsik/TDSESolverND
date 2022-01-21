@@ -50,7 +50,6 @@ int main(){
     //param.dip_path = "results/dip7.dat"; 
 
     param.print();
-    omp_set_num_threads(param.n_threads);
     TDSESolver tdse(&param);
     tdse.ipropagate();
     tdse.propagate();
