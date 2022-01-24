@@ -1,5 +1,5 @@
-import param
-import tdsesolver
+from pytdsesolver import param
+from pytdsesolver import tdsesolver
 
 _param = param.param
 parameters = tdsesolver.Parameters()
