@@ -106,12 +106,22 @@ void Parameters::print(){
     std::cout<<"\tw0Ei: "<<w0Ei<<std::endl;
     std::cout<<"\tw0Ek: "<<w0Ek<<std::endl;
     std::cout<<"\tw0Bi: "<<w0Bi<<std::endl;
-    std::cout<<"\tW0Bk: "<<w0Bk<<std::endl;
+    std::cout<<"\tw0Bk: "<<w0Bk<<std::endl;
+    std::cout<<"\tE0i: "<<E0i<<std::endl;
+    std::cout<<"\tE0k: "<<E0k<<std::endl;
+    std::cout<<"\tB0i: "<<B0i<<std::endl;
+    std::cout<<"\tB0k: "<<B0k<<std::endl;
+    std::cout<<"\tpopulation: "<<population<<std::endl;
+    std::cout<<"\tpop_imin: "<<pop_imin<<std::endl;
+    std::cout<<"\tpop_imax: "<<pop_imax<<std::endl;
+    std::cout<<"\tpop_kmin: "<<pop_kmin<<std::endl;
+    std::cout<<"\tpo[_kmax: "<<pop_kmax<<std::endl;
     std::cout<<"\tphiEi: "<<phiEi<<std::endl;
     std::cout<<"\tphiEk: "<<phiEk<<std::endl;
     std::cout<<"\tphiBi: "<<phiBi<<std::endl;
     std::cout<<"\tphiBk: "<<phiBk<<std::endl;
     std::cout<<"\tacc_path: "<<acc_path<<std::endl;
     std::cout<<"\tdip_path: "<<dip_path<<std::endl;
+    std::cout<<"\tpop_path: "<<pop_path<<std::endl;
     std::cout<<std::endl;
 }
