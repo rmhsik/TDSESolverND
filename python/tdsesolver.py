@@ -18,6 +18,12 @@ class TDSESolver:
 
         self._obj = lib.TDSESolver_new(param_class)
 
+    def ipropagate(self):
+        lib.TDSESolver_ipropagate(self._obj)
+    def propagate(self):
+        lib.TDSESolver_propagate(self._obj)
+
+
 class Parameters:
     def __init__(self):
         lib.Parameters_new.argtypes = []
