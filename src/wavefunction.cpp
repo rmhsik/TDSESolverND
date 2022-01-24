@@ -34,12 +34,36 @@ void WF::set_geometry( double *i, double *k, const double di, const double dk){
     switch(_param->geometry){
         case X:
             _apply_mask = &WF::apply_mask_X;
+            if(_param->population){
+                _pop = &WF::_pop_X;
+                _pop_buf = &WF::_pop_buf_X;
+            }
+            else{
+                _pop = &WF::_pop_0;
+                _pop_buf = &WF::_pop_buf_0;
+            }
             break;
         case XZ:
             _apply_mask = &WF::apply_mask_XZ;
+            if(_param->population){
+                _pop = &WF::_pop_XZ;
+                _pop_buf = &WF::_pop_buf_XZ;
+            }
+            else{
+                _pop = &WF::_pop_0;
+                _pop_buf = &WF::_pop_buf_0;
+            }
             break;
         case RZ:
             _apply_mask = &WF::apply_mask_RZ;
+            if(_param->population){
+                _pop = &WF::_pop_RZ;
+                _pop_buf = &WF::_pop_buf_RZ;
+            }
+            else{
+                _pop = &WF::_pop_0;
+                _pop_buf = &WF::_pop_buf_0;
+            }
             break;
     }
 }
@@ -390,3 +414,115 @@ void WF::acc_buf(){
     }   
 }
 
+cdouble WF::_pop_X(double imin, double imax, double kmin, double kmax){
+    cdouble sum = 0.0;
+    int n_imin, n_imax;
+    n_imin = (imin-_i[0])/_di;
+    n_imax = (imax-_i[0])/_di;
+    for(int i=n_imin; i<n_imax;i++){
+        for(int k=0;k<1;k++){
+            sum += conj(_wf[i*_nk+k])*_wf[i*_nk+k]*_di;
+        }
+    }
+    return sum;
+}
+
+cdouble WF::_pop_XZ(double imin, double imax, double kmin, double kmax){
+    cdouble sum = 0.0;
+    int n_imin, n_imax;
+    int n_kmin, n_kmax;
+    n_imin = (imin-_i[0])/_di;
+    n_imax = (imax-_i[0])/_di;
+    n_kmin = (kmin-_k[0])/_dk;
+    n_kmax = (kmax-_k[0])/_dk;
+    for(int i=n_imin; i<n_imax;i++){
+        for(int k=n_kmin;k<n_kmax;k++){
+            sum += conj(_wf[i*_nk+k])*_wf[i*_nk+k]*_di*_dk;
+        }
+    }
+    return sum;
+}
+
+cdouble WF::_pop_RZ(double imin, double imax, double kmin, double kmax){
+    cdouble sum = 0.0;
+    int n_imin, n_imax;
+    int n_kmin, n_kmax;
+    n_imin = (imin-_i[0])/_di;
+    n_imax = (imax-_i[0])/_di;
+    n_kmin = (kmin-_k[0])/_dk;
+    n_kmax = (kmax-_k[0])/_dk;
+    for(int i=n_imin; i<n_imax;i++){
+        for(int k=n_kmin;k<n_kmax;k++){
+            sum += 2*M_PI*_i[i]*conj(_wf[i*_nk+k])*_wf[i*_nk+k]*_di*_dk;
+        }
+    }
+    return sum;
+}
+
+cdouble WF::_pop_0(double imin, double imax, double kmin, double kmax){return 0.0;}
+
+void WF::_pop_buf_X(double imin, double imax, double kmin, double kmax){
+    int n_imin, n_imax;
+    int n_kmin, n_kmax;
+    n_imin = (imin-_i[0])/_di;
+    n_imax = (imax-_i[0])/_di;
+    n_kmin = (kmin-_k[0])/_dk;
+    n_kmax = (kmax-_k[0])/_dk;
+    for(int n=0;n<_param->nt_diag;n++){
+        cdouble sum = 0.0;
+        for(int i=n_imin; i<n_imax; i++){
+            for(int k=0; k<1; k++){
+                sum += conj(_wf_buf[n*_nk*_ni + i*_nk + k])*_wf_buf[n*_nk*_ni + i*_nk + k]*_di;
+            }
+        }
+        _diag_buf[n] = sum;
+    }
+}
+
+void WF::_pop_buf_XZ(double imin, double imax, double kmin, double kmax){
+    int n_imin, n_imax;
+    int n_kmin, n_kmax;
+    n_imin = (imin-_i[0])/_di;
+    n_imax = (imax-_i[0])/_di;
+    n_kmin = (kmin-_k[0])/_dk;
+    n_kmax = (kmax-_k[0])/_dk;
+    #pragma omp parallel for schedule(dynamic)
+    for(int n=0;n<_param->nt_diag;n++){
+        cdouble sum = 0.0;
+        for(int i=n_imin; i<n_imax; i++){
+            for(int k=n_kmin; k<n_kmax; k++){
+                sum += conj(_wf_buf[n*_nk*_ni + i*_nk + k])*_wf_buf[n*_nk*_ni + i*_nk + k]*_di*_dk;
+            }
+        }
+        _diag_buf[n] = sum;
+    }
+}
+
+void WF::_pop_buf_RZ(double imin, double imax, double kmin, double kmax){
+    int n_imin, n_imax;
+    int n_kmin, n_kmax;
+    n_imin = (imin-_i[0])/_di;
+    n_imax = (imax-_i[0])/_di;
+    n_kmin = (kmin-_k[0])/_dk;
+    n_kmax = (kmax-_k[0])/_dk;
+    #pragma omp parallel for schedule(dynamic)
+    for(int n=0;n<_param->nt_diag;n++){
+        cdouble sum = 0.0;
+        for(int i=n_imin; i<n_imax; i++){
+            for(int k=n_kmin; k<n_kmax; k++){
+                sum += 2*M_PI*_i[i]*conj(_wf_buf[n*_nk*_ni + i*_nk + k])*_wf_buf[n*_nk*_ni + i*_nk + k]*_di*_dk;
+            }
+        }
+        _diag_buf[n] = sum;
+    }
+}
+
+void WF::_pop_buf_0(double imin, double imax, double kmin, double kmax){}
+
+cdouble WF::pop(double imin, double imax, double kmin, double kmax){
+    return (this->*(this->_pop))(imin, imax, kmin, kmax);
+}
+
+void WF::pop_buf(double imin, double imax, double kmin, double kmax){
+    (this->*(this->_pop_buf))(imin, imax, kmin, kmax);
+}

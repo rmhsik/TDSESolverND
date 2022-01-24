@@ -50,14 +50,21 @@
             double phiEi;    
             double phiEk;    
             double phiBi;    
-            double phiBk;    
-	    std::string acc_path; 
-	    std::string dip_path; 
+            double phiBk;
+            int population;
+            double pop_imin;
+            double pop_imax;
+            double pop_kmin;
+            double pop_kmax;
+	        std::string acc_path; 
+	        std::string dip_path; 
+            std::string pop_path;
         Parameters();
        	void check_param();	
 	void print();
 	void set_acc_path(char *val);
 	void set_dip_path(char* val);
+	void set_pop_path(char* val);
     };
 
 #endif

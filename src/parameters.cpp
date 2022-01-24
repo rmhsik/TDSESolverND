@@ -44,11 +44,18 @@ Parameters::Parameters(){
         phiEk       = 0.0;
         phiBi       = 0.0;
         phiBk       = 0.0;
+        
+        // Diagnostics selection and parameters
+        population  = 0;
+        pop_imin    = imin;
+        pop_imax    = imax;
+        pop_kmin    = kmin;
+        pop_kmax    = kmax;
 
 	    //File paths
-	    acc_path    = "results/acc2.dat";
-	    dip_path    = "results/dip2.dat";
-        
+	    acc_path    = "results/acc.dat";
+	    dip_path    = "results/dip.dat";
+        pop_path    = "results/pop.dat"; 
         check_param();
 }
 
@@ -69,6 +76,10 @@ void Parameters::set_acc_path(char *val){
 
 void Parameters::set_dip_path(char *val){
     dip_path = std::string(val);
+}
+
+void Parameters::set_pop_path(char *val){
+    pop_path = std::string(val);
 }
 void Parameters::print(){
     std::cout<<"Parameters:\n";

@@ -29,5 +29,11 @@ param = {"n_threads": 5,
          "phiEk": 0.0,
          "phiBi": 0.0,
          "phiBk": 0.0,
-         "acc_path": "acc_test.dat",
-         "dip_path": "dip_test.dat"}
+         "population": 0,
+         "pop_imin": 0.0,
+         "pop_imax": 100.0,
+         "pop_kmin": -200.0,
+         "pop_kmax": 200.0,
+         "acc_path": "results/acc_test.dat",
+         "dip_path": "results/dip_test.dat",
+         "pop_path": "results/pop_test.dat"}

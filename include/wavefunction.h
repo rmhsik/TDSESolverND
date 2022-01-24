@@ -20,6 +20,17 @@ class WF{
         int _ni, _nk;
         double *_i, *_k, _di, _dk;
         void (WF::*_apply_mask)(cdouble*,cdouble*);
+        cdouble (WF::*_pop)(double,double,double,double);
+	void (WF::*_pop_buf)(double,double,double,double);
+
+	cdouble _pop_X(double imin, double imax, double kmin, double kmax);
+	cdouble _pop_XZ(double imin, double imax, double kmin, double kmax);
+	cdouble _pop_RZ(double imin, double imax, double kmin, double kmax);
+	cdouble _pop_0(double imin, double imax, double kmin, double kmax);
+	void _pop_buf_X(double imin, double imax, double kmin, double kmax);
+	void _pop_buf_XZ(double imin, double imax, double kmin, double kmax);
+	void _pop_buf_RZ(double imin, double imax, double kmin, double kmax);
+	void _pop_buf_0(double imin, double imax, double kmin, double kmax);
     public:
         WF();
         WF(Parameters *param);
@@ -55,9 +66,11 @@ class WF{
 
         cdouble dipole();
         cdouble acc();
+	cdouble pop(double imin, double imax, double kmin, double kmax);
         
         void dipole_buf();
         void acc_buf();
+	void pop_buf(double imin, double imax, double kmin, double kmax);
 
 };
 

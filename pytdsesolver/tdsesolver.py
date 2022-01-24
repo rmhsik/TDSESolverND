@@ -92,10 +92,18 @@ class Parameters:
         lib.Parameters_phiBi.restype = ct.c_void_p
         lib.Parameters_phiBk.argtypes = [ct.c_void_p, ct.c_double]
         lib.Parameters_phiBk.restype = ct.c_void_p
+        lib.Parameters_population.argtypes = [ct.c_void_p, ct.c_int]
+        lib.Parameters_poplation.restype = ct.c_void_p
+        lib.Parameters_pop_imin.argtypes = [ct.c_void_p, ct.c_double]
+        lib.Parameters_pop_imin.restype = ct.c_void_p
+        lib.Parameters_pop_kmin.argtypes = [ct.c_void_p, ct.c_doouble]
+        lib.Parameters_pop_kmax.restype = ct.c_void_p
         lib.Parameters_acc_path.argtypes = [ct.c_void_p, ct.c_char_p]
         lib.Parameters_acc_path.restype = ct.c_void_p
         lib.Parameters_dip_path.argtypes = [ct.c_void_p, ct.c_char_p]
         lib.Parameters_dip_path.restype = ct.c_void_p
+        lib.Parameters_pop_path.argtypes = [ct.c_void_p, ct.c_char_p]
+        lib.Parameters_pop_path_restype = ct.c_void_p
         self._obj = lib.Parameters_new()
 
     def print(self):
@@ -132,8 +140,14 @@ class Parameters:
         self.phiEk(param["phiEk"])
         self.phiBi(param["phiBi"])
         self.phiBk(param["phiBk"])
+        self.population(param["population"])
+        self.pop_imin(param["pop_imin"])
+        self.pop_imax(param["pop_imax"])
+        self.pop_kmin(param["pop_kmin"])
+        self.pop_kmax(param["pop_kmax"])
         self.acc_path(param["acc_path"])
         self.dip_path(param["dip_path"])
+        self.pop_path(param["pop_path"])
     
     def n_threads(self, val):
         lib.Parameters_n_threads(self._obj, val)
@@ -197,8 +211,20 @@ class Parameters:
         lib.Parameters_phiBi(self._obj, val)
     def phiBk(self, val):
         lib.Parameters_phiBk(self._obj, val)
+    def population(self, val):
+        lib.Parameters_population(self._obj, val)
+    def pop_imin(self, val):
+        lib.Parameters_imin(self._obj, val)
+    def pop_imax(self, val):
+        lib.Parameters_imax(self._obj, val)
+    def pop_kmin(self, val):
+        lib.Parameters_kmin(self._obj, val)
+    def pop_kmax(self, val):
+        lib.Parameters_kmax(self._obj, val)
     def acc_path(self, val):
         lib.Parameters_acc_path(self._obj, val.encode("utf-8"))
     def dip_path(self, val):
         lib.Parameters_dip_path(self._obj, val.encode("utf-8"))
+    def pop_path(self, val)
+        lib.Parameters_pop_path(self._obj, val.encode("utf-8"))
 

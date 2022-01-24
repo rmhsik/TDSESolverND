@@ -38,6 +38,12 @@ extern "C"{
     void Parameters_phiEk(Parameters *p, double val){p->phiEk = val;}
     void Parameters_phiBi(Parameters *p, double val){p->phiBi = val;}
     void Parameters_phiBk(Parameters *p, double val){p->phiEk = val;}
+    void Parameters_population(Parameters *p, int val){p->population = val;}
+    void Parameters_pop_imin(Parameters *p, double val){p->pop_imin = val;}
+    void Parameters_pop_imax(Parameters *p, double val){p->pop_imax = val;}
+    void Parameters_pop_kmin(Parameters *p, double val){p->pop_kmin = val;}
+    void Parameters_pop_kmax(Parameters *p, double val){p->pop_kmax = val;}
     void Parameters_acc_path(Parameters *p, char *val){p->set_acc_path(val);}
     void Parameters_dip_path(Parameters *p, char *val){p->set_dip_path(val);}
+    void Parameters_pop_path(Parameters *p, char *val){p->set_pop_path(val);}
 }
