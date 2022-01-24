@@ -1,8 +1,10 @@
+import numpy as np
 from pytdsesolver import param
 from pytdsesolver import tdsesolver
 
 #Range of values:
 B_array_scan = np.array([0.0,0.05,0.10,0.15,0.20])
+B_array_scan = np.array([0.0])
 E0 = 0.0400
 
 _param = param.param

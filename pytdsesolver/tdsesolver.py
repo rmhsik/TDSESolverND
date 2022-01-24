@@ -1,7 +1,7 @@
 import ctypes as ct
 import sys
 
-path = '../lib/libtdsesolver.so'
+path = 'lib/libtdsesolver.so'
 
 lib = ct.cdll.LoadLibrary(path)
 
@@ -93,10 +93,10 @@ class Parameters:
         lib.Parameters_phiBk.argtypes = [ct.c_void_p, ct.c_double]
         lib.Parameters_phiBk.restype = ct.c_void_p
         lib.Parameters_population.argtypes = [ct.c_void_p, ct.c_int]
-        lib.Parameters_poplation.restype = ct.c_void_p
+        lib.Parameters_population.restype = ct.c_void_p
         lib.Parameters_pop_imin.argtypes = [ct.c_void_p, ct.c_double]
         lib.Parameters_pop_imin.restype = ct.c_void_p
-        lib.Parameters_pop_kmin.argtypes = [ct.c_void_p, ct.c_doouble]
+        lib.Parameters_pop_kmin.argtypes = [ct.c_void_p, ct.c_double]
         lib.Parameters_pop_kmax.restype = ct.c_void_p
         lib.Parameters_acc_path.argtypes = [ct.c_void_p, ct.c_char_p]
         lib.Parameters_acc_path.restype = ct.c_void_p
@@ -225,6 +225,6 @@ class Parameters:
         lib.Parameters_acc_path(self._obj, val.encode("utf-8"))
     def dip_path(self, val):
         lib.Parameters_dip_path(self._obj, val.encode("utf-8"))
-    def pop_path(self, val)
+    def pop_path(self, val):
         lib.Parameters_pop_path(self._obj, val.encode("utf-8"))
 
