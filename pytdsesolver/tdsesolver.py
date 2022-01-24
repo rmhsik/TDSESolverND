@@ -96,7 +96,11 @@ class Parameters:
         lib.Parameters_population.restype = ct.c_void_p
         lib.Parameters_pop_imin.argtypes = [ct.c_void_p, ct.c_double]
         lib.Parameters_pop_imin.restype = ct.c_void_p
+        lib.Parameters_pop_imax.argtypes = [ct.c_void_p, ct.c_double]
+        lib.Parameters_pop_imax.restype = ct.c_void_p
         lib.Parameters_pop_kmin.argtypes = [ct.c_void_p, ct.c_double]
+        lib.Parameters_pop_kmin.restype = ct.c_void_p
+        lib.Parameters_pop_kmax.argtypes = [ct.c_void_p, ct.c_double]
         lib.Parameters_pop_kmax.restype = ct.c_void_p
         lib.Parameters_acc_path.argtypes = [ct.c_void_p, ct.c_char_p]
         lib.Parameters_acc_path.restype = ct.c_void_p
@@ -214,13 +218,13 @@ class Parameters:
     def population(self, val):
         lib.Parameters_population(self._obj, val)
     def pop_imin(self, val):
-        lib.Parameters_imin(self._obj, val)
+        lib.Parameters_pop_imin(self._obj, val)
     def pop_imax(self, val):
-        lib.Parameters_imax(self._obj, val)
+        lib.Parameters_pop_imax(self._obj, val)
     def pop_kmin(self, val):
-        lib.Parameters_kmin(self._obj, val)
+        lib.Parameters_pop_kmin(self._obj, val)
     def pop_kmax(self, val):
-        lib.Parameters_kmax(self._obj, val)
+        lib.Parameters_pop_kmax(self._obj, val)
     def acc_path(self, val):
         lib.Parameters_acc_path(self._obj, val.encode("utf-8"))
     def dip_path(self, val):

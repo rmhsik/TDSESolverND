@@ -329,7 +329,6 @@ void TDSESolver::propagate_X(){
     for(int i=0; i<_param->nt;i++){
         acc_vec[i] *= _accmask[i];
         dip_vec[i] *= _accmask[i];
-        pop_vec[i] *= _accmask[i];
     }
     write_array(acc_vec,_param->nt,_param->acc_path);
     write_array(dip_vec,_param->nt,_param->dip_path);
@@ -450,7 +449,6 @@ void TDSESolver::propagate_XZ(){
         valaccmask = _accmask[j];
         acc_vec[j] *= valaccmask;
         dip_vec[j] *= valaccmask;
-        pop_vec[j] *= valaccmask;
     }
     write_array(acc_vec,_param->nt,_param->acc_path);
     write_array(dip_vec,_param->nt,_param->dip_path);
@@ -590,7 +588,6 @@ void TDSESolver::propagate_RZ(){
         valaccmask = _accmask[j];
         acc_vec[j] *= valaccmask;
         dip_vec[j] *= valaccmask;
-        pop_vec[j] *= valaccmask;
     }
 
     write_array(acc_vec, _param->nt, _param->acc_path);
