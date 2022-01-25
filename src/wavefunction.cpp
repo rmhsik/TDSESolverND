@@ -42,7 +42,26 @@ void WF::set_geometry( double *i, double *k, const double di, const double dk){
                 _pop = &WF::_pop_0;
                 _pop_buf = &WF::_pop_buf_0;
             }
+
+            if(_param->acc_i){
+                _acc_i = &WF::_acc_i_X;
+                _acc_i_buf = &WF::_acc_i_buf_X;
+            }
+            else{
+                _acc_i = &WF::_acc_0;
+                _acc_i_buf = &WF::_acc_buf_0;
+            }
+
+            if(_param->acc_k){
+                _acc_k = &WF::_acc_k_X;
+                _acc_k_buf = &WF::_acc_k_buf_X;
+            }
+            else{                
+                _acc_k = &WF::_acc_0;
+                _acc_k_buf = &WF::_acc_buf_0;
+            }
             break;
+
         case XZ:
             _apply_mask = &WF::apply_mask_XZ;
             if(_param->population){
@@ -52,6 +71,24 @@ void WF::set_geometry( double *i, double *k, const double di, const double dk){
             else{
                 _pop = &WF::_pop_0;
                 _pop_buf = &WF::_pop_buf_0;
+            }
+            
+            if(_param->acc_i){
+                _acc_i = &WF::_acc_i_XZ;
+                _acc_i_buf = &WF::_acc_i_buf_XZ;
+            }
+            else{
+                _acc_i = &WF::_acc_0;
+                _acc_i_buf = &WF::_acc_buf_0;
+            }
+
+            if(_param->acc_k){
+                _acc_k = &WF::_acc_k_XZ;
+                _acc_k_buf = &WF::_acc_k_buf_XZ;
+            }
+            else{
+                _acc_k = &WF::_acc_0;
+                _acc_k_buf = &WF::_acc_buf_0;
             }
             break;
         case RZ:
@@ -63,6 +100,24 @@ void WF::set_geometry( double *i, double *k, const double di, const double dk){
             else{
                 _pop = &WF::_pop_0;
                 _pop_buf = &WF::_pop_buf_0;
+            }
+
+            if(_param->acc_i){
+                _acc_i = &WF::_acc_i_RZ;
+                _acc_i_buf = &WF::_acc_i_buf_RZ;
+            }
+            else{
+                _acc_i = &WF::_acc_0;
+                _acc_i_buf = &WF::_acc_buf_0;
+            }
+
+            if(_param->acc_k){
+                _acc_k = &WF::_acc_k_RZ;
+                _acc_k_buf = &WF::_acc_k_buf_RZ;
+            }
+            else{
+                _acc_k = &WF::_acc_0;
+                _acc_k_buf = &WF::_acc_buf_0;
             }
             break;
     }
@@ -263,8 +318,12 @@ cdouble* WF::get_diag_buf(){
     return _diag_buf;
 }
 
-void WF::set_dpotential(cdouble* dV){
-    _dV = dV;
+void WF::set_dpotential_i(cdouble* dV){
+    _dV_i = dV;
+}
+
+void WF::set_dpotential_k(cdouble* dV){
+    _dV_k = dV;
 }
 
 cdouble WF::operator()(int i, int j){
@@ -307,33 +366,138 @@ cdouble WF::dipole(){
     return sum; 
 }
 
-cdouble WF::acc(){
+cdouble WF::_acc_i_X(){return 0.0;}
+
+cdouble WF::_acc_k_X(){
     cdouble sum = cdouble(0.0,0.0);
-    switch(_param->geometry){
-        case X:
-            for(int i=0; i<_ni; i++){
-                sum += conj(_wf[i*_nk + 0])*(-1.0*_dV[i*_nk + 0])*_wf[i*_nk + 0]*_di;
-            }
-            break;
+    for(int i=0; i<_ni; i++){
+        sum+= conj(_wf[i*_nk + 0])*(-1.0*_dV_k[i*_nk + 0])*_wf[i*_nk + 0]*_di;
+    }
+    return sum;
+}
 
-        case XZ:
-            #pragma parallel for schedule(dynamic) reduction(+: sum)
-            for(int i=0; i<_ni; i++){
-                for(int j=0; j<_nk; j++){
-                    sum += conj(_wf[i*_nk + j])*(-1.0*_dV[i*_nk + j])*_wf[i*_nk + j]*_di*_dk;
-                }
-            }
-        case RZ:
-            #pragma parallel for schedule(dynamic) reduction(+: sum)
-            for(int i=0; i<_ni; i++){
-                for(int k=0; k<_nk;k++){
-                    sum += 2*M_PI*_i[i]*conj(_wf[i*_nk + k])*(-1.0*_dV[i*_nk + k])*_wf[i*_nk + k]*_di*_dk;
-                }
-            }
-    }   
+cdouble WF::_acc_i_XZ(){
+    cdouble sum = cdouble(0.0,0.0);
+    //#pragma omp parallel for schedule(dynamic) reduction(+: sum)
+    for(int i=0; i<_ni; i++){
+        for(int k=0; k<_nk; k++){
+            sum += conj(_wf[i*_nk + k])*(-1.0*_dV_i[i*_nk + k])*_wf[i*_nk + k]*_di*_dk;
+        }
+    }
+    return sum;
+}
 
+cdouble WF::_acc_k_XZ(){
+    cdouble sum = cdouble(0.0,0.0);
+    //#pragma omp parallel for schedule(dynamic) reduction(+: sum)
+    for(int i=0; i<_ni; i++){
+        for(int k=0; k<_nk; k++){
+            sum += conj(_wf[i*_nk + k])*(-1.0*_dV_k[i*_nk + k])*_wf[i*_nk + k]*_di*_dk;
+        }
+    }
+    return sum;
+}
+
+cdouble WF::_acc_i_RZ(){
+    cdouble sum = cdouble(0.0,0.0);
+    //#pragma omp parallel for schedule(dynamics) reduction(+: sum)
+    for(int i=0; i<_ni; i++){
+        for(int k=0; k<_nk; k++){
+            sum += 2*M_PI*_i[i]*conj(_wf[i*_nk + k])*(-1.0*_dV_i[i*_nk+k])*_wf[i*_nk+k]*_di*_dk;
+        }
+    }
+    return sum;
+}
+
+cdouble WF::_acc_k_RZ(){
+    cdouble sum = cdouble(0.0,0.0);
+    //#pragma omp parallel for schedule(dynamics) reduction(+: sum)
+    for(int i=0; i<_ni; i++){
+        for(int k=0; k<_nk; k++){
+            sum += 2*M_PI*_i[i]*conj(_wf[i*_nk + k])*(-1.0*_dV_k[i*_nk+k])*_wf[i*_nk+k]*_di*_dk;
+        }
+    }
+    return sum;
+}
+
+cdouble WF::_acc_0(){return 0.0;}
+
+cdouble WF::acc_i(){
+    cdouble sum = (this->*(this->_acc_i))();
     return sum; 
 }
+
+cdouble WF::acc_k(){
+    cdouble sum = (this->*(this->_acc_k))();
+    return sum;
+}
+
+void WF::_acc_i_buf_X(){}
+
+void WF::_acc_k_buf_X(){
+    for(int n=0; n<_param->nt_diag;n++){
+        cdouble sum = 0.0;
+        for(int i=0; i<_ni; i++){
+            sum += conj(_wf_buf[n*_ni*_nk + i*_nk + 0])*(-1.0*_dV_k[i*_nk + 0])*_wf_buf[n*_ni*_nk + i*_nk +0]*_di;
+        }
+        _diag_buf[n] = sum;
+    }
+}
+
+void WF::_acc_i_buf_XZ(){
+    #pragma omp parallel for schedule(dynamic)
+    for(int n=0;n<_param->nt_diag;n++){
+        cdouble sum = 0.0;
+        for(int i=0; i<_ni; i++){
+            for(int k=0; k<_nk; k++){
+                sum += conj(_wf_buf[n*_ni*_nk + i*_nk + k])*(-1.0*_dV_i[i*_nk + k])*_wf_buf[n*_ni*_nk + i*_nk + k]*_di*_dk;
+            }
+        }
+        _diag_buf[n] = sum;
+    }
+}
+
+void WF::_acc_k_buf_XZ(){
+    #pragma omp parallel for schedule(dynamic)
+    for(int n=0;n<_param->nt_diag;n++){
+        cdouble sum = 0.0;
+        for(int i=0; i<_ni; i++){
+            for(int k=0; k<_nk;k++){
+                sum += conj(_wf_buf[n*_ni*_nk + i*_nk + k])*(-1.0*_dV_k[i*_nk + k])*_wf_buf[n*_ni*_nk +i*_nk +k]*_di*_dk;
+            }
+        }
+        _diag_buf[n] = sum;
+    }
+}
+
+void WF::_acc_i_buf_RZ(){
+    #pragma omp parallel for schedule(dynamic)
+    for(int n=0; n<_param->nt_diag;n++){
+        cdouble sum = 0.0;
+        for(int i=0;i<_ni;i++){
+            for(int k=0;k<_nk;k++){
+                sum += 2*M_PI*_i[i]*conj(_wf_buf[n*_ni*_nk + i*_nk + k])*(-1.0*_dV_i[i*_nk + k])*_wf_buf[n*_ni*_nk + i*_nk +k]*_di*_dk;
+            }
+        }
+        _diag_buf[n] = sum;
+    }
+}
+
+void WF::_acc_k_buf_RZ(){
+    #pragma omp parallel for schedule(dynamic)
+    for(int n=0; n<_param->nt_diag;n++){
+        cdouble sum = 0.0;
+        for(int i=0;i<_ni;i++){
+            for(int k=0;k<_nk;k++){
+                sum += 2*M_PI*_i[i]*conj(_wf_buf[n*_ni*_nk + i*_nk + k])*(-1.0*_dV_k[i*_nk + k])*_wf_buf[n*_ni*_nk + i*_nk +k]*_di*_dk;
+            }
+        }
+        _diag_buf[n] = sum;
+    }
+}   
+    
+
+void WF::_acc_buf_0(){}
 
 void WF::dipole_buf(){
     switch(_param->geometry){
@@ -375,44 +539,13 @@ void WF::dipole_buf(){
 
 }
 
-void WF::acc_buf(){
-    switch(_param->geometry){
-        case X:
-            for(int n=0;n<_param->nt_diag;n++){ 
-                cdouble sum = 0.0;
-                for(int i=0; i<_ni; i++){
-                    sum += conj(_wf_buf[n*_ni*_nk + i*_nk + 0])*(-1.0*_dV[i*_nk + 0])*_wf_buf[n*_ni*_nk + i*_nk + 0]*_di;
-                }
-                _diag_buf[n] = sum;
-            }
-            break;
-
-        case XZ:
-            #pragma omp parallel for schedule(dynamic)
-            for(int n=0;n<_param->nt_diag;n++){
-                cdouble sum = 0.0;
-                for(int i=0; i<_ni; i++){
-                    for(int j=0; j<_nk; j++){
-                        sum += conj(_wf_buf[n*_nk*_ni + i*_nk + j])*(-1.0*_dV[i*_nk + j])*_wf_buf[n*_nk*_ni + i*_nk + j]*_di*_dk;
-                    }
-                }
-                _diag_buf[n] = sum;
-            }
-            break;
-        case RZ:
-            #pragma omp parallel for schedule(dynamic)
-            for(int n=0;n<_param->nt_diag;n++){
-                cdouble sum=0.0;
-                for(int i=0; i<_ni; i++){
-                    for(int k=0; k<_nk;k++){
-                        sum += 2*M_PI*_i[i]*conj(_wf_buf[n*_ni*_nk + i*_nk + k])*(-1.0*_dV[i*_nk + k])*_wf_buf[n*_nk*_ni + i*_nk + k]*_di*_dk;
-                    }
-                }
-                _diag_buf[n] = sum;
-            }
-            break;
-    }   
+void WF::acc_i_buf(){
+    (this->*(this->_acc_i_buf))();
 }
+void WF::acc_k_buf(){
+    (this->*(this->_acc_k_buf))();
+}
+
 
 cdouble WF::_pop_X(double imin, double imax, double kmin, double kmax){
     cdouble sum = 0.0;

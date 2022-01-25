@@ -15,18 +15,38 @@ class WF{
         cdouble *_diag_buf;
         cdouble *_row;
         cdouble *_col;
-        cdouble *_dV;
+        cdouble *_dV_i;
+        cdouble *_dV_k;
         Parameters *_param;
         int _ni, _nk;
         double *_i, *_k, _di, _dk;
         void (WF::*_apply_mask)(cdouble*,cdouble*);
         cdouble (WF::*_pop)(double,double,double,double);
 	void (WF::*_pop_buf)(double,double,double,double);
+	cdouble (WF::*_acc_i)();
+	cdouble (WF::*_acc_k)();
+	void (WF::*_acc_i_buf)();
+	void (WF::*_acc_k_buf)();
 
 	cdouble _pop_X(double imin, double imax, double kmin, double kmax);
 	cdouble _pop_XZ(double imin, double imax, double kmin, double kmax);
 	cdouble _pop_RZ(double imin, double imax, double kmin, double kmax);
 	cdouble _pop_0(double imin, double imax, double kmin, double kmax);
+	cdouble _acc_i_X();
+	cdouble _acc_k_X();
+	cdouble _acc_i_XZ();
+	cdouble _acc_k_XZ();
+	cdouble _acc_i_RZ();
+	cdouble _acc_k_RZ();
+	cdouble _acc_0();
+
+	void _acc_i_buf_X();
+	void _acc_k_buf_X();
+	void _acc_i_buf_XZ();
+	void _acc_k_buf_XZ();
+	void _acc_i_buf_RZ();
+	void _acc_k_buf_RZ();
+	void _acc_buf_0();
 	void _pop_buf_X(double imin, double imax, double kmin, double kmax);
 	void _pop_buf_XZ(double imin, double imax, double kmin, double kmax);
 	void _pop_buf_RZ(double imin, double imax, double kmin, double kmax);
@@ -52,7 +72,8 @@ class WF{
         cdouble* get_buf();
         cdouble* get_diag_buf();
         cdouble norm();
-        void set_dpotential(cdouble *dV);
+        void set_dpotential_i(cdouble *dV);
+	void set_dpotential_k(cdouble *dV);
         void apply_mask(cdouble* imask, cdouble *kmask);
         void apply_mask_X(cdouble* imask, cdouble *kmask);
         void apply_mask_RZ(cdouble* imask, cdouble *kmask);
@@ -65,11 +86,13 @@ class WF{
         void operator/= (cdouble val);        
 
         cdouble dipole();
-        cdouble acc();
+        cdouble acc_i();
+	cdouble acc_k();
 	cdouble pop(double imin, double imax, double kmin, double kmax);
         
         void dipole_buf();
-        void acc_buf();
+        void acc_i_buf();
+	void acc_k_buf();
 	void pop_buf(double imin, double imax, double kmin, double kmax);
 
 };

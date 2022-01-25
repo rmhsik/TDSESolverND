@@ -42,8 +42,10 @@ int main(){
     param.phiBi = 0.0;
     param.phiBk = 0.0;
 
-    char *acc_path= "results/acc8.dat";
-    param.set_acc_path(acc_path);
+    char *acc_i_path = "results/acc_i.dat";
+    param.set_acc_i_path(acc_i_path);
+    char *acc_k_path = "results/acc_k.dat";
+    param.set_acc_k_path(acc_k_path);
     char *dip_path = "results/dip8.dat";
     param.set_dip_path(dip_path); 
     //param.acc_path = "results/acc7.dat";

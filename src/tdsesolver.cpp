@@ -109,7 +109,8 @@ void TDSESolver::setup_fields(){
 void TDSESolver::setup_wf(){
     _wf = WF(_param);
     _wf.set_geometry(_i,_k,_di,_dk);
-    _wf.set_dpotential(_ham.get_dpotential_k()); 
+    _wf.set_dpotential_i(_ham.get_dpotential_i());
+    _wf.set_dpotential_k(_ham.get_dpotential_k()); 
     switch(_param->init_wf){
     	case GAUS:
             _wf.gaussian(0.0,0.0,1.0);
@@ -306,7 +307,7 @@ void TDSESolver::propagate_X(){
         //acc_vec[i] = _wf.acc();
         if ((i+2)%_param->nt_diag==0 && i<(_param->nt-_param->nt%_param->nt_diag)){ 
             idx = i - _param->nt_diag + 2;
-            _wf.acc_buf();
+            _wf.acc_k_buf();
             std::memcpy(&acc_vec[idx],_wf.get_diag_buf(),_param->nt_diag*sizeof(cdouble));
             _wf.dipole_buf();
             std::memcpy(&dip_vec[idx],_wf.get_diag_buf(),_param->nt_diag*sizeof(cdouble));
@@ -318,7 +319,7 @@ void TDSESolver::propagate_X(){
         }
     }
     // Get las batch if diagnostics from lat idx up to _param.nt
-    _wf.acc_buf();
+    _wf.acc_k_buf();
     std::memcpy(&acc_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
     _wf.dipole_buf();
     std::memcpy(&dip_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
@@ -330,7 +331,7 @@ void TDSESolver::propagate_X(){
         acc_vec[i] *= _accmask[i];
         dip_vec[i] *= _accmask[i];
     }
-    write_array(acc_vec,_param->nt,_param->acc_path);
+    write_array(acc_vec,_param->nt,_param->acc_k_path);
     write_array(dip_vec,_param->nt,_param->dip_path);
     write_array(pop_vec,_param->nt,_param->pop_path);
    
@@ -382,14 +383,15 @@ void TDSESolver::ipropagate_XZ(){
 
 void TDSESolver::propagate_XZ(){
     cdouble norm, ener;
-    cdouble *acc_vec, *dip_vec, *pop_vec;
+    cdouble *acc_i_vec, *acc_k_vec, *dip_vec, *pop_vec;
     cdouble *psi_col, *psi_row;
     int idx;
     const int ni = _param->ni;
     const int nk = _param->nk;
     std::string path;
 
-    acc_vec = new cdouble [_param->nt];
+    acc_i_vec = new cdouble [_param->nt];
+    acc_k_vec = new cdouble [_param->nt];
     dip_vec = new cdouble [_param->nt];
     pop_vec = new cdouble [_param->nt]; 
 
@@ -428,8 +430,10 @@ void TDSESolver::propagate_XZ(){
             idx = j - _param->nt_diag + 2;
             _wf.dipole_buf();
             std::memcpy(&dip_vec[idx], _wf.get_diag_buf(), _param->nt_diag*sizeof(cdouble));
-            _wf.acc_buf();
-            std::memcpy(&acc_vec[idx], _wf.get_diag_buf(), _param->nt_diag*sizeof(cdouble));
+            _wf.acc_k_buf();
+            std::memcpy(&acc_k_vec[idx], _wf.get_diag_buf(), _param->nt_diag*sizeof(cdouble));
+            _wf.acc_i_buf();
+            std::memcpy(&acc_i_vec[idx], _wf.get_diag_buf(), _param->nt_diag*sizeof(cdouble));
             _wf.pop_buf(_param->pop_imin, _param->pop_imax, _param->pop_kmin, _param->pop_kmax);
             std::memcpy(&pop_vec[idx], _wf.get_diag_buf(), _param->nt_diag*sizeof(cdouble)); 
             //norm = _wf.norm();
@@ -440,20 +444,25 @@ void TDSESolver::propagate_XZ(){
     // Get last batch of diagnostics from last idx up to _paran.nt
     _wf.dipole_buf();
     std::memcpy(&dip_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
-    _wf.acc_buf();
-    std::memcpy(&acc_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
+    _wf.acc_k_buf();
+    std::memcpy(&acc_k_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
+    _wf.acc_i_buf();
+    std::memcpy(&acc_i_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
     _wf.pop_buf(_param->pop_imin, _param->pop_imax, _param->pop_kmin, _param->pop_kmax);
     std::memcpy(&pop_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
     cdouble valaccmask;
     for(int j=0; j<_param->nt; j++){
         valaccmask = _accmask[j];
-        acc_vec[j] *= valaccmask;
+        acc_i_vec[j] *= valaccmask;
+        acc_k_vec[j] *= valaccmask;
         dip_vec[j] *= valaccmask;
     }
-    write_array(acc_vec,_param->nt,_param->acc_path);
+    write_array(acc_i_vec,_param->nt,_param->acc_i_path);
+    write_array(acc_k_vec,_param->nt,_param->acc_k_path);
     write_array(dip_vec,_param->nt,_param->dip_path);
     write_array(pop_vec,_param->nt,_param->pop_path);
-    delete acc_vec;
+    delete acc_i_vec;
+    delete acc_k_vec;
     delete dip_vec;
     delete pop_vec;
 }
@@ -510,14 +519,15 @@ void TDSESolver::ipropagate_RZ(){
 
 void TDSESolver::propagate_RZ(){
     cdouble norm, ener;
-    cdouble *acc_vec, *dip_vec, *pop_vec;
+    cdouble *acc_i_vec, *acc_k_vec, *dip_vec, *pop_vec;
     cdouble *psi_col, *psi_row;
     int idx;
     const int ni = _param->ni;
     const int nk = _param->nk;
     std::string path;
 
-    acc_vec = new cdouble [_param->nt];
+    acc_i_vec = new cdouble [_param->nt];
+    acc_k_vec = new cdouble [_param->nt];
     dip_vec = new cdouble [_param->nt];
     pop_vec = new cdouble [_param->nt];
 
@@ -567,8 +577,10 @@ void TDSESolver::propagate_RZ(){
             idx = j - _param->nt_diag + 2;
             _wf.dipole_buf();
             std::memcpy(&dip_vec[idx], _wf.get_diag_buf(), _param->nt_diag*sizeof(cdouble));
-            _wf.acc_buf();
-            std::memcpy(&acc_vec[idx], _wf.get_diag_buf(), _param->nt_diag*sizeof(cdouble));
+            _wf.acc_i_buf();
+            std::memcpy(&acc_i_vec[idx], _wf.get_diag_buf(), _param->nt_diag*sizeof(cdouble));
+            _wf.acc_k_buf();
+            std::memcpy(&acc_k_vec[idx], _wf.get_diag_buf(), _param->nt_diag*sizeof(cdouble));
             _wf.pop_buf(_param->pop_imin, _param->pop_imax, _param->pop_kmin, _param->pop_kmax); 
             std::memcpy(&pop_vec[idx], _wf.get_diag_buf(), _param->nt_diag*sizeof(cdouble));
             //norm = _wf.norm();
@@ -579,21 +591,26 @@ void TDSESolver::propagate_RZ(){
     // Get last batch of diagnostics from last idx up to _paran.nt
     _wf.dipole_buf();
     std::memcpy(&dip_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
-    _wf.acc_buf();
-    std::memcpy(&acc_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
+    _wf.acc_i_buf();
+    std::memcpy(&acc_i_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
+    _wf.acc_k_buf();
+    std::memcpy(&acc_k_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
     _wf.pop_buf(_param->pop_imin, _param->pop_imax, _param->pop_kmin, _param->pop_kmax);
     std::memcpy(&pop_vec[idx], _wf.get_diag_buf(), (_param->nt%_param->nt_diag-1)*sizeof(cdouble));
     cdouble valaccmask;
     for(int j=0; j<_param->nt; j++){
         valaccmask = _accmask[j];
-        acc_vec[j] *= valaccmask;
+        acc_i_vec[j] *= valaccmask;
+        acc_k_vec[j] *= valaccmask;
         dip_vec[j] *= valaccmask;
     }
 
-    write_array(acc_vec, _param->nt, _param->acc_path);
+    write_array(acc_i_vec, _param->nt, _param->acc_i_path);
+    write_array(acc_k_vec, _param->nt, _param->acc_k_path);
     write_array(dip_vec, _param->nt, _param->dip_path);
     write_array(pop_vec, _param->nt, _param->pop_path);
-    delete acc_vec;
+    delete acc_i_vec;
+    delete acc_k_vec;
     delete dip_vec;
     delete pop_vec;
 }

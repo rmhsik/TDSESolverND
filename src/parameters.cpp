@@ -51,9 +51,12 @@ Parameters::Parameters(){
         pop_imax    = imax;
         pop_kmin    = kmin;
         pop_kmax    = kmax;
+        acc_i       = 0;
+        acc_k       = 1;
 
 	    //File paths
-	    acc_path    = "results/acc.dat";
+	    acc_i_path  = "results/acc_i.dat";
+        acc_k_path  = "results/acc_k.dat";    
 	    dip_path    = "results/dip.dat";
         pop_path    = "results/pop.dat"; 
         check_param();
@@ -70,8 +73,12 @@ void Parameters::check_param(){
     }
 }
 
-void Parameters::set_acc_path(char *val){
-    acc_path = std::string(val);
+void Parameters::set_acc_i_path(char *val){
+    acc_i_path = std::string(val);
+}
+
+void Parameters::set_acc_k_path(char *val){
+    acc_k_path = std::string(val);
 }
 
 void Parameters::set_dip_path(char *val){
@@ -120,7 +127,8 @@ void Parameters::print(){
     std::cout<<"\tphiEk: "<<phiEk<<std::endl;
     std::cout<<"\tphiBi: "<<phiBi<<std::endl;
     std::cout<<"\tphiBk: "<<phiBk<<std::endl;
-    std::cout<<"\tacc_path: "<<acc_path<<std::endl;
+    std::cout<<"\tacc_i_path: "<<acc_i_path<<std::endl;
+    std::cout<<"\tacc_k_path: "<<acc_k_path<<std::endl;
     std::cout<<"\tdip_path: "<<dip_path<<std::endl;
     std::cout<<"\tpop_path: "<<pop_path<<std::endl;
     std::cout<<std::endl;
