@@ -95,15 +95,19 @@ _potential = new cdouble[_ni*_nk];
 }
 
 void Hamiltonian::set_dpotential(){
-    _dpotential = new cdouble[_ni*_nk];
     switch(_param->geometry){
         case X:
+            _dpotential_k = new cdouble[_ni*_nk];
             dpotential_X();
             break;
         case XZ:
+            _dpotential_i = new cdouble[_ni*_nk];
+            _dpotential_k = new cdouble[_ni*_nk];
             dpotential_XZ();
             break;
         case RZ:
+            _dpotential_k = new cdouble[_ni*_nk];
+            _dpotential_i = new cdouble[_ni*_nk];
             dpotential_RZ();
             break;
     }
@@ -132,32 +136,50 @@ void Hamiltonian::potential_XZ(){
 }
 
 void Hamiltonian::dpotential_X(){
-    _dpotential[0*_nk + 0] = (_potential[1*_nk + 0] - _potential[0*_nk + 0])/_di;
-    _dpotential[(_ni-1)*_nk + 0] = (_potential[(_ni-1)*_nk + 0]-_potential[(_ni-2)*_nk + 0])/_di;
+    _dpotential_k[0*_nk + 0] = (_potential[1*_nk + 0] - _potential[0*_nk + 0])/_di;
+    _dpotential_k[(_ni-1)*_nk + 0] = (_potential[(_ni-1)*_nk + 0]-_potential[(_ni-2)*_nk + 0])/_di;
     for(int i=1; i<_ni-1;i++){
-        _dpotential[i*_nk + 0] = (_potential[(i+1)*_nk + 0]-_potential[(i-1)*_nk + 0])/(2.0*_di);
+        _dpotential_k[i*_nk + 0] = (_potential[(i+1)*_nk + 0]-_potential[(i-1)*_nk + 0])/(2.0*_di);
     }
 }
 
 void Hamiltonian::dpotential_RZ(){
     for(int i=0; i<_ni;i++){
-        _dpotential[i*_nk + 0] = (_potential[i*_nk + 1] - _potential[i*_nk + 0])/_dk;
-        _dpotential[i*_nk + _nk-1] = (_potential[i*_nk + _nk-1]-_potential[i*_nk + _nk-2])/_dk;
+        _dpotential_k[i*_nk + 0] = (_potential[i*_nk + 1] - _potential[i*_nk + 0])/_dk;
+        _dpotential_k[i*_nk + _nk-1] = (_potential[i*_nk + _nk-1]-_potential[i*_nk + _nk-2])/_dk;
     }
     for(int i=0; i<_ni;i++){
-        for(int k=0;k<_nk-1;k++)
-            _dpotential[i*_nk + k] = (_potential[i*_nk + k+1]-_potential[i*_nk + k-1])/(2.0*_dk);
+        for(int k=1;k<_nk-1;k++)
+            _dpotential_k[i*_nk + k] = (_potential[i*_nk + k+1]-_potential[i*_nk + k-1])/(2.0*_dk);
+    }
+
+    for(int k=0; k<_nk;k++){
+        _dpotential_i[0*_nk + k] = (_potential[1*_nk + k] - _potential[0*_nk + k])/_di;
+        _dpotential_i[(_ni-1)*_nk + k] = (_potential[(_ni-1)*_nk + k]-_potential[(_ni-2)*_nk + k])/_di;
+    }
+    for(int i=1; i<_ni-1;i++){
+        for(int k=0;k<_nk;k++)
+            _dpotential_i[i*_nk + k] = (_potential[(i+1)*_nk + k]-_potential[(i-1)*_nk + k])/(2.0*_di);
     }
 }
 
 void Hamiltonian::dpotential_XZ(){
     for(int i=0; i<_ni;i++){
-        _dpotential[i*_nk + 0] = (_potential[i*_nk + 1] - _potential[i*_nk + 0])/_dk;
-        _dpotential[i*_nk + _nk-1] = (_potential[i*_nk + _nk-1]-_potential[i*_nk + _nk-2])/_dk;
+        _dpotential_k[i*_nk + 0] = (_potential[i*_nk + 1] - _potential[i*_nk + 0])/_dk;
+        _dpotential_k[i*_nk + _nk-1] = (_potential[i*_nk + _nk-1]-_potential[i*_nk + _nk-2])/_dk;
     }
     for(int i=0; i<_ni;i++){
-        for(int k=0;k<_nk-1;k++)
-            _dpotential[i*_nk + k] = (_potential[i*_nk + k+1]-_potential[i*_nk + k-1])/(2.0*_dk);
+        for(int k=1;k<_nk-1;k++)
+            _dpotential_k[i*_nk + k] = (_potential[i*_nk + k+1]-_potential[i*_nk + k-1])/(2.0*_dk);
+    }
+
+    for(int k=0; k<_nk;k++){
+        _dpotential_i[0*_nk + k] = (_potential[1*_nk + k] - _potential[0*_nk + k])/_di;
+        _dpotential_i[(_ni-1)*_nk + k] = (_potential[(_ni-1)*_nk + k]-_potential[(_nk-2)*_nk + k])/_di;
+    }
+    for(int i=1; i<_ni-1;i++){
+        for(int k=0;k<_nk;k++)
+            _dpotential_i[i*_nk + k] = (_potential[(i+1)*_nk + k]-_potential[(i-1)*_nk + k])/(2.0*_di);
     }
 }
 
@@ -165,8 +187,12 @@ cdouble* Hamiltonian::get_potential(){
     return _potential;
 }
 
-cdouble* Hamiltonian::get_dpotential(){
-    return _dpotential;
+cdouble* Hamiltonian::get_dpotential_i(){
+    return _dpotential_i;
+}
+
+cdouble* Hamiltonian::get_dpotential_k(){
+    return _dpotential_k;
 }
 
 void Hamiltonian::step_i_X(cdouble *psi, double afield_i, double bfield_i, const int j, const int imag,const int id_thread){

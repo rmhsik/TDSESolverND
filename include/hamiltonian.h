@@ -11,7 +11,8 @@ class Hamiltonian{
     private:
         Parameters *_param;
         cdouble *_potential;
-        cdouble *_dpotential;
+        cdouble *_dpotential_i;
+        cdouble *_dpotential_k;
         double *_i, *_k;
         double _di, _dk;
         int _ni, _nk;
@@ -39,7 +40,8 @@ class Hamiltonian{
         void set_potential();
         void set_dpotential();
         cdouble *get_potential();
-        cdouble *get_dpotential();
+        cdouble *get_dpotential_i();
+        cdouble *get_dpotential_k();
 
         void (Hamiltonian::*step_i)(cdouble*, double, double, const int, const int, const int);
         void (Hamiltonian::*step_k)(cdouble*, double, double, const int, const int, const int);

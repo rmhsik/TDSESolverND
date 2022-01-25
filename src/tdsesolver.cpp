@@ -109,7 +109,7 @@ void TDSESolver::setup_fields(){
 void TDSESolver::setup_wf(){
     _wf = WF(_param);
     _wf.set_geometry(_i,_k,_di,_dk);
-    _wf.set_dpotential(_ham.get_dpotential()); 
+    _wf.set_dpotential(_ham.get_dpotential_k()); 
     switch(_param->init_wf){
     	case GAUS:
             _wf.gaussian(0.0,0.0,1.0);
