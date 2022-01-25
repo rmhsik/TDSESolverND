@@ -102,8 +102,14 @@ class Parameters:
         lib.Parameters_pop_kmin.restype = ct.c_void_p
         lib.Parameters_pop_kmax.argtypes = [ct.c_void_p, ct.c_double]
         lib.Parameters_pop_kmax.restype = ct.c_void_p
-        lib.Parameters_acc_path.argtypes = [ct.c_void_p, ct.c_char_p]
-        lib.Parameters_acc_path.restype = ct.c_void_p
+        lib.Parameters_acc_i.argtypes = [ct.c_void_p, ct.c_int]
+        lib.Parameters_acc_i.restype = ct.c_void_p
+        lib.Parameters_acc_k.argtypes = [ct.c_void_p, ct.c_int]
+        lib.Parameters_acc_k.restype = ct.c_void_p
+        lib.Parameters_acc_i_path.argtypes = [ct.c_void_p, ct.c_char_p]
+        lib.Parameters_acc_i_path.restype = ct.c_void_p
+        lib.Parameters_acc_k_path.argtypes = [ct.c_void_p, ct.c_char_p]
+        lib.Parameters_acc_k_path.restype = ct.c_void_p
         lib.Parameters_dip_path.argtypes = [ct.c_void_p, ct.c_char_p]
         lib.Parameters_dip_path.restype = ct.c_void_p
         lib.Parameters_pop_path.argtypes = [ct.c_void_p, ct.c_char_p]
@@ -149,7 +155,10 @@ class Parameters:
         self.pop_imax(param["pop_imax"])
         self.pop_kmin(param["pop_kmin"])
         self.pop_kmax(param["pop_kmax"])
-        self.acc_path(param["acc_path"])
+        self.acc_i(param["acc_i"])
+        self.acc_k(param["acc_k"])
+        self.acc_i_path(param["acc_i_path"])
+        self.acc_k_path(param["acc_k_path"])
         self.dip_path(param["dip_path"])
         self.pop_path(param["pop_path"])
     
@@ -225,8 +234,14 @@ class Parameters:
         lib.Parameters_pop_kmin(self._obj, val)
     def pop_kmax(self, val):
         lib.Parameters_pop_kmax(self._obj, val)
-    def acc_path(self, val):
-        lib.Parameters_acc_path(self._obj, val.encode("utf-8"))
+    def acc_i(self, val):
+        lib.Parameters_acc_i(self._obj, val)
+    def acc_k(self, val):
+        lib.Parameters_acc_k(self._obj, val)
+    def acc_i_path(self, val):
+        lib.Parameters_acc_i_path(self._obj, val.encode("utf-8"))
+    def acc_k_path(self, val):
+        lib.Parameters_acc_k_path(self._obj, val.encode("utf-8"))
     def dip_path(self, val):
         lib.Parameters_dip_path(self._obj, val.encode("utf-8"))
     def pop_path(self, val):
