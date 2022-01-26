@@ -80,3 +80,6 @@ double Field::env_trap(double ti){
     }
 }
 
+Field::~Field(){
+    delete _field;
+}

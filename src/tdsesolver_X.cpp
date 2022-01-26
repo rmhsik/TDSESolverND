@@ -18,10 +18,13 @@ void TDSESolver::_geom_X(){
 
 void TDSESolver::_fields_X(){
     std::string path;
-    Afield_i = Field(_param->E0i, _param->w0Ei, _param->phiEi, _param->env, _param->tmax_ev,_t, _param->nt);
-    Afield_i.calc_pot();
+    Afield_i = new Field(_param->E0i, _param->w0Ei, _param->phiEi, _param->env, _param->tmax_ev,_t, _param->nt);
+    Afield_i->calc_pot();
     path = "results/Afield_i.dat";
-    write_array(Afield_i.get(),_param->nt,path);
+    write_array(Afield_i->get(),_param->nt,path);
+    Afield_k = NULL;
+    Bfield_i = NULL;
+    Bfield_k = NULL;
 }
 
 void TDSESolver::_masks_X(){
@@ -55,13 +58,13 @@ void TDSESolver::_ipropagate_X(){
         cdouble *psi_row;
         psi_row = _wf->row(0);
 
-        (_ham.*(_ham.step_i))(psi_row,0.0,0.0,0,1,0);
-        //(_ham).*(_ham.step_i)(psi_row,0.0,0.0,1);
+        (_ham->*(_ham->step_i))(psi_row,0.0,0.0,0,1,0);
+        //(_ham->.*(_ham->step_i)(psi_row,0.0,0.0,1);
         _wf->set_row(psi_row,0);
         norm = _wf->norm();
         (*_wf)/=norm;
         if(i%100 ==0){
-            std::cout<<"Norm:"<<norm<<" "<<(_ham.*(_ham.ener))(_wf->get())<<"\n";
+            std::cout<<"Norm:"<<norm<<" "<<(_ham->*(_ham->ener))(_wf->get())<<"\n";
         }
     }
 
@@ -87,7 +90,7 @@ void TDSESolver::_propagate_X(){
     //norm_vec = new cdouble[norm_vec_size];
     for(int i=0; i<_param->nt; i++){
         psi_row = _wf->row(0);
-        (_ham.*(_ham.step_i))(psi_row,Afield_i[i],0.0,0,0,0);
+        (_ham->*(_ham->step_i))(psi_row,(*Afield_i)[i],0.0,0,0,0);
         _wf->set_row(psi_row,0);
         _wf->apply_mask(_imask,_kmask);
         
@@ -103,7 +106,7 @@ void TDSESolver::_propagate_X(){
             std::memcpy(&pop_vec[idx],_wf->get_diag_buf(),_param->nt_diag*sizeof(cdouble));
             //norm_vec_idx = (int)(i/100);
             //norm_vec[norm_vec_idx] = _wf.norm();
-            //std::cout<<"Ener: "<<(_ham.*(_ham.ener))(psi_row)<<"\n";
+            //std::cout<<"Ener: "<<(_ham->*(_ham->ener))(psi_row)<<"\n";
         }
     }
     // Get las batch if diagnostics from lat idx up to _param.nt

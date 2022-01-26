@@ -51,7 +51,6 @@ void TDSESolver::setup_geometry(){
 }
 
 void TDSESolver::setup_fields(){
-    std::string path;
     switch(_param->geometry){
         case X:
             _fields_X();
@@ -68,30 +67,30 @@ void TDSESolver::setup_fields(){
 }
 
 void TDSESolver::setup_wf(){
-    _wf = WF(_param);
-    _wf.set_geometry(_i,_k,_di,_dk);
-    _wf.set_dpotential_i(_ham.get_dpotential_i());
-    _wf.set_dpotential_k(_ham.get_dpotential_k()); 
+    _wf = new WF(_param);
+    _wf->set_geometry(_i,_k,_di,_dk);
+    _wf->set_dpotential_i(_ham->get_dpotential_i());
+    _wf->set_dpotential_k(_ham->get_dpotential_k()); 
     switch(_param->init_wf){
     	case GAUS:
-            _wf.gaussian(0.0,0.0,1.0);
+            _wf->gaussian(0.0,0.0,1.0);
             break;
         case EXPO:
-            _wf.exponential(0.0,0.0,1.0);
+            _wf->exponential(0.0,0.0,1.0);
             break;
     } 
-    cdouble norm = _wf.norm();
-    _wf /= norm;
-    norm = _wf.norm();
+    cdouble norm = _wf->norm();
+    (*_wf) /= norm;
+    norm = _wf->norm();
 
     std::string path = "results/init_psi2.dat";
 }
 
 void TDSESolver::setup_ham(){
-    _ham = Hamiltonian(_param);
-    _ham.set_geometry(_i,_k,_di, _dk);
-    _ham.set_potential();
-    _ham.set_dpotential();
+    _ham = new Hamiltonian(_param);
+    _ham->set_geometry(_i,_k,_di, _dk);
+    _ham->set_potential();
+    _ham->set_dpotential();
 }
 
 void TDSESolver::setup_masks(){
@@ -140,4 +139,19 @@ void TDSESolver::ipropagate(){
 
 void TDSESolver::propagate(){
     (this->*(this->_propagate))();
+}
+
+TDSESolver::~TDSESolver(){
+    delete _t;
+    delete _i;
+    delete _k;
+    delete _accmask;
+    delete _imask;
+    delete _kmask;
+    delete Afield_i;
+    delete Afield_k;
+    delete Bfield_i;
+    delete Bfield_k;
+    delete _wf;
+    delete _ham;
 }

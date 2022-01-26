@@ -33,6 +33,10 @@ class WF{
         void (WF::*_dip_i_buf)();
         void (WF::*_dip_k_buf)();
         
+	void _geom_X();
+	void _geom_XZ();
+	void _geom_RZ();
+
         cdouble _pop_X(double imin, double imax, double kmin, double kmax);
         cdouble _pop_XZ(double imin, double imax, double kmin, double kmax);
         cdouble _pop_RZ(double imin, double imax, double kmin, double kmax);
@@ -118,6 +122,7 @@ class WF{
         void acc_k_buf();
         void pop_buf(double imin, double imax, double kmin, double kmax);
 
+	~WF();
 };
 
 

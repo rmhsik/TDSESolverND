@@ -14,13 +14,13 @@
         private:
             Parameters *_param;
 
-            Field Afield_i;
-            Field Afield_k;
-            Field Bfield_i;
-            Field Bfield_k;
+            Field *Afield_i;
+            Field *Afield_k;
+            Field *Bfield_i;
+            Field *Bfield_k;
             
             WF *_wf;
-            Hamiltonian _ham;
+            Hamiltonian *_ham;
 
             cdouble *_accmask;
             cdouble *_imask;
@@ -59,7 +59,8 @@
             void setup_ham();
             void propagate();
             void ipropagate();
+            
+            ~TDSESolver();
                 };
-
 
 #endif

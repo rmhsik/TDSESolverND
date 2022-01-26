@@ -33,50 +33,14 @@ void WF::set_geometry( double *i, double *k, const double di, const double dk){
 
     switch(_param->geometry){
         case X:
-            _apply_mask = &WF::apply_mask_X;
-            _pop = &WF::_pop_X;
-            _pop_buf = &WF::_pop_buf_X;
-
-            _acc_i = &WF::_acc_i_X;
-            _acc_i_buf = &WF::_acc_i_buf_X;
-            _acc_k = &WF::_acc_k_X;
-            _acc_k_buf = &WF::_acc_k_buf_X;
-            
-            _dip_i = &WF::_dip_i_X;
-            _dip_i_buf = &WF::_dip_i_buf_X;
-            _dip_k = &WF::_dip_k_X;
-            _dip_k_buf = &WF::_dip_k_buf_X;
+            _geom_X();
             break;
 
         case XZ:
-            _apply_mask = &WF::apply_mask_XZ;
-            _pop = &WF::_pop_XZ;
-            _pop_buf = &WF::_pop_buf_XZ;
-        
-            _acc_i = &WF::_acc_i_XZ;
-            _acc_i_buf = &WF::_acc_i_buf_XZ;
-            _acc_k = &WF::_acc_k_XZ;
-            _acc_k_buf = &WF::_acc_k_buf_XZ;
-
-            _dip_i = &WF::_dip_i_XZ;
-            _dip_i_buf = &WF::_dip_i_buf_XZ;
-            _dip_k = &WF::_dip_k_XZ;
-            _dip_k_buf = &WF::_dip_k_buf_XZ;
+            _geom_XZ();
             break;
         case RZ:
-            _apply_mask = &WF::apply_mask_RZ;
-            _pop = &WF::_pop_RZ;
-            _pop_buf = &WF::_pop_buf_RZ;
-
-            _acc_i = &WF::_acc_i_RZ;
-            _acc_i_buf = &WF::_acc_i_buf_RZ;
-            _acc_k = &WF::_acc_k_RZ;
-            _acc_k_buf = &WF::_acc_k_buf_RZ;
-
-            _dip_i = &WF::_dip_i_RZ;
-            _dip_i_buf = &WF::_dip_i_buf_RZ;
-            _dip_k = &WF::_dip_k_RZ;
-            _dip_k_buf = &WF::_dip_k_buf_RZ;
+            _geom_RZ();
             break;
     }
 }
@@ -310,4 +274,12 @@ cdouble WF::pop(double imin, double imax, double kmin, double kmax){
 
 void WF::pop_buf(double imin, double imax, double kmin, double kmax){
     (this->*(this->_pop_buf))(imin, imax, kmin, kmax);
+}
+
+WF::~WF(){
+    delete _wf;
+    delete _wf_buf;
+    delete _diag_buf;
+    delete _row;
+    delete _col;
 }

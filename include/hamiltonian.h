@@ -66,7 +66,7 @@ class Hamiltonian{
         void step_k_RZ(cdouble *psi, double afield_k, double bfield_k, const int i, const int imag, const int id_thread);
         cdouble ener_RZ(cdouble* psi);
 
-        
+        ~Hamiltonian();        
 };
 
 #endif

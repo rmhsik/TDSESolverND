@@ -17,20 +17,20 @@ void TDSESolver::_geom_XZ(){
 
 void TDSESolver::_fields_XZ(){
     std::string path;
-    Afield_i = Field(_param->E0i, _param->w0Ei, _param->phiEi, _param->env, _param->tmax_ev, _t, _param->nt);
-    Afield_k = Field(_param->E0k, _param->w0Ek, _param->phiEk, _param->env, _param->tmax_ev, _t, _param->nt);
-    Bfield_i = Field(_param->B0i, _param->w0Bi, _param->phiBi, _param->env, _param->tmax_ev, _t, _param->nt);
-    Bfield_k = Field(_param->B0k, _param->w0Bk, _param->phiBk, _param->env, _param->tmax_ev, _t, _param->nt);
-    Afield_i.calc_pot();
-    Afield_k.calc_pot();
+    Afield_i = new Field(_param->E0i, _param->w0Ei, _param->phiEi, _param->env, _param->tmax_ev, _t, _param->nt);
+    Afield_k = new Field(_param->E0k, _param->w0Ek, _param->phiEk, _param->env, _param->tmax_ev, _t, _param->nt);
+    Bfield_i = new Field(_param->B0i, _param->w0Bi, _param->phiBi, _param->env, _param->tmax_ev, _t, _param->nt);
+    Bfield_k = new Field(_param->B0k, _param->w0Bk, _param->phiBk, _param->env, _param->tmax_ev, _t, _param->nt);
+    Afield_i->calc_pot();
+    Afield_k->calc_pot();
     path = "results/Afield_i.dat";
-    write_array(Afield_i.get(),_param->nt,path);
+    write_array(Afield_i->get(),_param->nt,path);
     path = "results/Afield_k.dat";
-    write_array(Afield_k.get(),_param->nt,path);
+    write_array(Afield_k->get(),_param->nt,path);
     path = "results/Bfield_i.dat";
-    write_array(Bfield_i.get(),_param->nt,path);
+    write_array(Bfield_i->get(),_param->nt,path);
     path = "results/Bfield_k.dat";
-    write_array(Bfield_k.get(),_param->nt,path);
+    write_array(Bfield_k->get(),_param->nt,path);
 }
 
 void TDSESolver::_masks_XZ(){
@@ -88,7 +88,7 @@ void TDSESolver::_ipropagate_XZ(){
             int id_thread = omp_get_thread_num();
             for(int k=0;k<nk;k++)
                 psi_col[id_thread*nk + k] = _wf->get()[i*nk+k];
-            (_ham.*(_ham.step_k))(&psi_col[id_thread*nk],0.0,0.0,i,1,id_thread);
+            (_ham->*(_ham->step_k))(&psi_col[id_thread*nk],0.0,0.0,i,1,id_thread);
             _wf->set_col(&psi_col[id_thread*nk],i);
         }
         
@@ -97,14 +97,14 @@ void TDSESolver::_ipropagate_XZ(){
             int id_thread = omp_get_thread_num();
             for(int i=0;i<ni;i++)
                 psi_row[id_thread*ni + i] = _wf->get()[i*nk+k];
-            (_ham.*(_ham.step_i))(&psi_row[id_thread*ni],0.0,0.0,k,1,id_thread);
+            (_ham->*(_ham->step_i))(&psi_row[id_thread*ni],0.0,0.0,k,1,id_thread);
             _wf->set_row(&psi_row[id_thread*ni],k);
         }
         
         norm = _wf->norm();
         (*_wf) /= norm;
         if(j%50==0){
-            ener = (_ham.*(_ham.ener))(_wf->get());
+            ener = (_ham->*(_ham->ener))(_wf->get());
             std::cout<<"Norm: "<< norm<<" Ener: "<<ener<<"\n";
         }
     }
@@ -141,7 +141,7 @@ void TDSESolver::_propagate_XZ(){
             int id_thread = omp_get_thread_num();
             for(int k=0;k<nk;k++)
                 psi_col[id_thread*nk + k] = wf_ptr[j%_param->nt_diag*ni*nk+i*nk+k];
-            (_ham.*(_ham.step_k))(&psi_col[id_thread*nk],Afield_k[j],Bfield_k[j],i,0,id_thread);
+            (_ham->*(_ham->step_k))(&psi_col[id_thread*nk],(*Afield_k)[j],(*Bfield_k)[j],i,0,id_thread);
             _wf->set_col_buf_mask(&psi_col[id_thread*nk],_kmask, i,(j+1)%_param->nt_diag);
         }
         
@@ -152,7 +152,7 @@ void TDSESolver::_propagate_XZ(){
             int id_thread = omp_get_thread_num();
             for(int i=0;i<ni;i++)
                 psi_row[id_thread*ni + i] = wf_ptr[(j+1)%_param->nt_diag*ni*nk+i*nk+k];
-            (_ham.*(_ham.step_i))(&psi_row[id_thread*ni],Afield_i[j],Bfield_k[j],k,0,id_thread);
+            (_ham->*(_ham->step_i))(&psi_row[id_thread*ni],(*Afield_i)[j],(*Bfield_k)[j],k,0,id_thread);
             _wf->set_row_buf_mask(&psi_row[id_thread*ni],_imask,k,(j+1)%_param->nt_diag);
         }
         //_wf.apply_mask_buf_RZ(_imask,_kmask,(j+1)%_param->nt_diag);
@@ -170,7 +170,7 @@ void TDSESolver::_propagate_XZ(){
             _wf->pop_buf(_param->pop_imin, _param->pop_imax, _param->pop_kmin, _param->pop_kmax);
             std::memcpy(&pop_vec[idx], _wf->get_diag_buf(), _param->nt_diag*sizeof(cdouble)); 
             //norm = _wf.norm();
-            //ener = (_ham.*(_ham.ener))(_wf.get());
+            //ener = (_ham->>*(_ham->>ener))(_wf.get());
             //std::cout<<j<<" ACC: "<< acc_vec[j]<<"\n";
         }
     }

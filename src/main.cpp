@@ -54,5 +54,5 @@ int main(){
     param.print();
     TDSESolver tdse(&param);
     tdse.ipropagate();
-    //tdse.propagate();
+    tdse.propagate();
 }

@@ -20,6 +20,7 @@
             double get(int i);
             double* get();
             double operator[](int i);
+            ~Field();
     };
 
 #endif

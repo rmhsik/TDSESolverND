@@ -6,6 +6,22 @@
 #include "debug.h"
 #include "wavefunction.h"
 
+void WF::_geom_RZ(){
+    _apply_mask = &WF::apply_mask_RZ;
+    _pop = &WF::_pop_RZ;
+    _pop_buf = &WF::_pop_buf_RZ;
+
+    _acc_i = &WF::_acc_i_RZ;
+    _acc_i_buf = &WF::_acc_i_buf_RZ;
+    _acc_k = &WF::_acc_k_RZ;
+    _acc_k_buf = &WF::_acc_k_buf_RZ;
+
+    _dip_i = &WF::_dip_i_RZ;
+    _dip_i_buf = &WF::_dip_i_buf_RZ;
+    _dip_k = &WF::_dip_k_RZ;
+    _dip_k_buf = &WF::_dip_k_buf_RZ;
+}
+
 void WF::apply_mask_RZ(cdouble *imask, cdouble *kmask){
     for(int i=0; i<_ni; i++){
         for(int k=0; k<_nk;k++)
