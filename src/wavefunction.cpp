@@ -34,91 +34,49 @@ void WF::set_geometry( double *i, double *k, const double di, const double dk){
     switch(_param->geometry){
         case X:
             _apply_mask = &WF::apply_mask_X;
-            if(_param->population){
-                _pop = &WF::_pop_X;
-                _pop_buf = &WF::_pop_buf_X;
-            }
-            else{
-                _pop = &WF::_pop_0;
-                _pop_buf = &WF::_pop_buf_0;
-            }
+            _pop = &WF::_pop_X;
+            _pop_buf = &WF::_pop_buf_X;
 
-            if(_param->acc_i){
-                _acc_i = &WF::_acc_i_X;
-                _acc_i_buf = &WF::_acc_i_buf_X;
-            }
-            else{
-                _acc_i = &WF::_acc_0;
-                _acc_i_buf = &WF::_acc_buf_0;
-            }
-
-            if(_param->acc_k){
-                _acc_k = &WF::_acc_k_X;
-                _acc_k_buf = &WF::_acc_k_buf_X;
-            }
-            else{                
-                _acc_k = &WF::_acc_0;
-                _acc_k_buf = &WF::_acc_buf_0;
-            }
+            _acc_i = &WF::_acc_i_X;
+            _acc_i_buf = &WF::_acc_i_buf_X;
+            _acc_k = &WF::_acc_k_X;
+            _acc_k_buf = &WF::_acc_k_buf_X;
+            
+            _dip_i = &WF::_dip_i_X;
+            _dip_i_buf = &WF::_dip_i_buf_X;
+            _dip_k = &WF::_dip_k_X;
+            _dip_k_buf = &WF::_dip_k_buf_X;
             break;
 
         case XZ:
             _apply_mask = &WF::apply_mask_XZ;
-            if(_param->population){
-                _pop = &WF::_pop_XZ;
-                _pop_buf = &WF::_pop_buf_XZ;
-            }
-            else{
-                _pop = &WF::_pop_0;
-                _pop_buf = &WF::_pop_buf_0;
-            }
-            
-            if(_param->acc_i){
-                _acc_i = &WF::_acc_i_XZ;
-                _acc_i_buf = &WF::_acc_i_buf_XZ;
-            }
-            else{
-                _acc_i = &WF::_acc_0;
-                _acc_i_buf = &WF::_acc_buf_0;
-            }
+            _pop = &WF::_pop_XZ;
+            _pop_buf = &WF::_pop_buf_XZ;
+        
+            _acc_i = &WF::_acc_i_XZ;
+            _acc_i_buf = &WF::_acc_i_buf_XZ;
+            _acc_k = &WF::_acc_k_XZ;
+            _acc_k_buf = &WF::_acc_k_buf_XZ;
 
-            if(_param->acc_k){
-                _acc_k = &WF::_acc_k_XZ;
-                _acc_k_buf = &WF::_acc_k_buf_XZ;
-            }
-            else{
-                _acc_k = &WF::_acc_0;
-                _acc_k_buf = &WF::_acc_buf_0;
-            }
+            _dip_i = &WF::_dip_i_XZ;
+            _dip_i_buf = &WF::_dip_i_buf_XZ;
+            _dip_k = &WF::_dip_k_XZ;
+            _dip_k_buf = &WF::_dip_k_buf_XZ;
             break;
         case RZ:
             _apply_mask = &WF::apply_mask_RZ;
-            if(_param->population){
-                _pop = &WF::_pop_RZ;
-                _pop_buf = &WF::_pop_buf_RZ;
-            }
-            else{
-                _pop = &WF::_pop_0;
-                _pop_buf = &WF::_pop_buf_0;
-            }
+            _pop = &WF::_pop_RZ;
+            _pop_buf = &WF::_pop_buf_RZ;
 
-            if(_param->acc_i){
-                _acc_i = &WF::_acc_i_RZ;
-                _acc_i_buf = &WF::_acc_i_buf_RZ;
-            }
-            else{
-                _acc_i = &WF::_acc_0;
-                _acc_i_buf = &WF::_acc_buf_0;
-            }
+            _acc_i = &WF::_acc_i_RZ;
+            _acc_i_buf = &WF::_acc_i_buf_RZ;
+            _acc_k = &WF::_acc_k_RZ;
+            _acc_k_buf = &WF::_acc_k_buf_RZ;
 
-            if(_param->acc_k){
-                _acc_k = &WF::_acc_k_RZ;
-                _acc_k_buf = &WF::_acc_k_buf_RZ;
-            }
-            else{
-                _acc_k = &WF::_acc_0;
-                _acc_k_buf = &WF::_acc_buf_0;
-            }
+            _dip_i = &WF::_dip_i_RZ;
+            _dip_i_buf = &WF::_dip_i_buf_RZ;
+            _dip_k = &WF::_dip_k_RZ;
+            _dip_k_buf = &WF::_dip_k_buf_RZ;
             break;
     }
 }
@@ -209,39 +167,6 @@ void WF::apply_mask(cdouble *imask, cdouble *kmask){
     (this->*(this->_apply_mask))(imask, kmask);
 }
 
-void WF::apply_mask_X(cdouble *imask, cdouble *kmask){
-    for(int i=0; i<_ni; i++){
-        _wf[i*_nk + 0] = _wf[i*_nk + 0]*imask[i];
-    }
-}
-
-void WF::apply_mask_XZ(cdouble *imask, cdouble *kmask){
-    for(int i=0; i<_ni; i++){
-        for(int k=0; k<_nk;k++)
-            _wf[i*_nk + k] = _wf[i*_nk + k]*imask[i]*kmask[k];
-    }
-}
-
-void WF::apply_mask_RZ(cdouble *imask, cdouble *kmask){
-    for(int i=0; i<_ni; i++){
-        for(int k=0; k<_nk;k++)
-            _wf[i*_nk + k] = _wf[i*_nk + k]*imask[i]*kmask[k];
-    }
-}
-
-void WF::apply_mask_buf_XZ(cdouble *imask, cdouble *kmask,const int idx){
-    for(int i=0; i<_ni; i++){
-        for(int k=0; k<_nk;k++)
-            _wf_buf[idx*_ni*_nk + i*_nk + k] *= imask[i]*kmask[k];
-    }
-}
-
-void WF::apply_mask_buf_RZ(cdouble *imask, cdouble *kmask,const int idx){
-    for(int i=0; i<_ni; i++){
-        for(int k=0; k<_nk;k++)
-            _wf_buf[idx*_ni*_nk + i*_nk + k] *= imask[i]*kmask[k];
-    }
-}
 
 cdouble* WF::get(){
     return _wf;
@@ -338,89 +263,12 @@ void WF::operator/=(cdouble val){
     }
 }
 
-cdouble WF::dipole(){
-    cdouble sum = 0.0;
-    switch(_param->geometry){
-        case X:
-            for(int i=0; i<_ni; i++){
-                sum += conj(_wf[i*_nk + 0])*_i[i]*_wf[i*_nk + 0]*_di;
-            }
-            break;
-
-        case XZ:
-            #pragma parallel for schedule(dynamic) reduction(+: sum)
-            for(int i=0; i<_ni; i++){
-                for(int j=0; j<_nk; j++){
-                    sum += conj(_wf[i*_nk + j])*_k[j]*_wf[i*_nk + j]*_di*_dk;
-                }
-            }
-        case RZ:
-            #pragma parallel for schedule(dynamic) reduction(+: sum)
-            for(int i=0; i<_ni; i++){
-                for(int k=0; k<_nk; k++){
-                    sum += 2*M_PI*_i[i]*conj(_wf[i*_nk + k])*_k[k]*_wf[i*_nk + k]*_di*_dk;
-                }
-            }
-    }   
-
-    return sum; 
-}
-
-cdouble WF::_acc_i_X(){return 0.0;}
-
-cdouble WF::_acc_k_X(){
-    cdouble sum = cdouble(0.0,0.0);
-    for(int i=0; i<_ni; i++){
-        sum+= conj(_wf[i*_nk + 0])*(-1.0*_dV_k[i*_nk + 0])*_wf[i*_nk + 0]*_di;
-    }
-    return sum;
-}
-
-cdouble WF::_acc_i_XZ(){
-    cdouble sum = cdouble(0.0,0.0);
-    //#pragma omp parallel for schedule(dynamic) reduction(+: sum)
-    for(int i=0; i<_ni; i++){
-        for(int k=0; k<_nk; k++){
-            sum += conj(_wf[i*_nk + k])*(-1.0*_dV_i[i*_nk + k])*_wf[i*_nk + k]*_di*_dk;
-        }
-    }
-    return sum;
-}
-
-cdouble WF::_acc_k_XZ(){
-    cdouble sum = cdouble(0.0,0.0);
-    //#pragma omp parallel for schedule(dynamic) reduction(+: sum)
-    for(int i=0; i<_ni; i++){
-        for(int k=0; k<_nk; k++){
-            sum += conj(_wf[i*_nk + k])*(-1.0*_dV_k[i*_nk + k])*_wf[i*_nk + k]*_di*_dk;
-        }
-    }
-    return sum;
-}
-
-cdouble WF::_acc_i_RZ(){
-    cdouble sum = cdouble(0.0,0.0);
-    //#pragma omp parallel for schedule(dynamics) reduction(+: sum)
-    for(int i=0; i<_ni; i++){
-        for(int k=0; k<_nk; k++){
-            sum += 2*M_PI*_i[i]*conj(_wf[i*_nk + k])*(-1.0*_dV_i[i*_nk+k])*_wf[i*_nk+k]*_di*_dk;
-        }
-    }
-    return sum;
-}
-
-cdouble WF::_acc_k_RZ(){
-    cdouble sum = cdouble(0.0,0.0);
-    //#pragma omp parallel for schedule(dynamics) reduction(+: sum)
-    for(int i=0; i<_ni; i++){
-        for(int k=0; k<_nk; k++){
-            sum += 2*M_PI*_i[i]*conj(_wf[i*_nk + k])*(-1.0*_dV_k[i*_nk+k])*_wf[i*_nk+k]*_di*_dk;
-        }
-    }
-    return sum;
-}
-
+cdouble WF::_dip_0(){return 0.0;}
+void WF::_dip_buf_0(){}
 cdouble WF::_acc_0(){return 0.0;}
+void WF::_acc_buf_0(){}
+cdouble WF::_pop_0(double imin, double imax, double kmin, double kmax){return 0.0;}
+void WF::_pop_buf_0(double imin, double imax, double kmin, double kmax){}
 
 cdouble WF::acc_i(){
     cdouble sum = (this->*(this->_acc_i))();
@@ -432,111 +280,14 @@ cdouble WF::acc_k(){
     return sum;
 }
 
-void WF::_acc_i_buf_X(){}
+cdouble WF::dip_i(){
+    cdouble sum = (this->*(this->_dip_i))();
+    return sum;
+}  
 
-void WF::_acc_k_buf_X(){
-    for(int n=0; n<_param->nt_diag;n++){
-        cdouble sum = 0.0;
-        for(int i=0; i<_ni; i++){
-            sum += conj(_wf_buf[n*_ni*_nk + i*_nk + 0])*(-1.0*_dV_k[i*_nk + 0])*_wf_buf[n*_ni*_nk + i*_nk +0]*_di;
-        }
-        _diag_buf[n] = sum;
-    }
-}
-
-void WF::_acc_i_buf_XZ(){
-    #pragma omp parallel for schedule(dynamic)
-    for(int n=0;n<_param->nt_diag;n++){
-        cdouble sum = 0.0;
-        for(int i=0; i<_ni; i++){
-            for(int k=0; k<_nk; k++){
-                sum += conj(_wf_buf[n*_ni*_nk + i*_nk + k])*(-1.0*_dV_i[i*_nk + k])*_wf_buf[n*_ni*_nk + i*_nk + k]*_di*_dk;
-            }
-        }
-        _diag_buf[n] = sum;
-    }
-}
-
-void WF::_acc_k_buf_XZ(){
-    #pragma omp parallel for schedule(dynamic)
-    for(int n=0;n<_param->nt_diag;n++){
-        cdouble sum = 0.0;
-        for(int i=0; i<_ni; i++){
-            for(int k=0; k<_nk;k++){
-                sum += conj(_wf_buf[n*_ni*_nk + i*_nk + k])*(-1.0*_dV_k[i*_nk + k])*_wf_buf[n*_ni*_nk +i*_nk +k]*_di*_dk;
-            }
-        }
-        _diag_buf[n] = sum;
-    }
-}
-
-void WF::_acc_i_buf_RZ(){
-    #pragma omp parallel for schedule(dynamic)
-    for(int n=0; n<_param->nt_diag;n++){
-        cdouble sum = 0.0;
-        for(int i=0;i<_ni;i++){
-            for(int k=0;k<_nk;k++){
-                sum += 2*M_PI*_i[i]*conj(_wf_buf[n*_ni*_nk + i*_nk + k])*(-1.0*_dV_i[i*_nk + k])*_wf_buf[n*_ni*_nk + i*_nk +k]*_di*_dk;
-            }
-        }
-        _diag_buf[n] = sum;
-    }
-}
-
-void WF::_acc_k_buf_RZ(){
-    #pragma omp parallel for schedule(dynamic)
-    for(int n=0; n<_param->nt_diag;n++){
-        cdouble sum = 0.0;
-        for(int i=0;i<_ni;i++){
-            for(int k=0;k<_nk;k++){
-                sum += 2*M_PI*_i[i]*conj(_wf_buf[n*_ni*_nk + i*_nk + k])*(-1.0*_dV_k[i*_nk + k])*_wf_buf[n*_ni*_nk + i*_nk +k]*_di*_dk;
-            }
-        }
-        _diag_buf[n] = sum;
-    }
-}   
-    
-
-void WF::_acc_buf_0(){}
-
-void WF::dipole_buf(){
-    switch(_param->geometry){
-        case X:
-            for(int n=0; n<_param->nt_diag;n++){
-                cdouble sum = 0.0;
-                for(int i=0; i<_ni; i++){
-                    sum += conj(_wf_buf[n*_nk*_ni + i*_nk + 0])*_i[i]*_wf_buf[n*_nk*_ni + i*_nk + 0]*_di;
-                }
-                _diag_buf[n] = sum;
-            }
-            break;
-
-        case XZ:
-            #pragma omp parallel for schedule(dynamic)
-            for(int n=0; n<_param->nt_diag;n++){
-                cdouble sum = 0.0;
-                for(int i=0; i<_ni; i++){
-                    for(int j=0; j<_nk; j++){
-                        sum += conj(_wf_buf[n*_nk*_ni + i*_nk + j])*_k[j]*_wf_buf[n*_nk*_ni + i*_nk + j]*_di*_dk;
-                    }
-                }
-                _diag_buf[n] = sum;
-            }
-            break;
-        case RZ:
-            #pragma omp parallel for schedule(dynamic)
-            for(int n=0; n<_param->nt_diag; n++){
-                cdouble sum = 0.0;
-                for(int i=0; i<_ni; i++){
-                    for(int k=0; k<_nk; k++){
-                        sum += 2*M_PI*_i[i]*conj(_wf_buf[n*_nk*_ni + i*_nk + k])*_k[k]*_wf_buf[n*_nk*_ni + i*_nk + k]*_di*_dk;
-                    }
-                }
-                _diag_buf[n] = sum;
-            }
-            break;
-    }   
-
+cdouble WF::dip_k(){
+    cdouble sum = (this->*(this->_dip_k))();
+    return sum;
 }
 
 void WF::acc_i_buf(){
@@ -546,111 +297,12 @@ void WF::acc_k_buf(){
     (this->*(this->_acc_k_buf))();
 }
 
-
-cdouble WF::_pop_X(double imin, double imax, double kmin, double kmax){
-    cdouble sum = 0.0;
-    int n_imin, n_imax;
-    n_imin = (imin-_i[0])/_di;
-    n_imax = (imax-_i[0])/_di;
-    for(int i=n_imin; i<n_imax;i++){
-        for(int k=0;k<1;k++){
-            sum += conj(_wf[i*_nk+k])*_wf[i*_nk+k]*_di;
-        }
-    }
-    return sum;
+void WF::dip_i_buf(){
+    (this->*(this->_dip_i_buf))();
 }
-
-cdouble WF::_pop_XZ(double imin, double imax, double kmin, double kmax){
-    cdouble sum = 0.0;
-    int n_imin, n_imax;
-    int n_kmin, n_kmax;
-    n_imin = (imin-_i[0])/_di;
-    n_imax = (imax-_i[0])/_di;
-    n_kmin = (kmin-_k[0])/_dk;
-    n_kmax = (kmax-_k[0])/_dk;
-    for(int i=n_imin; i<n_imax;i++){
-        for(int k=n_kmin;k<n_kmax;k++){
-            sum += conj(_wf[i*_nk+k])*_wf[i*_nk+k]*_di*_dk;
-        }
-    }
-    return sum;
+void WF::dip_k_buf(){
+    (this->*(this->_dip_k_buf))();
 }
-
-cdouble WF::_pop_RZ(double imin, double imax, double kmin, double kmax){
-    cdouble sum = 0.0;
-    int n_imin, n_imax;
-    int n_kmin, n_kmax;
-    n_imin = (imin-_i[0])/_di;
-    n_imax = (imax-_i[0])/_di;
-    n_kmin = (kmin-_k[0])/_dk;
-    n_kmax = (kmax-_k[0])/_dk;
-    for(int i=n_imin; i<n_imax;i++){
-        for(int k=n_kmin;k<n_kmax;k++){
-            sum += 2*M_PI*_i[i]*conj(_wf[i*_nk+k])*_wf[i*_nk+k]*_di*_dk;
-        }
-    }
-    return sum;
-}
-
-cdouble WF::_pop_0(double imin, double imax, double kmin, double kmax){return 0.0;}
-
-void WF::_pop_buf_X(double imin, double imax, double kmin, double kmax){
-    int n_imin, n_imax;
-    int n_kmin, n_kmax;
-    n_imin = (imin-_i[0])/_di;
-    n_imax = (imax-_i[0])/_di;
-    n_kmin = (kmin-_k[0])/_dk;
-    n_kmax = (kmax-_k[0])/_dk;
-    for(int n=0;n<_param->nt_diag;n++){
-        cdouble sum = 0.0;
-        for(int i=n_imin; i<n_imax; i++){
-            for(int k=0; k<1; k++){
-                sum += conj(_wf_buf[n*_nk*_ni + i*_nk + k])*_wf_buf[n*_nk*_ni + i*_nk + k]*_di;
-            }
-        }
-        _diag_buf[n] = sum;
-    }
-}
-
-void WF::_pop_buf_XZ(double imin, double imax, double kmin, double kmax){
-    int n_imin, n_imax;
-    int n_kmin, n_kmax;
-    n_imin = (imin-_i[0])/_di;
-    n_imax = (imax-_i[0])/_di;
-    n_kmin = (kmin-_k[0])/_dk;
-    n_kmax = (kmax-_k[0])/_dk;
-    #pragma omp parallel for schedule(dynamic)
-    for(int n=0;n<_param->nt_diag;n++){
-        cdouble sum = 0.0;
-        for(int i=n_imin; i<n_imax; i++){
-            for(int k=n_kmin; k<n_kmax; k++){
-                sum += conj(_wf_buf[n*_nk*_ni + i*_nk + k])*_wf_buf[n*_nk*_ni + i*_nk + k]*_di*_dk;
-            }
-        }
-        _diag_buf[n] = sum;
-    }
-}
-
-void WF::_pop_buf_RZ(double imin, double imax, double kmin, double kmax){
-    int n_imin, n_imax;
-    int n_kmin, n_kmax;
-    n_imin = (imin-_i[0])/_di;
-    n_imax = (imax-_i[0])/_di;
-    n_kmin = (kmin-_k[0])/_dk;
-    n_kmax = (kmax-_k[0])/_dk;
-    #pragma omp parallel for schedule(dynamic)
-    for(int n=0;n<_param->nt_diag;n++){
-        cdouble sum = 0.0;
-        for(int i=n_imin; i<n_imax; i++){
-            for(int k=n_kmin; k<n_kmax; k++){
-                sum += 2*M_PI*_i[i]*conj(_wf_buf[n*_nk*_ni + i*_nk + k])*_wf_buf[n*_nk*_ni + i*_nk + k]*_di*_dk;
-            }
-        }
-        _diag_buf[n] = sum;
-    }
-}
-
-void WF::_pop_buf_0(double imin, double imax, double kmin, double kmax){}
 
 cdouble WF::pop(double imin, double imax, double kmin, double kmax){
     return (this->*(this->_pop))(imin, imax, kmin, kmax);

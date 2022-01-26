@@ -114,10 +114,10 @@ void TDSESolver::setup_wf(){
     switch(_param->init_wf){
     	case GAUS:
             _wf.gaussian(0.0,0.0,1.0);
-	    break;
-	case EXPO:
-	    _wf.exponential(0.0,0.0,1.0);
-	    break;
+            break;
+        case EXPO:
+            _wf.exponential(0.0,0.0,1.0);
+            break;
     } 
     cdouble norm = _wf.norm();
     //std::cout<<norm<<std::endl;
@@ -309,7 +309,7 @@ void TDSESolver::propagate_X(){
             idx = i - _param->nt_diag + 2;
             _wf.acc_k_buf();
             std::memcpy(&acc_vec[idx],_wf.get_diag_buf(),_param->nt_diag*sizeof(cdouble));
-            _wf.dipole_buf();
+            _wf.dip_i_buf();
             std::memcpy(&dip_vec[idx],_wf.get_diag_buf(),_param->nt_diag*sizeof(cdouble));
             _wf.pop_buf(_param->pop_imin, _param->pop_imax, _param->pop_kmin, _param->pop_kmax);
             std::memcpy(&pop_vec[idx],_wf.get_diag_buf(),_param->nt_diag*sizeof(cdouble));
@@ -321,7 +321,7 @@ void TDSESolver::propagate_X(){
     // Get las batch if diagnostics from lat idx up to _param.nt
     _wf.acc_k_buf();
     std::memcpy(&acc_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
-    _wf.dipole_buf();
+    _wf.dip_i_buf();
     std::memcpy(&dip_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
     _wf.pop_buf(_param->pop_imin, _param->pop_imax, _param->pop_kmin, _param->pop_kmax);
     std::memcpy(&pop_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
@@ -428,7 +428,7 @@ void TDSESolver::propagate_XZ(){
         //dip_vec[j] = _wf.dipole();
         if ((j+2)%_param->nt_diag==0 && j<(_param->nt-_param->nt%_param->nt_diag)){ 
             idx = j - _param->nt_diag + 2;
-            _wf.dipole_buf();
+            _wf.dip_k_buf();
             std::memcpy(&dip_vec[idx], _wf.get_diag_buf(), _param->nt_diag*sizeof(cdouble));
             _wf.acc_k_buf();
             std::memcpy(&acc_k_vec[idx], _wf.get_diag_buf(), _param->nt_diag*sizeof(cdouble));
@@ -442,7 +442,7 @@ void TDSESolver::propagate_XZ(){
         }
     }
     // Get last batch of diagnostics from last idx up to _paran.nt
-    _wf.dipole_buf();
+    _wf.dip_k_buf();
     std::memcpy(&dip_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
     _wf.acc_k_buf();
     std::memcpy(&acc_k_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
@@ -575,7 +575,7 @@ void TDSESolver::propagate_RZ(){
         //dip_vec[j] = _wf.dipole();
         if ((j+2)%_param->nt_diag==0 && j<(_param->nt-_param->nt%_param->nt_diag)){ 
             idx = j - _param->nt_diag + 2;
-            _wf.dipole_buf();
+            _wf.dip_k_buf();
             std::memcpy(&dip_vec[idx], _wf.get_diag_buf(), _param->nt_diag*sizeof(cdouble));
             _wf.acc_i_buf();
             std::memcpy(&acc_i_vec[idx], _wf.get_diag_buf(), _param->nt_diag*sizeof(cdouble));
@@ -589,7 +589,7 @@ void TDSESolver::propagate_RZ(){
         }
     }
     // Get last batch of diagnostics from last idx up to _paran.nt
-    _wf.dipole_buf();
+    _wf.dip_k_buf();
     std::memcpy(&dip_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
     _wf.acc_i_buf();
     std::memcpy(&acc_i_vec[idx+1],_wf.get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));

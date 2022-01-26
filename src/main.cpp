@@ -9,8 +9,8 @@ int main(){
 
     param.geometry = XZ;
     param.init_wf = GAUS;
-    param.ni = 1000;
-    param.nk = 1000;
+    param.ni = 100;
+    param.nk = 100;
     param.imin = -100;
     param.imax =  100;
     param.kmin = -100;
@@ -54,5 +54,5 @@ int main(){
     param.print();
     TDSESolver tdse(&param);
     tdse.ipropagate();
-    tdse.propagate();
+    //tdse.propagate();
 }
