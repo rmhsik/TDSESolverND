@@ -19,7 +19,7 @@
             Field Bfield_i;
             Field Bfield_k;
             
-            WF _wf;
+            WF *_wf;
             Hamiltonian _ham;
 
             cdouble *_accmask;
@@ -30,9 +30,24 @@
             double *_i, _di;
             double *_k, _dk;
 
-	    void (TDSESolver::*_propagate)();
-	    void (TDSESolver::*_ipropagate)();
+            void (TDSESolver::*_propagate)();
+            void (TDSESolver::*_ipropagate)();
+            void _propagate_X();
+            void _ipropagate_X();
+            void _propagate_XZ();
+            void _ipropagate_XZ();
+            void _propagate_RZ();
+            void _ipropagate_RZ();
 
+            void _geom_X();
+            void _geom_XZ();
+            void _geom_RZ();
+            void _fields_X();
+            void _fields_XZ();
+            void _fields_RZ();
+            void _masks_X();
+            void _masks_XZ();
+            void _masks_RZ();
         public:
             TDSESolver();
             TDSESolver(Parameters *param);
@@ -44,13 +59,7 @@
             void setup_ham();
             void propagate();
             void ipropagate();
-            void propagate_X();
-            void ipropagate_X();
-            void propagate_XZ();
-            void ipropagate_XZ();
-            void propagate_RZ();
-            void ipropagate_RZ();
-    };
+                };
 
 
 #endif

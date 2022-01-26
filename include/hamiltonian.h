@@ -23,6 +23,10 @@ class Hamiltonian{
         cdouble *_Mpi_du, *_Mpi_d, *_Mpi_dl;
         cdouble *_lhs_i, *_res_i;
         cdouble *_lhs_k, *_res_k; 
+        
+        void _allocate_X();
+        void _allocate_XZ();
+        void _allocate_RZ();
 
         void potential_X();
         void dpotential_X();

@@ -8,3 +8,7 @@ lib/
 build/
 __pycache__/
 !tdsesolver.py
+!tdsesolver_X.cpp
+!tdsesolver_XZ.cpp
+!tdsesolver_RZ.cpp
+
