@@ -49,7 +49,7 @@ void Hamiltonian::dpotential_XZ(){
 
     for(int k=0; k<_nk;k++){
         _dpotential_i[0*_nk + k] = (_potential[1*_nk + k] - _potential[0*_nk + k])/_di;
-        _dpotential_i[(_ni-1)*_nk + k] = (_potential[(_ni-1)*_nk + k]-_potential[(_nk-2)*_nk + k])/_di;
+        _dpotential_i[(_ni-1)*_nk + k] = (_potential[(_ni-1)*_nk + k]-_potential[(_ni-2)*_nk + k])/_di;
     }
     for(int i=1; i<_ni-1;i++){
         for(int k=0;k<_nk;k++)
