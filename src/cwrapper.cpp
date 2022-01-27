@@ -47,6 +47,7 @@ extern "C"{
     void Parameters_acc_k(Parameters *p, int val){p->acc_k = val;}
     void Parameters_acc_i_path(Parameters *p, char *val){p->set_acc_i_path(val);}
     void Parameters_acc_k_path(Parameters *p, char *val){p->set_acc_k_path(val);}
-    void Parameters_dip_path(Parameters *p, char *val){p->set_dip_path(val);}
+    void Parameters_dip_i_path(Parameters *p, char *val){p->set_dip_i_path(val);}
+    void Parameters_dip_k_path(Parameters *p, char *val){p->set_dip_k_path(val);}
     void Parameters_pop_path(Parameters *p, char *val){p->set_pop_path(val);}
 }

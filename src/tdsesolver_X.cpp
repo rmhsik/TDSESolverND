@@ -123,7 +123,7 @@ void TDSESolver::_propagate_X(){
         dip_vec[i] *= _accmask[i];
     }
     write_array(acc_vec,_param->nt,_param->acc_k_path);
-    write_array(dip_vec,_param->nt,_param->dip_path);
+    write_array(dip_vec,_param->nt,_param->dip_i_path);
     write_array(pop_vec,_param->nt,_param->pop_path);
    
     delete acc_vec;

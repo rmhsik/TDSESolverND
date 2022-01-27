@@ -47,7 +47,7 @@ int main(){
     char *acc_k_path = "results/acc_k.dat";
     param.set_acc_k_path(acc_k_path);
     char *dip_path = "results/dip8.dat";
-    param.set_dip_path(dip_path); 
+    param.set_dip_i_path(dip_path); 
     //param.acc_path = "results/acc7.dat";
     //param.dip_path = "results/dip7.dat"; 
 

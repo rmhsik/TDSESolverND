@@ -57,7 +57,8 @@ Parameters::Parameters(){
 	    //File paths
 	    acc_i_path  = "results/acc_i.dat";
         acc_k_path  = "results/acc_k.dat";    
-	    dip_path    = "results/dip.dat";
+	    dip_i_path  = "results/dip_i.dat";
+        dip_k_path  = "results/dip_k.dat";
         pop_path    = "results/pop.dat"; 
         check_param();
 }
@@ -81,13 +82,18 @@ void Parameters::set_acc_k_path(char *val){
     acc_k_path = std::string(val);
 }
 
-void Parameters::set_dip_path(char *val){
-    dip_path = std::string(val);
+void Parameters::set_dip_i_path(char *val){
+    dip_i_path = std::string(val);
+}
+
+void Parameters::set_dip_k_path(char *val){
+    dip_k_path = std::string(val);
 }
 
 void Parameters::set_pop_path(char *val){
     pop_path = std::string(val);
 }
+
 void Parameters::print(){
     std::cout<<"Parameters:\n";
     std::cout<<"------------------------\n";
@@ -122,14 +128,15 @@ void Parameters::print(){
     std::cout<<"\tpop_imin: "<<pop_imin<<std::endl;
     std::cout<<"\tpop_imax: "<<pop_imax<<std::endl;
     std::cout<<"\tpop_kmin: "<<pop_kmin<<std::endl;
-    std::cout<<"\tpo[_kmax: "<<pop_kmax<<std::endl;
+    std::cout<<"\tpop_kmax: "<<pop_kmax<<std::endl;
     std::cout<<"\tphiEi: "<<phiEi<<std::endl;
     std::cout<<"\tphiEk: "<<phiEk<<std::endl;
     std::cout<<"\tphiBi: "<<phiBi<<std::endl;
     std::cout<<"\tphiBk: "<<phiBk<<std::endl;
     std::cout<<"\tacc_i_path: "<<acc_i_path<<std::endl;
     std::cout<<"\tacc_k_path: "<<acc_k_path<<std::endl;
-    std::cout<<"\tdip_path: "<<dip_path<<std::endl;
+    std::cout<<"\tdip_i_path: "<<dip_i_path<<std::endl;
+    std::cout<<"\tdip_k_path: "<<dip_k_path<<std::endl;
     std::cout<<"\tpop_path: "<<pop_path<<std::endl;
     std::cout<<std::endl;
 }

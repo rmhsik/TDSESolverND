@@ -192,7 +192,7 @@ void TDSESolver::_propagate_XZ(){
     }
     write_array(acc_i_vec,_param->nt,_param->acc_i_path);
     write_array(acc_k_vec,_param->nt,_param->acc_k_path);
-    write_array(dip_vec,_param->nt,_param->dip_path);
+    write_array(dip_vec,_param->nt,_param->dip_k_path);
     write_array(pop_vec,_param->nt,_param->pop_path);
     delete acc_i_vec;
     delete acc_k_vec;
