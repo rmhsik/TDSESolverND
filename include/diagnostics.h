@@ -36,15 +36,12 @@ class Diagnostics{
         void _set_ham(Hamiltonian *ham);
         void _set_wf(WF *wf); 
         void _set_tempmask();
-        int _get_type(std::string def);
-
         
     public:
         Diagnostics();
         Diagnostics(int n_probes, std::string def);
-        void run_diagnostic(const int idx);
-        cdouble* get_data();
-        void write_diagnostic();
+        void run_diagnostics(const int idx);
+        void write_diagnostics();
 };
 
 #endif

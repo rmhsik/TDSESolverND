@@ -1,9 +1,9 @@
-#ifndef PROBE_XZ_H
-#define PROBE_XZ_H
+#ifndef PROBE_RZ_H
+#define PROBE_RZ_H
 
 #include "probe.h"
 
-class ProbeXZ: public Probe{
+class ProbeRZ: public Probe{
     protected:
         void _acc_i(const int idx);
         void _acc_k(const int idx);
@@ -11,8 +11,8 @@ class ProbeXZ: public Probe{
         void _dip_k(const int idx);
         void _pop(const int idx);
     public:
-        ProbeXZ();
-        ProbeXZ(std::string def);
+        ProbeRZ();
+        ProbeRZ(std::string def);
 };
 
 #endif

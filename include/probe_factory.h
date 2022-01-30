@@ -3,6 +3,7 @@
 
 #include "probe.h"
 #include "probe.XZ.h"
+#include "probe.RZ.h"
 
 class ProbeFactory{
     public:

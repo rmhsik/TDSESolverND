@@ -5,5 +5,8 @@ Probe* ProbeFactory::create(int geometry, std::string def){
         case XZ:
             return new ProbeXZ(def);
             break;
+        case RZ:
+            return new ProbeRZ(def);
+            break;
     }
 }

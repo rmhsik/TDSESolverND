@@ -11,7 +11,7 @@ Diagnostics::Diagnostics(const int n_probes, std::string defs){
     _n_probes = n_probes;
     //_def = def;
 
-    char delim= '\n';
+    char delim= '-';
     int counter = 0;
     std::stringstream ss(defs);
     std::string item;
@@ -64,29 +64,6 @@ void Diagnostics::_set_tempmask(){
 
 
 }
-
-int Diagnostics::_get_type(std::string _def){
-    char delim = ',';
-    std::stringstream ss(_def);
-    std::string item;
-    std::vector<std::string> parsed;
-    int type;
-    while(getline(ss,item,delim)){
-        parsed.push_back(item);
-    }
-    if(parsed[0] == "acc_i") 
-        type = ACC_I;
-    else if(parsed[0] == "acc_k")
-        type = ACC_K;
-    else if(parsed[0] == "dip_i")
-        type = DIP_I;
-    else if(parsed[0] == "dip_k")
-        type = DIP_K;
-    else if(parsed[0] == "pop")
-        type = POP;
-    return type;
-}
-
 void Diagnostics::_create_probes(){
     ProbeFactory factory;
     for(int i=0; i<_n_probes;i++){
@@ -99,10 +76,14 @@ void Diagnostics::_create_probes(){
     } 
 }
 
-void Diagnostics::run_diagnostic(const int idx){
+void Diagnostics::run_diagnostics(const int idx){
     for(int i=0; i<_n_probes;i++){
         _probe_vec[i]->calc(idx);
     } 
 }
 
-
+void Diagnostics::write_diagnostics(){
+    for(int i=0;i<_n_probes;i++){
+        _probe_vec[i]->write_probe();
+    }
+}
