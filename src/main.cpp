@@ -1,7 +1,9 @@
 #include <iostream>
 #include <omp.h>
+#include <vector>
 #include "tdsesolver.h"
 #include "parameters.h"
+#include "diagnostics.h"
 
 int main(){
     Parameters param;
@@ -9,8 +11,8 @@ int main(){
 
     param.geometry = XZ;
     param.init_wf = GAUS;
-    param.ni = 100;
-    param.nk = 100;
+    param.ni = 500;
+    param.nk = 500;
     param.imin = -100;
     param.imax =  100;
     param.kmin = -100;
@@ -51,8 +53,9 @@ int main(){
     //param.acc_path = "results/acc7.dat";
     //param.dip_path = "results/dip7.dat"; 
 
-    param.print();
-    TDSESolver tdse(&param);
-    tdse.ipropagate();
-    tdse.propagate();
+    //param.print();
+    //TDSESolver tdse(&param);
+    //tdse.ipropagate();
+    //tdse.propagate();
+
 }

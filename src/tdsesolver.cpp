@@ -97,26 +97,8 @@ void TDSESolver::setup_masks(){
     _accmask = new cdouble[_param->nt];
     _imask = new cdouble[_param->ni];
     _kmask = new cdouble[_param->nk];
-    double tmax_mask = 0.0;
     std::string path;    
-    if (_param->env==SIN2){
-        tmax_mask = _param->tmax_ev;
-    }
-    else{
-        tmax_mask = _param->tmax_ev + _param->period*2.0;
-    }
-
-    for(int i=0; i<_param->nt;i++){
-        if(_t[i]<tmax_mask){
-            _accmask[i] = 1.0;
-        }
-        else{
-            _accmask[i] = exp(-pow(_t[i]-tmax_mask,2)/100.0);
-        }
-    }
-    path = "results/accmask.dat";
-    write_array(_accmask,_param->nt,path);
-
+    
     switch(_param->geometry){
         case X:
             _masks_X(); 
