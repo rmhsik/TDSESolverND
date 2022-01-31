@@ -9,11 +9,11 @@ int main(){
     Parameters param;
     param.n_threads = 6;
 
-    param.geometry = XZ;
-    param.init_wf = GAUS;
-    param.ni = 500;
-    param.nk = 500;
-    param.imin = -100;
+    param.geometry = RZ;
+    param.init_wf = EXPO;
+    param.ni = 1000;
+    param.nk = 2000;
+    param.imin =  0;
     param.imax =  100;
     param.kmin = -100;
     param.kmax =  100;
@@ -34,7 +34,7 @@ int main(){
     param.w0Bi = 0.057;
     param.w0Bk = 0.057;
 								
-    param.E0i = 0.067;
+    param.E0i = 0.000;
     param.E0k = 0.067;
     param.B0i = 0.0;
     param.B0k = 0.12;

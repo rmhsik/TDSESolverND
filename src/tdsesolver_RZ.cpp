@@ -117,7 +117,7 @@ void TDSESolver::_ipropagate_RZ(){
     delete psi_col;
     delete psi_row;
 }
-
+/*
 void TDSESolver::_propagate_RZ(){
     cdouble norm, ener;
     cdouble *acc_i_vec, *acc_k_vec, *dip_vec, *pop_vec;
@@ -215,5 +215,60 @@ void TDSESolver::_propagate_RZ(){
     delete dip_vec;
     delete pop_vec;
 }
+*/
 
+void TDSESolver::_propagate_RZ(){
+    cdouble norm, ener;
+    cdouble *acc_i_vec, *acc_k_vec, *dip_vec, *pop_vec;
+    cdouble *psi_col, *psi_row;
+    int idx;
+    const int ni = _param->ni;
+    const int nk = _param->nk;
 
+    psi_col = new cdouble [_param->nk*_param->n_threads];
+    psi_row = new cdouble [_param->ni*_param->n_threads];
+
+    //wf_ptr = _wf.get_buf();
+    _wf->set_to_buf(0); 
+    for(int j=0; j<_param->nt;j++){
+        #pragma omp parallel for schedule(dynamic)
+        for(int i=0;i<ni;i++){
+            cdouble *wf_ptr;
+            wf_ptr = _wf->get_buf();
+            int id_thread = omp_get_thread_num();
+            for(int k=0;k<nk;k++)
+                psi_col[id_thread*nk + k] = wf_ptr[j%_param->nt_diag*ni*nk+i*nk+k];
+            (_ham->*(_ham->step_k))(&psi_col[id_thread*nk],(*Afield_k)[j],(*Bfield_k)[j],i,0,id_thread);
+            _wf->set_col_buf_mask(&psi_col[id_thread*nk],_kmask, i,(j+1)%_param->nt_diag);
+        }
+        
+        #pragma omp parallel for schedule(dynamic)
+        for(int k=0;k<nk;k++){
+            cdouble *wf_ptr;
+            wf_ptr = _wf->get_buf();
+            int id_thread = omp_get_thread_num();
+            for(int i=0;i<ni;i++)
+                psi_row[id_thread*ni + i] = wf_ptr[(j+1)%_param->nt_diag*ni*nk+i*nk+k];
+            (_ham->*(_ham->step_i))(&psi_row[id_thread*ni],(*Afield_k)[j],(*Bfield_k)[j],k,0,id_thread);
+            _wf->set_row_buf_mask(&psi_row[id_thread*ni],_imask,k,(j+1)%_param->nt_diag);
+        }
+        
+        #pragma omp parallel for schedule(dynamic)
+        for(int i=0;i<ni;i++){
+            cdouble *wf_ptr;
+            wf_ptr = _wf->get_buf();
+            int id_thread = omp_get_thread_num();
+            for(int k=0;k<nk;k++)
+                psi_col[id_thread*nk + k] = wf_ptr[(j+1)%_param->nt_diag*ni*nk+i*nk+k];
+            (_ham->*(_ham->step_k))(&psi_col[id_thread*nk],(*Afield_k)[j],(*Bfield_k)[j],i,0,id_thread);
+            _wf->set_col_buf_mask(&psi_col[id_thread*nk],_kmask,i,(j+1)%_param->nt_diag);
+        }
+
+        if ((j+2)%_param->nt_diag==0 && j<(_param->nt-_param->nt%_param->nt_diag)){ 
+            idx = j - _param->nt_diag + 2;
+            _diag->run_diagnostics(idx);
+        }
+    }
+    //TODO:  Get last batch of diagnostics from last idx up to _paran.nt
+    _diag->write_diagnostics();
+}

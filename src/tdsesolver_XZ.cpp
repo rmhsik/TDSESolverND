@@ -208,7 +208,6 @@ void TDSESolver::_propagate_XZ(){
     int idx;
     const int ni = _param->ni;
     const int nk = _param->nk;
-    std::string path;
 
     psi_col = new cdouble [_param->nk*_param->n_threads];
     psi_row = new cdouble [_param->ni*_param->n_threads];
@@ -237,16 +236,13 @@ void TDSESolver::_propagate_XZ(){
             (_ham->*(_ham->step_i))(&psi_row[id_thread*ni],(*Afield_i)[j],(*Bfield_k)[j],k,0,id_thread);
             _wf->set_row_buf_mask(&psi_row[id_thread*ni],_imask,k,(j+1)%_param->nt_diag);
         }
-        //_wf.apply_mask_buf_RZ(_imask,_kmask,(j+1)%_param->nt_diag);
-        //_wf.set_to_buf(j%_param->nt_diag);
-        //acc_vec[j] = _wf.acc();
-        //dip_vec[j] = _wf.dipole();
+
         if ((j+2)%_param->nt_diag==0 && j<(_param->nt-_param->nt%_param->nt_diag)){ 
-            idx = j - _param->nt_diag + 2;
-            _diag->run_diagnostics(idx);
+             idx = j - _param->nt_diag + 2;
+             _diag->run_diagnostics(idx);
         }
     }
-    // Get last batch of diagnostics from last idx up to _paran.nt
+    //TODO: Get last batch of diagnostics from last idx up to _paran.nt
     _diag->write_diagnostics();
     
 }
