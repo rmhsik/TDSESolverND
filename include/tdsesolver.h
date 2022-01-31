@@ -9,6 +9,7 @@
 #include "fields.h"
 #include "wavefunction.h"
 #include "hamiltonian.h"
+#include "diagnostics.h"
 
     class TDSESolver{
         private:
@@ -21,6 +22,7 @@
             
             WF *_wf;
             Hamiltonian *_ham;
+            Diagnostics *_diag;
 
             cdouble *_accmask;
             cdouble *_imask;
@@ -55,12 +57,13 @@
             void setup_geometry();
             void setup_fields();
             void setup_masks();
+            void setup_diagnostics();
             void setup_wf();
             void setup_ham();
             void propagate();
             void ipropagate();
             
             ~TDSESolver();
-                };
+    };
 
 #endif

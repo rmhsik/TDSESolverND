@@ -22,6 +22,7 @@ TDSESolver::TDSESolver(Parameters *param){
     setup_ham();
     setup_wf();
     setup_masks();
+    setup_diagnostics();
     }
 
 void TDSESolver::setup_time(){
@@ -115,6 +116,16 @@ void TDSESolver::setup_masks(){
 
 }
 
+void TDSESolver::setup_diagnostics(){
+    _diag = new Diagnostics(_param->n_probes, _param->probe_def);
+    _diag->set_parameters(_param);
+    _diag->set_geometry(_i,_k,_t,_di,_dk);
+    _diag->set_ham(_ham);
+    _diag->set_wf(_wf);
+    _diag->set_tempmask();
+    _diag->create_probes();
+}
+
 void TDSESolver::ipropagate(){
     (this->*(this->_ipropagate))();
 }
@@ -136,4 +147,5 @@ TDSESolver::~TDSESolver(){
     delete Bfield_k;
     delete _wf;
     delete _ham;
+    delete _diag;
 }

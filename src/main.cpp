@@ -7,7 +7,7 @@
 
 int main(){
     Parameters param;
-    param.n_threads = 4;
+    param.n_threads = 6;
 
     param.geometry = XZ;
     param.init_wf = GAUS;
@@ -54,8 +54,8 @@ int main(){
     //param.dip_path = "results/dip7.dat"; 
 
     //param.print();
-    //TDSESolver tdse(&param);
-    //tdse.ipropagate();
-    //tdse.propagate();
+    TDSESolver tdse(&param);
+    tdse.ipropagate();
+    tdse.propagate();
 
 }

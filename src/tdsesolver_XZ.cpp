@@ -209,18 +209,6 @@ void TDSESolver::_propagate_XZ(){
     const int ni = _param->ni;
     const int nk = _param->nk;
     std::string path;
-    std::vector<Diagnostics*> diags;
-    diags.push_back(new DiagnosticsXZ("acc_i,results/acc_i_test_diag.dat"));
-    diags.push_back(new DiagnosticsXZ("acc_k,results/acc_k_test_diag.dat"));
-    diags[0]->set_parameters(_param);
-    diags[0]->set_ham(_ham);
-    diags[0]->set_wf(_wf);
-    diags[0]->set_geometry(_i,_k,_t,_di,_dk);
-
-    diags[1]->set_parameters(_param);
-    diags[1]->set_ham(_ham);
-    diags[1]->set_wf(_wf);
-    diags[1]->set_geometry(_i,_k,_t,_di,_dk);
 
     psi_col = new cdouble [_param->nk*_param->n_threads];
     psi_row = new cdouble [_param->ni*_param->n_threads];
@@ -255,20 +243,10 @@ void TDSESolver::_propagate_XZ(){
         //dip_vec[j] = _wf.dipole();
         if ((j+2)%_param->nt_diag==0 && j<(_param->nt-_param->nt%_param->nt_diag)){ 
             idx = j - _param->nt_diag + 2;
-            for(auto &diag: diags){
-                diag->run_diagnostic(idx);
-            }
+            _diag->run_diagnostics(idx);
         }
     }
     // Get last batch of diagnostics from last idx up to _paran.nt
-     
-    cdouble valaccmask;
-    for(auto &diag: diags){
-        for(int j=0; j<_param->nt; j++){
-            valaccmask = _accmask[j];
-            diag->get_data()[j] *= valaccmask;
-        }
-        diag->write_diagnostic();
-    }
+    _diag->write_diagnostics();
     
 }

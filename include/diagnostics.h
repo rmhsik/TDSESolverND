@@ -29,19 +29,20 @@ class Diagnostics{
         Hamiltonian *_ham;
         WF *_wf;
         
-        void _create_probes();
 
-        void _set_parameters(Parameters *param);
-        void _set_geometry(double *i, double *k, double *t, const double di, const double dk);
-        void _set_ham(Hamiltonian *ham);
-        void _set_wf(WF *wf); 
-        void _set_tempmask();
-        
+                
     public:
         Diagnostics();
         Diagnostics(int n_probes, std::string def);
         void run_diagnostics(const int idx);
         void write_diagnostics();
+        void set_parameters(Parameters *param);
+        void set_geometry(double *i, double *k, double *t, const double di, const double dk);
+        void set_ham(Hamiltonian *ham);
+        void set_wf(WF *wf); 
+        void set_tempmask();
+        void create_probes();
+
 };
 
 #endif

@@ -63,6 +63,8 @@
 	        std::string dip_i_path;
             std::string dip_k_path; 
             std::string pop_path;
+            int n_probes;
+            std::string probe_def;
         Parameters();
        	void check_param();	
 	void print();

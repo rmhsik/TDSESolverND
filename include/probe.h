@@ -24,11 +24,11 @@ class Probe{
         double _int_kmin, _int_kmax;
         void _parse_def();
 
-        virtual void _acc_i(const int idx);
-        virtual void _acc_k(const int idx);
-        virtual void _dip_i(const int idx);
-        virtual void _dip_k(const int idx);
-        virtual void _pop(const int idx);
+        virtual void _acc_i(const int idx){};
+        virtual void _acc_k(const int idx){};
+        virtual void _dip_i(const int idx){};
+        virtual void _dip_k(const int idx){};
+        virtual void _pop(const int idx){};
         void (Probe::*_calc)(const int idx);
     public:
         Probe();

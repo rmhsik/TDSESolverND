@@ -22,26 +22,26 @@ Diagnostics::Diagnostics(const int n_probes, std::string defs){
     if(counter != n_probes){debug0("[Diagnostics] n_probes != number of definitions");}
 }
 
-void Diagnostics::_set_parameters(Parameters *param){
+void Diagnostics::set_parameters(Parameters *param){
     _param = param;
     
 }
 
-void Diagnostics::_set_geometry(double *i, double *k, double *t, const double di, const double dk){
+void Diagnostics::set_geometry(double *i, double *k, double *t, const double di, const double dk){
     _i = i; _k = k; _di = di; _dk = dk, _t = t;
    _ni = _param->ni;
    _nk = _param->nk;
 }
 
-void Diagnostics::_set_wf(WF *wf){
+void Diagnostics::set_wf(WF *wf){
     _wf = wf;
 }
 
-void Diagnostics::_set_ham(Hamiltonian *ham){
+void Diagnostics::set_ham(Hamiltonian *ham){
     _ham = ham;
 }
 
-void Diagnostics::_set_tempmask(){
+void Diagnostics::set_tempmask(){
     _tempmask = new cdouble[_param->nt];
     double tmax_mask; 
     if (_param->env==SIN2){
@@ -64,7 +64,7 @@ void Diagnostics::_set_tempmask(){
 
 
 }
-void Diagnostics::_create_probes(){
+void Diagnostics::create_probes(){
     ProbeFactory factory;
     for(int i=0; i<_n_probes;i++){
         _probe_vec.push_back(factory.create(_param->geometry,_def_vec[i]));    

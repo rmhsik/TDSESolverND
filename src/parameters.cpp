@@ -53,6 +53,7 @@ Parameters::Parameters(){
         pop_kmax    = kmax;
         acc_i       = 0;
         acc_k       = 1;
+        n_probes    = 2;
 
 	    //File paths
 	    acc_i_path  = "results/acc_i.dat";
@@ -60,6 +61,8 @@ Parameters::Parameters(){
 	    dip_i_path  = "results/dip_i.dat";
         dip_k_path  = "results/dip_k.dat";
         pop_path    = "results/pop.dat"; 
+        probe_def   = "acc_i,results/acc_i_test_diag.dat-"
+                      "acc_k,results/acc_k_test_diag.dat";
         check_param();
 }
 
