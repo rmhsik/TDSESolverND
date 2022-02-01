@@ -11,7 +11,7 @@ Diagnostics::Diagnostics(const int n_probes, std::string defs){
     _n_probes = n_probes;
     //_def = def;
 
-    char delim= '-';
+    char delim= ';';
     int counter = 0;
     std::stringstream ss(defs);
     std::string item;

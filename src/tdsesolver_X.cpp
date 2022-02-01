@@ -79,15 +79,11 @@ void TDSESolver::_ipropagate_X(){
 
 void TDSESolver::_propagate_X(){
     debug3("[TDSESolver->propagate] Start propagate...");
-    cdouble *psi_row, *dip_vec,*acc_vec, *pop_vec;
+    cdouble *psi_row;
     cdouble *norm_vec;
     int norm_vec_size = (int)(_param->nt/100);
     int norm_vec_idx;
     int idx;
-    acc_vec = new cdouble[_param->nt];
-    //dip_vec = new cdouble[_param->nt];
-    //pop_vec = new cdouble[_param->nt];
-    //norm_vec = new cdouble[norm_vec_size];
     _wf->set_to_buf(0);
     for(int i=0; i<_param->nt; i++){
         psi_row = _wf->row(0);
@@ -95,40 +91,14 @@ void TDSESolver::_propagate_X(){
         _wf->set_row(psi_row,0);
         _wf->apply_mask(_imask,_kmask);
         _wf->set_to_buf(i%_param->nt_diag);
-        //acc_vec[i] = _wf.acc();
+
         if((i+1)%_param->nt_diag==0 && i<(_param->nt - _param->nt%_param->nt_diag)){
             idx = i - _param->nt_diag + 1;
-            _wf->acc_i_buf();
-            std::memcpy(&acc_vec[idx],_wf->get_diag_buf(),_param->nt_diag*sizeof(cdouble));
-            //_wf->dip_i_buf();
-            //std::memcpy(&dip_vec[idx],_wf->get_diag_buf(),_param->nt_diag*sizeof(cdouble));
-            //_wf->pop_buf(_param->pop_imin, _param->pop_imax, _param->pop_kmin, _param->pop_kmax);
-            //std::memcpy(&pop_vec[idx],_wf->get_diag_buf(),_param->nt_diag*sizeof(cdouble));
-            //norm_vec_idx = (int)(i/100);
-            //norm_vec[norm_vec_idx] = _wf.norm();
-            //std::cout<<"Ener: "<<(_ham->*(_ham->ener))(psi_row)<<"\n";
+            _diag->run_diagnostics(idx);
         }
     }
     // Get las batch if diagnostics from lat idx up to _param.nt
-    _wf->acc_i_buf();
-    std::memcpy(&acc_vec[idx+1],_wf->get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
-    //_wf->dip_i_buf();
-    //std::memcpy(&dip_vec[idx+1],_wf->get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
-    //_wf->pop_buf(_param->pop_imin, _param->pop_imax, _param->pop_kmin, _param->pop_kmax);
-    //std::memcpy(&pop_vec[idx+1],_wf->get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
-
-    
-    for(int i=0; i<_param->nt;i++){
-        //acc_vec[i] *= _accmask[i];
-        //dip_vec[i] *= _accmask[i];
-    }
-    write_array(acc_vec,_param->nt,_param->acc_k_path);
-    //write_array(dip_vec,_param->nt,_param->dip_i_path);
-    //write_array(pop_vec,_param->nt,_param->pop_path);
-   
-    delete acc_vec;
-    //delete dip_vec;
-    //delete pop_vec;
+    _diag->write_diagnostics();    
     debug3("[TDSESolver->propagate] End propagate");
 }
 

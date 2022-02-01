@@ -44,6 +44,9 @@ int main(){
     param.phiBi = 0.0;
     param.phiBk = 0.0;
 
+    param.n_probes = 2;
+    param.probe_def = "acc_i,results/acc_i_test_diag.dat;"
+                  "dip_i,-100,100,0,0,results/dip_i_test_diag.dat";
     char *acc_i_path = "results/acc_i.dat";
     param.set_acc_i_path(acc_i_path);
     char *acc_k_path = "results/acc_k.dat";

@@ -2,6 +2,7 @@
 #define PROBE_FACTORY_H
 
 #include "probe.h"
+#include "probe.X.h"
 #include "probe.XZ.h"
 #include "probe.RZ.h"
 

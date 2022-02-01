@@ -7,7 +7,7 @@ ifeq ($(detected_OS), Darwin)
 	CC = g++-11
 endif
 
-CFLAGS = -lm -O3 -fopenmp -ffast-math -g
+CFLAGS = -lm -O3 -fopenmp -ffast-math -g -Wall
 
 SRC = ./src/
 #SRC = ./src/fields.cpp ./src/hamiltonian.cpp ./src/parameters.cpp ./src/tdsesolver.cpp ./src/utils.cpp ./src/wavefunction.cpp
