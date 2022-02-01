@@ -56,23 +56,13 @@
             double pop_imax;
             double pop_kmin;
             double pop_kmax;
-            int acc_i;
-            int acc_k;
-	        std::string acc_i_path;
-            std::string acc_k_path; 
-	        std::string dip_i_path;
-            std::string dip_k_path; 
-            std::string pop_path;
             int n_probes;
             std::string probe_def;
-        Parameters();
-       	void check_param();	
-	void print();
-	void set_acc_i_path(char *val);
-    void set_acc_k_path(char *val);
-	void set_dip_i_path(char* val);
-    void set_dip_k_path(char* val);
-	void set_pop_path(char* val);
+            Parameters();
+
+            void check_param();	
+            void print();
+            void set_probe_def(char *val);
     };
 
 #endif

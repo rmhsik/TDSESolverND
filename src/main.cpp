@@ -47,12 +47,7 @@ int main(){
     param.n_probes = 2;
     param.probe_def = "acc_i,results/acc_i_test_diag.dat;"
                   "dip_i,-100,100,0,0,results/dip_i_test_diag.dat";
-    char *acc_i_path = "results/acc_i.dat";
-    param.set_acc_i_path(acc_i_path);
-    char *acc_k_path = "results/acc_k.dat";
-    param.set_acc_k_path(acc_k_path);
-    char *dip_path = "results/dip8.dat";
-    param.set_dip_i_path(dip_path); 
+
     //param.acc_path = "results/acc7.dat";
     //param.dip_path= "results/dip7.dat"; 
     param.check_param();

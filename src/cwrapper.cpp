@@ -7,6 +7,7 @@ extern "C"{
     void TDSESolver_propagate(TDSESolver *tdse){tdse->propagate();}
     Parameters *Parameters_new(){ return new Parameters;}
     void Parameters_print(Parameters *p){p->print(); }
+    void Parameters_check_param(Parameters *p){p->check_param();}
     void Parameters_n_threads(Parameters *p, int val){p->n_threads = val;}
     void Parameters_init_wf(Parameters *p, int val){p->init_wf = val;}
     void Parameters_geometry(Parameters *p, int val){p->geometry = val;}
@@ -38,16 +39,6 @@ extern "C"{
     void Parameters_phiEk(Parameters *p, double val){p->phiEk = val;}
     void Parameters_phiBi(Parameters *p, double val){p->phiBi = val;}
     void Parameters_phiBk(Parameters *p, double val){p->phiEk = val;}
-    void Parameters_population(Parameters *p, int val){p->population = val;}
-    void Parameters_pop_imin(Parameters *p, double val){p->pop_imin = val;}
-    void Parameters_pop_imax(Parameters *p, double val){p->pop_imax = val;}
-    void Parameters_pop_kmin(Parameters *p, double val){p->pop_kmin = val;}
-    void Parameters_pop_kmax(Parameters *p, double val){p->pop_kmax = val;}
-    void Parameters_acc_i(Parameters *p, int val){p->acc_i = val;}
-    void Parameters_acc_k(Parameters *p, int val){p->acc_k = val;}
-    void Parameters_acc_i_path(Parameters *p, char *val){p->set_acc_i_path(val);}
-    void Parameters_acc_k_path(Parameters *p, char *val){p->set_acc_k_path(val);}
-    void Parameters_dip_i_path(Parameters *p, char *val){p->set_dip_i_path(val);}
-    void Parameters_dip_k_path(Parameters *p, char *val){p->set_dip_k_path(val);}
-    void Parameters_pop_path(Parameters *p, char *val){p->set_pop_path(val);}
+    void Parameters_n_probes(Parameters *p, int val){p->n_probes = val;}
+    void Parameters_probe_def(Parameters *p, char *val){p->set_probe_def(val);}
 }

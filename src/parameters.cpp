@@ -47,21 +47,10 @@ Parameters::Parameters(){
         
         // Diagnostics selection and parameters
         population  = 0;
-        pop_imin    = imin;
-        pop_imax    = imax;
-        pop_kmin    = kmin;
-        pop_kmax    = kmax;
-        acc_i       = 0;
-        acc_k       = 1;
         n_probes    = 2;
 
 	    //File paths
-	    acc_i_path  = "results/acc_i.dat";
-        acc_k_path  = "results/acc_k.dat";    
-	    dip_i_path  = "results/dip_i.dat";
-        dip_k_path  = "results/dip_k.dat";
-        pop_path    = "results/pop.dat"; 
-        probe_def   = "acc_i,results/acc_i_test_diag.dat-"
+        probe_def   = "acc_i,results/acc_i_test_diag.dat;"
                       "acc_k,results/acc_k_test_diag.dat";
         check_param();
 }
@@ -78,25 +67,10 @@ void Parameters::check_param(){
     }
 }
 
-void Parameters::set_acc_i_path(char *val){
-    acc_i_path = std::string(val);
+void Parameters::set_probe_def(char *val){
+    probe_def = std::string(val);
 }
 
-void Parameters::set_acc_k_path(char *val){
-    acc_k_path = std::string(val);
-}
-
-void Parameters::set_dip_i_path(char *val){
-    dip_i_path = std::string(val);
-}
-
-void Parameters::set_dip_k_path(char *val){
-    dip_k_path = std::string(val);
-}
-
-void Parameters::set_pop_path(char *val){
-    pop_path = std::string(val);
-}
 
 void Parameters::print(){
     std::cout<<"Parameters:\n";
@@ -137,10 +111,7 @@ void Parameters::print(){
     std::cout<<"\tphiEk: "<<phiEk<<std::endl;
     std::cout<<"\tphiBi: "<<phiBi<<std::endl;
     std::cout<<"\tphiBk: "<<phiBk<<std::endl;
-    std::cout<<"\tacc_i_path: "<<acc_i_path<<std::endl;
-    std::cout<<"\tacc_k_path: "<<acc_k_path<<std::endl;
-    std::cout<<"\tdip_i_path: "<<dip_i_path<<std::endl;
-    std::cout<<"\tdip_k_path: "<<dip_k_path<<std::endl;
-    std::cout<<"\tpop_path: "<<pop_path<<std::endl;
+    std::cout<<"\tn_probes: "<<n_probes<<std::endl;
+    std::cout<<"\tprobe_def: "<<probe_def<<std::endl;
     std::cout<<std::endl;
 }

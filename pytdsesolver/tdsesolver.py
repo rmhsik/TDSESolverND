@@ -30,6 +30,8 @@ class Parameters:
         lib.Parameters_new.restype  = ct.c_void_p
         lib.Parameters_print.argtypes = [ct.c_void_p]
         lib.Parameters_print.restype = ct.c_void_p
+        lib.Parameters_check_param.argtypes = [ct.c_void_p]
+        lib.Parameters_check_param.restype = ct.c_void_p
         lib.Parameters_n_threads.argtypes = [ct.c_void_p, ct.c_int]
         lib.Parameters_n_threads.restype = ct.c_void_p
         lib.Parameters_init_wf.argtypes = [ct.c_void_p, ct.c_int]
@@ -92,32 +94,18 @@ class Parameters:
         lib.Parameters_phiBi.restype = ct.c_void_p
         lib.Parameters_phiBk.argtypes = [ct.c_void_p, ct.c_double]
         lib.Parameters_phiBk.restype = ct.c_void_p
-        lib.Parameters_population.argtypes = [ct.c_void_p, ct.c_int]
-        lib.Parameters_population.restype = ct.c_void_p
-        lib.Parameters_pop_imin.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_pop_imin.restype = ct.c_void_p
-        lib.Parameters_pop_imax.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_pop_imax.restype = ct.c_void_p
-        lib.Parameters_pop_kmin.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_pop_kmin.restype = ct.c_void_p
-        lib.Parameters_pop_kmax.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_pop_kmax.restype = ct.c_void_p
-        lib.Parameters_acc_i.argtypes = [ct.c_void_p, ct.c_int]
-        lib.Parameters_acc_i.restype = ct.c_void_p
-        lib.Parameters_acc_k.argtypes = [ct.c_void_p, ct.c_int]
-        lib.Parameters_acc_k.restype = ct.c_void_p
-        lib.Parameters_acc_i_path.argtypes = [ct.c_void_p, ct.c_char_p]
-        lib.Parameters_acc_i_path.restype = ct.c_void_p
-        lib.Parameters_acc_k_path.argtypes = [ct.c_void_p, ct.c_char_p]
-        lib.Parameters_acc_k_path.restype = ct.c_void_p
-        lib.Parameters_dip_path.argtypes = [ct.c_void_p, ct.c_char_p]
-        lib.Parameters_dip_path.restype = ct.c_void_p
-        lib.Parameters_pop_path.argtypes = [ct.c_void_p, ct.c_char_p]
-        lib.Parameters_pop_path_restype = ct.c_void_p
+        lib.Parameters_n_probes.argtypes = [ct.c_void_p, ct.c_int]
+        lib.Parameters_n_probes.restype = ct.c_void_p
+        lib.Parameters_probe_def.argtypes = [ct.c_void_p, ct.c_char_p]
+        lib.Parameters_probe_def.restype = ct.c_void_p
         self._obj = lib.Parameters_new()
 
     def print(self):
         lib.Parameters_print(self._obj)
+
+    def check_param(self):
+        lib.Parameters_check_param(self._obj)
+
     def set(self,param):
         self.n_threads(param["n_threads"])
         self.init_wf(param["init_wf"])
@@ -150,17 +138,10 @@ class Parameters:
         self.phiEk(param["phiEk"])
         self.phiBi(param["phiBi"])
         self.phiBk(param["phiBk"])
-        self.population(param["population"])
-        self.pop_imin(param["pop_imin"])
-        self.pop_imax(param["pop_imax"])
-        self.pop_kmin(param["pop_kmin"])
-        self.pop_kmax(param["pop_kmax"])
-        self.acc_i(param["acc_i"])
-        self.acc_k(param["acc_k"])
-        self.acc_i_path(param["acc_i_path"])
-        self.acc_k_path(param["acc_k_path"])
-        self.dip_path(param["dip_path"])
-        self.pop_path(param["pop_path"])
+        self.n_probes(param["n_probes"])
+        self.probe_def(param["probe_def"])
+        
+        self.check_param()
     
     def n_threads(self, val):
         lib.Parameters_n_threads(self._obj, val)
@@ -224,26 +205,8 @@ class Parameters:
         lib.Parameters_phiBi(self._obj, val)
     def phiBk(self, val):
         lib.Parameters_phiBk(self._obj, val)
-    def population(self, val):
-        lib.Parameters_population(self._obj, val)
-    def pop_imin(self, val):
-        lib.Parameters_pop_imin(self._obj, val)
-    def pop_imax(self, val):
-        lib.Parameters_pop_imax(self._obj, val)
-    def pop_kmin(self, val):
-        lib.Parameters_pop_kmin(self._obj, val)
-    def pop_kmax(self, val):
-        lib.Parameters_pop_kmax(self._obj, val)
-    def acc_i(self, val):
-        lib.Parameters_acc_i(self._obj, val)
-    def acc_k(self, val):
-        lib.Parameters_acc_k(self._obj, val)
-    def acc_i_path(self, val):
-        lib.Parameters_acc_i_path(self._obj, val.encode("utf-8"))
-    def acc_k_path(self, val):
-        lib.Parameters_acc_k_path(self._obj, val.encode("utf-8"))
-    def dip_path(self, val):
-        lib.Parameters_dip_path(self._obj, val.encode("utf-8"))
-    def pop_path(self, val):
-        lib.Parameters_pop_path(self._obj, val.encode("utf-8"))
+    def n_probes(self, val):
+        lib.Parameters_n_probes(self._obj, val)
+    def probe_def(self, val):
+        lib.Parameters_probe_def(self._obj, val.encode("utf-8"))
 
