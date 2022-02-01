@@ -29,26 +29,30 @@ void WF::apply_mask_X(cdouble *imask, cdouble *kmask){
     }
 }
 
-cdouble WF::_acc_i_X(){return 0.0;}
-
-cdouble WF::_acc_k_X(){
+cdouble WF::_acc_i_X(){
     cdouble sum = cdouble(0.0,0.0);
     for(int i=0; i<_ni; i++){
-        sum+= conj(_wf[i*_nk + 0])*(-1.0*_dV_k[i*_nk + 0])*_wf[i*_nk + 0]*_di;
+        sum+= conj(_wf[i*_nk + 0])*(-1.0*_dV_i[i*_nk + 0])*_wf[i*_nk + 0]*_di;
     }
     return sum;
 }
 
-void WF::_acc_i_buf_X(){}
+cdouble WF::_acc_k_X(){
+   return 0.0; 
+}
 
-void WF::_acc_k_buf_X(){
+void WF::_acc_i_buf_X(){
     for(int n=0; n<_param->nt_diag;n++){
         cdouble sum = 0.0;
         for(int i=0; i<_ni; i++){
-            sum += conj(_wf_buf[n*_ni*_nk + i*_nk + 0])*(-1.0*_dV_k[i*_nk + 0])*_wf_buf[n*_ni*_nk + i*_nk +0]*_di;
+            sum += conj(_wf_buf[n*_ni*_nk + i*_nk + 0])*(-1.0*_dV_i[i*_nk + 0])*_wf_buf[n*_ni*_nk + i*_nk +0]*_di;
         }
         _diag_buf[n] = sum;
     }
+}
+
+void WF::_acc_k_buf_X(){
+   
 }
 
 cdouble WF::_pop_X(double imin, double imax, double kmin, double kmax){

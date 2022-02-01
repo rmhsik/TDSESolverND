@@ -9,14 +9,14 @@ int main(){
     Parameters param;
     param.n_threads = 6;
 
-    param.geometry = RZ;
-    param.init_wf = EXPO;
-    param.ni = 1000;
-    param.nk = 2000;
-    param.imin =  0;
+    param.geometry = X;
+    param.init_wf = GAUS;
+    param.ni = 5000;
+    param.nk = 500;
+    param.imin =  -100;
     param.imax =  100;
-    param.kmin = -100;
-    param.kmax =  100;
+    param.kmin = -150;
+    param.kmax =  150;
 				
     param.w0 = 0.057;
     param.period = 2.0*M_PI/param.w0;
@@ -34,12 +34,12 @@ int main(){
     param.w0Bi = 0.057;
     param.w0Bk = 0.057;
 								
-    param.E0i = 0.000;
+    param.E0i = 0.067;
     param.E0k = 0.067;
-    param.B0i = 0.0;
-    param.B0k = 0.12;
+    param.B0i = 0.000;
+    param.B0k = 0.000;
 													
-    param.phiEi = 0.5*M_PI;
+    param.phiEi = 0.0*M_PI;
     param.phiEk = 0.0;
     param.phiBi = 0.0;
     param.phiBk = 0.0;
@@ -51,9 +51,9 @@ int main(){
     char *dip_path = "results/dip8.dat";
     param.set_dip_i_path(dip_path); 
     //param.acc_path = "results/acc7.dat";
-    //param.dip_path = "results/dip7.dat"; 
-
-    //param.print();
+    //param.dip_path= "results/dip7.dat"; 
+    param.check_param();
+    param.print();
     TDSESolver tdse(&param);
     tdse.ipropagate();
     tdse.propagate();

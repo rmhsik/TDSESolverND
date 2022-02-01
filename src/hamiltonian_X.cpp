@@ -15,7 +15,7 @@ void Hamiltonian::_allocate_X(){
     _res_i = new cdouble[_ni];
 
     _potential = new cdouble[_ni*_nk];
-    _dpotential_k = new cdouble[_ni*_nk];
+    _dpotential_i = new cdouble[_ni*_nk];
 }
 
 void Hamiltonian::potential_X(){
@@ -25,10 +25,10 @@ void Hamiltonian::potential_X(){
 }
 
 void Hamiltonian::dpotential_X(){
-    _dpotential_k[0*_nk + 0] = (_potential[1*_nk + 0] - _potential[0*_nk + 0])/_di;
-    _dpotential_k[(_ni-1)*_nk + 0] = (_potential[(_ni-1)*_nk + 0]-_potential[(_ni-2)*_nk + 0])/_di;
+    _dpotential_i[0*_nk + 0] = (_potential[1*_nk + 0] - _potential[0*_nk + 0])/_di;
+    _dpotential_i[(_ni-1)*_nk + 0] = (_potential[(_ni-1)*_nk + 0]-_potential[(_ni-2)*_nk + 0])/_di;
     for(int i=1; i<_ni-1;i++){
-        _dpotential_k[i*_nk + 0] = (_potential[(i+1)*_nk + 0]-_potential[(i-1)*_nk + 0])/(2.0*_di);
+        _dpotential_i[i*_nk + 0] = (_potential[(i+1)*_nk + 0]-_potential[(i-1)*_nk + 0])/(2.0*_di);
     }
 }
 

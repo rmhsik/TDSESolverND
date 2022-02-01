@@ -71,6 +71,7 @@ void Parameters::check_param(){
         nk = 1;
         kmin = 0.0;
         kmax = 0.0;
+        //nt_diag = 1;
     }
     else if(geometry == RZ){
         imin = 0.0;

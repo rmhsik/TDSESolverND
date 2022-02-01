@@ -22,7 +22,7 @@ TDSESolver::TDSESolver(Parameters *param){
     setup_ham();
     setup_wf();
     setup_masks();
-    setup_diagnostics();
+    //setup_diagnostics();
     }
 
 void TDSESolver::setup_time(){
@@ -147,5 +147,5 @@ TDSESolver::~TDSESolver(){
     delete Bfield_k;
     delete _wf;
     delete _ham;
-    delete _diag;
+    //delete _diag;
 }
