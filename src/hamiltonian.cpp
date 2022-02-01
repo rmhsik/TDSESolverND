@@ -57,6 +57,14 @@ void Hamiltonian::set_dpotential(){
     }
 }
 
+void Hamiltonian::set_fields(Field* field1, Field* field2, Field* field3, Field* field4){
+    Afield_i = field1;
+    Afield_k = field2;
+    Bfield_i = field3;
+    Bfield_k = field4;
+
+}
+
 cdouble* Hamiltonian::get_potential(){
     return _potential;
 }

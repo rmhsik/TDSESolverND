@@ -6,6 +6,7 @@
 #include <complex>
 #include <string>
 #include "parameters.h"
+#include "fields.h"
 
 class Hamiltonian{
     private:
@@ -13,6 +14,12 @@ class Hamiltonian{
         cdouble *_potential;
         cdouble *_dpotential_i;
         cdouble *_dpotential_k;
+
+        Field *Afield_i;
+        Field *Afield_k;
+        Field *Bfield_i;
+        Field *Bfield_k;
+
         double *_i, *_k;
         double _di, _dk;
         int _ni, _nk;
@@ -43,6 +50,7 @@ class Hamiltonian{
         void set_geometry(double *i, double *k, const double di, const double dk);
         void set_potential();
         void set_dpotential();
+        void set_fields(Field* field1, Field* field2, Field* field3, Field* field4);
         cdouble *get_potential();
         cdouble *get_dpotential_i();
         cdouble *get_dpotential_k();

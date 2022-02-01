@@ -95,7 +95,6 @@ void TDSESolver::setup_ham(){
 }
 
 void TDSESolver::setup_masks(){
-    _accmask = new cdouble[_param->nt];
     _imask = new cdouble[_param->ni];
     _kmask = new cdouble[_param->nk];
     std::string path;    
@@ -138,7 +137,6 @@ TDSESolver::~TDSESolver(){
     delete _t;
     delete _i;
     delete _k;
-    delete _accmask;
     delete _imask;
     delete _kmask;
     delete Afield_i;

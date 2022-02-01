@@ -24,7 +24,6 @@
             Hamiltonian *_ham;
             Diagnostics *_diag;
 
-            cdouble *_accmask;
             cdouble *_imask;
             cdouble *_kmask;
 
