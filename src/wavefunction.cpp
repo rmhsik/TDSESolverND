@@ -207,14 +207,6 @@ cdouble* WF::get_diag_buf(){
     return _diag_buf;
 }
 
-void WF::set_dpotential_i(cdouble* dV){
-    _dV_i = dV;
-}
-
-void WF::set_dpotential_k(cdouble* dV){
-    _dV_k = dV;
-}
-
 cdouble WF::operator()(int i, int j){
     return _wf[i*_nk + j];
 }

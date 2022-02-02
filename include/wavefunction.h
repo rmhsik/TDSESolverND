@@ -97,8 +97,6 @@ class WF{
         cdouble* get_buf();
         cdouble* get_diag_buf();
         cdouble norm();
-        void set_dpotential_i(cdouble *dV);
-        void set_dpotential_k(cdouble *dV);
         void apply_mask(cdouble* imask, cdouble *kmask);
         void apply_mask_X(cdouble* imask, cdouble *kmask);
         void apply_mask_RZ(cdouble* imask, cdouble *kmask);

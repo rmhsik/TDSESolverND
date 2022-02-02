@@ -8,6 +8,9 @@ Parameters::Parameters(){
         //Inital WF
         init_wf	    = GAUS;
 
+        // Use potential
+        use_potential = 0;
+
         //Geometry
         geometry    = XZ;            
         ni          = 500;
@@ -77,6 +80,7 @@ void Parameters::print(){
     std::cout<<"------------------------\n";
     std::cout<<"\tn_threads: "<<n_threads<<std::endl;
     std::cout<<"\tinit_wf: "<<init_wf<<std::endl;
+    std::cout<<"\tuse_potential: "<<use_potential<<std::endl;
     std::cout<<"\tgeometry: "<<geometry<<std::endl;
     std::cout<<"\tni: "<<ni<<std::endl;
     std::cout<<"\timin: "<<imin<<std::endl;
@@ -102,11 +106,6 @@ void Parameters::print(){
     std::cout<<"\tE0k: "<<E0k<<std::endl;
     std::cout<<"\tB0i: "<<B0i<<std::endl;
     std::cout<<"\tB0k: "<<B0k<<std::endl;
-    std::cout<<"\tpopulation: "<<population<<std::endl;
-    std::cout<<"\tpop_imin: "<<pop_imin<<std::endl;
-    std::cout<<"\tpop_imax: "<<pop_imax<<std::endl;
-    std::cout<<"\tpop_kmin: "<<pop_kmin<<std::endl;
-    std::cout<<"\tpop_kmax: "<<pop_kmax<<std::endl;
     std::cout<<"\tphiEi: "<<phiEi<<std::endl;
     std::cout<<"\tphiEk: "<<phiEk<<std::endl;
     std::cout<<"\tphiBi: "<<phiBi<<std::endl;

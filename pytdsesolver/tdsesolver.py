@@ -36,6 +36,8 @@ class Parameters:
         lib.Parameters_n_threads.restype = ct.c_void_p
         lib.Parameters_init_wf.argtypes = [ct.c_void_p, ct.c_int]
         lib.Parameters_init_wf.restype = ct.c_void_p
+        lib.Parameters_use_potential.argtypes = [ct.c_void_p, ct.c_int]
+        lib.Parameters_use_potential.restype = ct.c_void_p
         lib.Parameters_geometry.argtypes = [ct.c_void_p, ct.c_int]
         lib.Parameters_geometry.restype = ct.c_void_p
         lib.Parameters_ni.argtypes = [ct.c_void_p, ct.c_int]
@@ -109,6 +111,7 @@ class Parameters:
     def set(self,param):
         self.n_threads(param["n_threads"])
         self.init_wf(param["init_wf"])
+        self.use_potential(param["use_potential"])
         self.geometry(param["geometry"])
         self.ni(param["ni"])
         self.imin(param["imin"])
@@ -147,6 +150,8 @@ class Parameters:
         lib.Parameters_n_threads(self._obj, val)
     def init_wf(self, val):
         lib.Parameters_init_wf(self._obj, val)
+    def use_potential(self, val):
+        lib.Parameters_use_potential(self._obj, val)
     def geometry(self, val):
         lib.Parameters_geometry(self._obj, val)
     def ni(self, val):

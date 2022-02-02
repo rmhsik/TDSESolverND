@@ -13,49 +13,27 @@ Hamiltonian::Hamiltonian(Parameters *param){
     switch(_param->geometry){
         case X:
             _allocate_X();
+            if(_param->use_potential == 0)
+                _potential = &potential_X;
             break;
         case XZ:
             _allocate_XZ();
+            if(_param->use_potential == 0)
+                _potential = &potential_XZ;
             break;
 
         case RZ:
             _allocate_RZ();
+            if(_param->use_potential == 0)
+                _potential = &potential_RZ;
             break;
     }    
+    if(_param->sue_potential != 0 )
+            _potential = &potential;
 }
 
 void Hamiltonian::set_geometry(double *i, double *k, const double di, const double dk){
     _i = i; _k = k; _di = di; _dk = dk;
-}
-
-void Hamiltonian::set_potential(){
-
-    switch(_param->geometry){
-        case X:
-            potential_X();
-            break;
-        case XZ:
-            potential_XZ();
-            break;
-        case RZ:
-            potential_RZ();
-            break;
-    }
-        
-}
-
-void Hamiltonian::set_dpotential(){
-    switch(_param->geometry){
-        case X:
-            dpotential_X();
-            break;
-        case XZ:
-            dpotential_XZ();
-            break;
-        case RZ:
-            dpotential_RZ();
-            break;
-    }
 }
 
 void Hamiltonian::set_fields(Field* field1, Field* field2, Field* field3, Field* field4){
@@ -66,20 +44,9 @@ void Hamiltonian::set_fields(Field* field1, Field* field2, Field* field3, Field*
 
 }
 
-cdouble* Hamiltonian::get_potential(){
-    return _potential;
-}
-
-cdouble* Hamiltonian::get_dpotential_i(){
-    return _dpotential_i;
-}
-
-cdouble* Hamiltonian::get_dpotential_k(){
-    return _dpotential_k;
-}
-
 cdouble Hamiltonian::_potential_fn(double i, double k, int t){
-    return potential(i,k,t, this);
+    return (*_potential)(i,k,t,this);
+    //return potential(i,k,t, this);
 }
 
 cdouble Hamiltonian::dpotential_i(double i, double k){
@@ -117,9 +84,6 @@ void Hamiltonian::tdma(cdouble* aa, cdouble* bb, cdouble* cc, cdouble* dd, cdoub
 }
 
 Hamiltonian::~Hamiltonian(){
-    delete _potential;
-    delete _dpotential_i;
-    delete _dpotential_k;
     delete _Mk_du;
     delete _Mk_d;
     delete _Mk_dl;

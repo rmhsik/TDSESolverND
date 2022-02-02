@@ -22,6 +22,7 @@
 	    //Inital WF
 	    int n_threads;
 	    int init_wf;	 
+        int use_potential;
             int geometry;           
             int ni;  
             double imin;
@@ -51,11 +52,6 @@
             double phiEk;    
             double phiBi;    
             double phiBk;
-            int population;
-            double pop_imin;
-            double pop_imax;
-            double pop_kmin;
-            double pop_kmax;
             int n_probes;
             std::string probe_def;
             Parameters();

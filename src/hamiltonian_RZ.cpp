@@ -24,39 +24,8 @@ void Hamiltonian::_allocate_RZ(){
     _lhs_i = new cdouble[_param->n_threads*_ni];
     _res_i = new cdouble[_param->n_threads*_ni];
 
-    _potential = new cdouble[_ni*_nk];
-    _dpotential_k = new cdouble[_ni*_nk];
-    _dpotential_i = new cdouble[_ni*_nk];
-
 }
 
-void Hamiltonian::potential_RZ(){
-    for(int i=0;i<_ni;i++){
-        for(int k=0;k<_nk;k++){
-            _potential[i*_nk + k] = -1.0/sqrt(_i[i]*_i[i] + _k[k]*_k[k]);
-        }
-    }
-}
-
-void Hamiltonian::dpotential_RZ(){
-    for(int i=0; i<_ni;i++){
-        _dpotential_k[i*_nk + 0] = (_potential[i*_nk + 1] - _potential[i*_nk + 0])/_dk;
-        _dpotential_k[i*_nk + _nk-1] = (_potential[i*_nk + _nk-1]-_potential[i*_nk + _nk-2])/_dk;
-    }
-    for(int i=0; i<_ni;i++){
-        for(int k=1;k<_nk-1;k++)
-            _dpotential_k[i*_nk + k] = (_potential[i*_nk + k+1]-_potential[i*_nk + k-1])/(2.0*_dk);
-    }
-
-    for(int k=0; k<_nk;k++){
-        _dpotential_i[0*_nk + k] = (_potential[1*_nk + k] - _potential[0*_nk + k])/_di;
-        _dpotential_i[(_ni-1)*_nk + k] = (_potential[(_ni-1)*_nk + k]-_potential[(_ni-2)*_nk + k])/_di;
-    }
-    for(int i=1; i<_ni-1;i++){
-        for(int k=0;k<_nk;k++)
-            _dpotential_i[i*_nk + k] = (_potential[(i+1)*_nk + k]-_potential[(i-1)*_nk + k])/(2.0*_di);
-    }
-}
 
 void Hamiltonian::step_i_RZ(cdouble *psi_row, const int k, const int ti, const int imag, const int id_thread){
     cdouble Hr_du;

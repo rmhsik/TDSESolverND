@@ -10,6 +10,7 @@ extern "C"{
     void Parameters_check_param(Parameters *p){p->check_param();}
     void Parameters_n_threads(Parameters *p, int val){p->n_threads = val;}
     void Parameters_init_wf(Parameters *p, int val){p->init_wf = val;}
+    void Parameters_use_potential(Parameters *p, int val){p->use_potential = val;}
     void Parameters_geometry(Parameters *p, int val){p->geometry = val;}
     void Parameters_ni(Parameters *p, int val){p->ni = val;}
     void Parameters_imin(Parameters *p, double val){p->imin = val;}

@@ -11,9 +11,6 @@
 class Hamiltonian{
     private:
         Parameters *_param;
-        cdouble *_potential;
-        cdouble *_dpotential_i;
-        cdouble *_dpotential_k;
 
         Field *Afield_i;
         Field *Afield_k;
@@ -35,29 +32,21 @@ class Hamiltonian{
         void _allocate_XZ();
         void _allocate_RZ();
 
-        void potential_X();
-        void dpotential_X();
-        void potential_RZ();
-        void dpotential_RZ();
-        void potential_XZ();
-        void dpotential_XZ();
-
         void tridot(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* vec, cdouble* out, const int n);
         void tdma(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* dd, cdouble* out,  const int n);
 
+        cdouble (*_potential)(double i, double k, int ti, Hamiltonian *ham);
         cdouble _potential_fn(double i, double k, int ti);
 
     public:
         friend cdouble potential(double i, double k, int ti, Hamiltonian *ham);
+        friend cdouble potential_X(double i, double k, int ti, Hamiltonian *ham);
+        friend cdouble potential_XZ(double i, double k, int ti, Hamiltonian *ham);
+        friend cdouble potential_RZ(double i, double k, int ti, Hamiltonian *ham);
         Hamiltonian();
         Hamiltonian(Parameters *param);
         void set_geometry(double *i, double *k, const double di, const double dk);
-        void set_potential();
-        void set_dpotential();
         void set_fields(Field* field1, Field* field2, Field* field3, Field* field4);
-        cdouble *get_potential();
-        cdouble *get_dpotential_i();
-        cdouble *get_dpotential_k();
         cdouble dpotential_i(double i, double k);
         cdouble dpotential_k(double i, double k); 
 

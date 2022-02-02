@@ -70,8 +70,6 @@ void TDSESolver::setup_fields(){
 void TDSESolver::setup_wf(){
     _wf = new WF(_param);
     _wf->set_geometry(_i,_k,_di,_dk);
-    _wf->set_dpotential_i(_ham->get_dpotential_i());
-    _wf->set_dpotential_k(_ham->get_dpotential_k()); 
     switch(_param->init_wf){
     	case GAUS:
             _wf->gaussian(0.0,0.0,1.0);
@@ -90,8 +88,6 @@ void TDSESolver::setup_wf(){
 void TDSESolver::setup_ham(){
     _ham = new Hamiltonian(_param);
     _ham->set_geometry(_i,_k,_di, _dk);
-    _ham->set_potential();
-    _ham->set_dpotential();
     _ham->set_fields(Afield_i, Afield_k, Bfield_i, Bfield_k);
 }
 
