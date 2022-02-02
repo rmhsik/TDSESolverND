@@ -71,7 +71,7 @@ void Hamiltonian::step_i_XZ(cdouble *psi_row, const int k, const int ti, const i
     Hx_du = -b - I*1.0/(2.0*C*_di)*afield_i;
     Hx_dl = -b + I*1.0/(2.0*C*_di)*afield_i;
     for(int i=0;i<_ni;i++){
-        Hx_d  =  a + 0.5*_potential[i*_nk + k] + 0.5*0.125*bfield_k*bfield_k*_i[i]*_i[i];
+        Hx_d  =  a + 0.5*_potential_fn(_i[i],_k[k],0) + 0.5*0.125*bfield_k*bfield_k*_i[i]*_i[i];
 
         _Mi_du[id_thread*_ni + i] = I*Hx_du*dt/2.0;
         _Mi_d[id_thread*_ni + i]  = 1.0 + I*Hx_d*dt/2.0;
@@ -107,7 +107,7 @@ void Hamiltonian::step_k_XZ(cdouble *psi_col, const int i, const int ti, const i
     Hz_du = -b - I*1.0/(2.0*C*_dk)*afield_k;
     Hz_dl = -b + I*1.0/(2.0*C*_dk)*afield_k;
     for(int k=0;k<_nk;k++){
-        Hz_d  =  a + 0.5*_potential[i*_nk + k]+ 0.5*0.125*bfield_k*bfield_k*_i[i]*_i[i];
+        Hz_d  =  a + 0.5*_potential_fn(_i[i],_k[k],0) + 0.5*0.125*bfield_k*bfield_k*_i[i]*_i[i];
 
         _Mk_du[id_thread*_nk + k] = I*Hz_du*dt/2.0;
         _Mk_d[id_thread*_nk + k]  = 1.0 + I*Hz_d*dt/2.0;
@@ -159,7 +159,7 @@ cdouble Hamiltonian::ener_XZ(cdouble *psi){
     for(int i=0;i<_ni;i++){
         for(int k=0;k<_nk;k++){
             Hz_du[k] = -b;
-            Hz_d[k]  =  a + 0.5*_potential[i*_nk + k];
+            Hz_d[k]  =  a + 0.5*_potential_fn(_i[i],_k[k],0);
             Hz_dl[k] = -b;
             col[k] = psi[i*_nk + k];
         }
@@ -177,7 +177,7 @@ cdouble Hamiltonian::ener_XZ(cdouble *psi){
     for(int k=0;k<_nk;k++){
         for(int i=0;i<_ni;i++){
             Hx_du[i] = -b;
-            Hx_d[i]  =  a + 0.5*_potential[i*_nk + k];
+            Hx_d[i]  =  a + 0.5*_potential_fn(_i[i],_k[k],0);
             Hx_dl[i] = -b;
             row[i] = psi[i*_nk + k];
         }
