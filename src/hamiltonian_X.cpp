@@ -32,11 +32,13 @@ void Hamiltonian::dpotential_X(){
     }
 }
 
-void Hamiltonian::step_i_X(cdouble *psi, double afield_i, double bfield_i, const int j, const int imag,const int id_thread){
+void Hamiltonian::step_i_X(cdouble *psi, const int j, const int ti, const int imag,const int id_thread){
     cdouble H_du;
     cdouble H_d;
     cdouble H_dl;
     cdouble dt = imag==0 ? cdouble(1.0,0.0)*_param->dt: cdouble(0.0,-1.0)*_param->dt_ITP;
+
+    cdouble afield_i = (*Afield_i)[ti];
 
     cdouble a = 1.0/(_di*_di);
     cdouble b = 1.0/(2.0*_di*_di); 

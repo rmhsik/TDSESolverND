@@ -59,7 +59,7 @@ void TDSESolver::_ipropagate_X(){
         cdouble *psi_row;
         psi_row = _wf->row(0);
 
-        (_ham->*(_ham->step_i))(psi_row,0.0,0.0,0,1,0);
+        (_ham->*(_ham->step_i))(psi_row,0,0,1,0);
         _wf->set_row(psi_row,0);
         norm = _wf->norm();
         (*_wf)/=norm;
@@ -87,7 +87,7 @@ void TDSESolver::_propagate_X(){
     _wf->set_to_buf(0);
     for(int i=0; i<_param->nt; i++){
         psi_row = _wf->row(0);
-        (_ham->*(_ham->step_i))(psi_row,(*Afield_i)[i],0.0,0,0,0);
+        (_ham->*(_ham->step_i))(psi_row,0,i,0,0);
         _wf->set_row(psi_row,0);
         _wf->apply_mask(_imask,_kmask);
         _wf->set_to_buf(i%_param->nt_diag);

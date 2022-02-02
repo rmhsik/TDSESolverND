@@ -92,6 +92,7 @@ void TDSESolver::setup_ham(){
     _ham->set_geometry(_i,_k,_di, _dk);
     _ham->set_potential();
     _ham->set_dpotential();
+    _ham->set_fields(Afield_i, Afield_k, Bfield_i, Bfield_k);
 }
 
 void TDSESolver::setup_masks(){

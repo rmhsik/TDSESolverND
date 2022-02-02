@@ -4,8 +4,6 @@
 #include <cmath>
 #include "hamiltonian.h"
 
-cdouble potential(double i, double k, double t);
-cdouble dpotentiali(double i, double k, double t);
-cdouble dpotentialk(double i, double k, double t);
+cdouble potential(double i, double k, int ti, Hamiltonian *ham);
 #endif
 

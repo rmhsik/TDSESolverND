@@ -1,5 +1,6 @@
 #include <iostream>
 #include "hamiltonian.h"
+#include "potential.h"
 
 Hamiltonian::Hamiltonian(){
 }
@@ -75,6 +76,18 @@ cdouble* Hamiltonian::get_dpotential_i(){
 
 cdouble* Hamiltonian::get_dpotential_k(){
     return _dpotential_k;
+}
+
+cdouble Hamiltonian::_potential_fn(double i, double k, int t){
+    return potential(i,k,t, this);
+}
+
+cdouble Hamiltonian::dpotential_i(double i, double k){
+    return (_potential_fn(i + _di,k,0) - _potential_fn(i - _di,k,0))/(2.0*_di);
+}
+
+cdouble Hamiltonian::dpotential_k(double i, double k){
+    return (_potential_fn(i,k + _dk,0) - _potential_fn(i,k - _dk,0))/(2.0*_dk);
 }
 
 void Hamiltonian::tridot(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* vec, cdouble* out, const int n){

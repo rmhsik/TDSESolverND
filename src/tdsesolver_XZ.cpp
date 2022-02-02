@@ -89,7 +89,7 @@ void TDSESolver::_ipropagate_XZ(){
             int id_thread = omp_get_thread_num();
             for(int k=0;k<nk;k++)
                 psi_col[id_thread*nk + k] = _wf->get()[i*nk+k];
-            (_ham->*(_ham->step_k))(&psi_col[id_thread*nk],0.0,0.0,i,1,id_thread);
+            (_ham->*(_ham->step_k))(&psi_col[id_thread*nk],i,0,1,id_thread);
             _wf->set_col(&psi_col[id_thread*nk],i);
         }
         
@@ -98,7 +98,7 @@ void TDSESolver::_ipropagate_XZ(){
             int id_thread = omp_get_thread_num();
             for(int i=0;i<ni;i++)
                 psi_row[id_thread*ni + i] = _wf->get()[i*nk+k];
-            (_ham->*(_ham->step_i))(&psi_row[id_thread*ni],0.0,0.0,k,1,id_thread);
+            (_ham->*(_ham->step_i))(&psi_row[id_thread*ni],k,0,1,id_thread);
             _wf->set_row(&psi_row[id_thread*ni],k);
         }
         
@@ -222,7 +222,7 @@ void TDSESolver::_propagate_XZ(){
             int id_thread = omp_get_thread_num();
             for(int k=0;k<nk;k++)
                 psi_col[id_thread*nk + k] = wf_ptr[j%_param->nt_diag*ni*nk+i*nk+k];
-            (_ham->*(_ham->step_k))(&psi_col[id_thread*nk],(*Afield_k)[j],(*Bfield_k)[j],i,0,id_thread);
+            (_ham->*(_ham->step_k))(&psi_col[id_thread*nk],i,j,0,id_thread);
             _wf->set_col_buf_mask(&psi_col[id_thread*nk],_kmask, i,(j+1)%_param->nt_diag);
         }
         
@@ -233,7 +233,7 @@ void TDSESolver::_propagate_XZ(){
             int id_thread = omp_get_thread_num();
             for(int i=0;i<ni;i++)
                 psi_row[id_thread*ni + i] = wf_ptr[(j+1)%_param->nt_diag*ni*nk+i*nk+k];
-            (_ham->*(_ham->step_i))(&psi_row[id_thread*ni],(*Afield_i)[j],(*Bfield_k)[j],k,0,id_thread);
+            (_ham->*(_ham->step_i))(&psi_row[id_thread*ni],k,j,0,id_thread);
             _wf->set_row_buf_mask(&psi_row[id_thread*ni],_imask,k,(j+1)%_param->nt_diag);
         }
 

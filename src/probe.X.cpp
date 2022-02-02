@@ -6,11 +6,13 @@ ProbeX::ProbeX(std::string def): Probe::Probe(def){}
 
 void ProbeX::_acc_i(const int idx){
     cdouble* wf_buf = _wf->get_buf();
-    cdouble* dV_i = _ham->get_dpotential_i();
+    //cdouble* dV_i = _ham->get_dpotential_i();
     for(int n=0; n<_param->nt_diag;n++){
         cdouble sum = 0.0;
+        cdouble dV_i=0.0;
         for(int i=0; i<_ni; i++){
-            sum += conj(wf_buf[n*_ni*_nk + i*_nk + 0])*(-1.0*dV_i[i*_nk + 0])*wf_buf[n*_ni*_nk + i*_nk +0]*_di;
+            dV_i = _ham->dpotential_i(_i[i],0);
+            sum += conj(wf_buf[n*_ni*_nk + i*_nk + 0])*(-1.0*dV_i)*wf_buf[n*_ni*_nk + i*_nk +0]*_di;
         }
         _data[idx + n] = sum;
     }
