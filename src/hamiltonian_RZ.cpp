@@ -160,7 +160,7 @@ cdouble Hamiltonian::ener_RZ(cdouble *psi){
     for(int i=0;i<_ni;i++){
         for(int k=0;k<_nk;k++){
             Hz_du[k] = -b;
-            Hz_d[k]  =  a + 0.5*_potential[i*_nk + k];
+            Hz_d[k]  =  a + 0.5*_potential_fn(_i[i],_k[k],0);
             Hz_dl[k] = -b;
             col[k] = psi[i*_nk + k];
         }
@@ -180,7 +180,7 @@ cdouble Hamiltonian::ener_RZ(cdouble *psi){
     for(int k=0;k<_nk;k++){
         for(int i=0;i<_ni;i++){
             Hr_du[i] = -c*(b+0.5*1.0/(_i[i]));
-            Hr_d[i]  =  a + 0.5*_potential[i*_nk + k];
+            Hr_d[i]  =  a + 0.5*_potential_fn(_i[i],_k[k],0);
             Hr_dl[i] = -c*(b-0.5*1.0/(_i[i]));;
             row[i] = psi[i*_nk + k];
         }
