@@ -9,6 +9,7 @@ Hamiltonian::Hamiltonian(Parameters *param){
     _param = param;
     _ni = _param->ni;
     _nk = _param->nk;
+    _nt = _param->nt;
 
     switch(_param->geometry){
         case X:
@@ -32,8 +33,8 @@ Hamiltonian::Hamiltonian(Parameters *param){
             _potential = &potential;
 }
 
-void Hamiltonian::set_geometry(double *i, double *k, const double di, const double dk){
-    _i = i; _k = k; _di = di; _dk = dk;
+void Hamiltonian::set_geometry(double *i, double *k, double *t, const double di, const double dk, const double dt){
+    _i = i; _k = k; _t = t; _di = di; _dk = dk; _dt = dt;
 }
 
 void Hamiltonian::set_fields(Field* field1, Field* field2, Field* field3, Field* field4){
@@ -44,7 +45,7 @@ void Hamiltonian::set_fields(Field* field1, Field* field2, Field* field3, Field*
 
 }
 
-cdouble Hamiltonian::_potential_fn(double i, double k, int t){
+cdouble Hamiltonian::_potential_fn(double i, double k, double t){
     return (*_potential)(i,k,t,this);
     //return potential(i,k,t, this);
 }

@@ -40,7 +40,7 @@ void Hamiltonian::step_i_RZ(cdouble *psi_row, const int k, const int ti, const i
     cdouble c = 1.0/(2.0*_di); 
     for(int i=0;i<_ni;i++){
         Hr_du = -c*(b+0.5*1.0/(_i[i]));
-        Hr_d  =  a + 0.5*_potential_fn(_i[i],_k[k],0) + 0.5*0.125*bfield_k*bfield_k*_i[i]*_i[i];
+        Hr_d  =  a + 0.5*_potential_fn(_i[i],_k[k],_t[ti]) + 0.5*0.125*bfield_k*bfield_k*_i[i]*_i[i];
         Hr_dl = -c*(b-0.5*1.0/(_i[i]));
 
         _Mi_du[id_thread*_ni + i] = I*Hr_du*dt/2.0;
@@ -77,7 +77,7 @@ void Hamiltonian::step_k_RZ(cdouble *psi_col, const int i, const int ti, const i
     Hz_du = -b - I*1.0/(2.0*C*_dk)*afield_k;
     Hz_dl = -b + I*1.0/(2.0*C*_dk)*afield_k;
     for(int k=0;k<_nk;k++){
-        Hz_d  =  a + 0.5*_potential_fn(_i[i], _k[k],0)+ 0.5*0.125*bfield_k*bfield_k*_i[i]*_i[i];
+        Hz_d  =  a + 0.5*_potential_fn(_i[i], _k[k],_t[ti])+ 0.5*0.125*bfield_k*bfield_k*_i[i]*_i[i];
 
         _Mk_du[id_thread*_nk + k] = I*Hz_du*dt/4.0;
         _Mk_d[id_thread*_nk + k]  = 1.0 + I*Hz_d*dt/4.0;

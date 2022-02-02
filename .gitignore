@@ -7,6 +7,7 @@ TDSESolver*
 lib/
 build/
 __pycache__/
+.DS_Store
 !tdsesolver.py
 !tdsesolver_X.cpp
 !tdsesolver_XZ.cpp

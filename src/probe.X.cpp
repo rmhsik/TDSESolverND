@@ -59,7 +59,6 @@ void ProbeX::_pop(const int idx){
 
 void ProbeX::_dens(const int idx){
     int n = idx/_param->nt_diag;
-    std::cout<<idx<<" "<<n<<std::endl;
     cdouble *wf_buf = _wf->get_buf();
     for(int i=0;i<_ni;i++){
         _data[n*_ni + i] = conj(wf_buf[0*_ni*_nk + i*_nk + 0])*wf_buf[0*_ni*_nk + i*_nk + 0];

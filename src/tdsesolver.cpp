@@ -87,7 +87,7 @@ void TDSESolver::setup_wf(){
 
 void TDSESolver::setup_ham(){
     _ham = new Hamiltonian(_param);
-    _ham->set_geometry(_i,_k,_di, _dk);
+    _ham->set_geometry(_i,_k,_t,_di,_dk,_dt);
     _ham->set_fields(Afield_i, Afield_k, Bfield_i, Bfield_k);
 }
 

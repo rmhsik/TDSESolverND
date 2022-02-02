@@ -17,10 +17,10 @@ class Hamiltonian{
         Field *Bfield_i;
         Field *Bfield_k;
 
-        double *_i, *_k;
-        double _di, _dk;
-        int _ni, _nk;
-        
+        double *_i, *_k, *_t;
+        double _di, _dk, _dt;
+        int _ni, _nk, _nt;
+             
         cdouble *_Mk_du, *_Mk_d, *_Mk_dl;
         cdouble *_Mpk_du, *_Mpk_d, *_Mpk_dl;
         cdouble *_Mi_du, *_Mi_d, *_Mi_dl;
@@ -35,17 +35,17 @@ class Hamiltonian{
         void tridot(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* vec, cdouble* out, const int n);
         void tdma(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* dd, cdouble* out,  const int n);
 
-        cdouble (*_potential)(double i, double k, int ti, Hamiltonian *ham);
-        cdouble _potential_fn(double i, double k, int ti);
+        cdouble (*_potential)(double i, double k, double ti, Hamiltonian *ham);
+        cdouble _potential_fn(double i, double k, double ti);
 
     public:
-        friend cdouble potential(double i, double k, int ti, Hamiltonian *ham);
-        friend cdouble potential_X(double i, double k, int ti, Hamiltonian *ham);
-        friend cdouble potential_XZ(double i, double k, int ti, Hamiltonian *ham);
-        friend cdouble potential_RZ(double i, double k, int ti, Hamiltonian *ham);
+        friend cdouble potential(double i, double k, double ti, Hamiltonian *ham);
+        friend cdouble potential_X(double i, double k, double ti, Hamiltonian *ham);
+        friend cdouble potential_XZ(double i, double k, double ti, Hamiltonian *ham);
+        friend cdouble potential_RZ(double i, double k, double ti, Hamiltonian *ham);
         Hamiltonian();
         Hamiltonian(Parameters *param);
-        void set_geometry(double *i, double *k, const double di, const double dk);
+        void set_geometry(double *i, double *k, double *t, const double di, const double dk, const double dt);
         void set_fields(Field* field1, Field* field2, Field* field3, Field* field4);
         cdouble dpotential_i(double i, double k);
         cdouble dpotential_k(double i, double k); 
