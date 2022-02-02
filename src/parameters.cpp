@@ -49,7 +49,6 @@ Parameters::Parameters(){
         phiBk       = 0.0;
         
         // Diagnostics selection and parameters
-        population  = 0;
         n_probes    = 2;
 
 	    //File paths

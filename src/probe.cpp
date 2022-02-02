@@ -11,7 +11,6 @@ Probe::Probe(){
 Probe::Probe(std::string def){
     _def = def;
     _parse_def();
-
     switch(_type){
         case ACC_I:
             _calc = &Probe::_acc_i;
@@ -27,6 +26,9 @@ Probe::Probe(std::string def){
             break;
         case POP:
             _calc = &Probe::_pop;
+            break;
+        case DENS:
+            _calc = &Probe::_dens;
             break;
     } 
 }
@@ -48,7 +50,11 @@ void Probe::set_geometry(double* i, double *k, const double di, const double dk)
     _di = di; _dk = dk; 
     _nt_diag = _param->nt_diag; 
     _nt = _param->nt;
-    _data = new cdouble[_nt];
+    if (_type != DENS)
+        _data = new cdouble[_nt];
+    else{ 
+        _data = new cdouble[_nt/_nt_diag*_ni*_nk];
+    }
 }
 
 void Probe::set_tempmask(cdouble* tempmask){
@@ -56,7 +62,10 @@ void Probe::set_tempmask(cdouble* tempmask){
 }
 
 void Probe::write_probe(){
-    write_array(_data,_nt, _data_path); 
+    if(_type == DENS)
+        write_array(_data,_nt/_nt_diag*_ni*_nk, _data_path);
+    else
+        write_array(_data,_nt, _data_path); 
 }
 
 void Probe::_parse_def(){
@@ -77,8 +86,10 @@ void Probe::_parse_def(){
         _type = DIP_K;
     else if(parsed[0] == "pop")
         _type = POP;
+    else if(parsed[0] == "dens")
+        _type = DENS;
 
-    if (_type == ACC_I || _type == ACC_K){
+    if (_type == ACC_I || _type == ACC_K || _type == DENS){
         _data_path = parsed[1];
         _int_imin = 0.0;
         _int_imax = 0.0;

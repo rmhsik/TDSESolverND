@@ -13,6 +13,7 @@
 #define DIP_I 2
 #define DIP_K 3
 #define POP   4
+#define DENS  5
 
 class Diagnostics{
     private:

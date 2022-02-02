@@ -92,3 +92,5 @@ void ProbeXZ::_pop(const int idx){
         _data[idx + n] = sum;
     }
 }
+
+void ProbeXZ::_dens(const int idx){}

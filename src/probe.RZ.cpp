@@ -92,3 +92,5 @@ void ProbeRZ::_pop(const int idx){
         _data[idx + n] = sum;
     }
 }
+
+void ProbeRZ::_dens(const int idx){}

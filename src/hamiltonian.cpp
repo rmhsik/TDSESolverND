@@ -28,7 +28,7 @@ Hamiltonian::Hamiltonian(Parameters *param){
                 _potential = &potential_RZ;
             break;
     }    
-    if(_param->sue_potential != 0 )
+    if(_param->use_potential != 0 )
             _potential = &potential;
 }
 
