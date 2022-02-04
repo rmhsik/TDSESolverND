@@ -9,10 +9,11 @@ int main(){
     Parameters param;
     param.n_threads = 6;
 
-    param.geometry = X;
+    param.geometry = XZ;
     param.init_wf = GAUS;
-    param.ni = 5000;
-    param.nk = 500;
+    param.use_potential = 0;
+    param.ni = 6000;
+    param.nk = 6000;
     param.imin =  -100;
     param.imax =  100;
     param.kmin = -150;
@@ -37,16 +38,15 @@ int main(){
     param.E0i = 0.067;
     param.E0k = 0.067;
     param.B0i = 0.000;
-    param.B0k = 0.000;
+    param.B0k = 0.012;
 													
-    param.phiEi = 0.0*M_PI;
+    param.phiEi = 0.5*M_PI;
     param.phiEk = 0.0;
     param.phiBi = 0.0;
     param.phiBk = 0.0;
 
-    param.n_probes = 2;
-    param.probe_def = "acc_i,results/acc_i_test_diag.dat;"
-                  "dip_i,-100,100,0,0,results/dip_i_test_diag.dat";
+    param.n_probes = 1;
+    param.probe_def = "acc_i,results/acc_i_test_diag.dat";
 
     //param.acc_path = "results/acc7.dat";
     //param.dip_path= "results/dip7.dat"; 
