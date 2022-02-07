@@ -9,15 +9,15 @@ int main(){
     Parameters param;
     param.n_threads = 6;
 
-    param.geometry = XZ;
+    param.geometry = X;
     param.init_wf = GAUS;
     param.use_potential = 0;
-    param.ni = 6000;
-    param.nk = 6000;
-    param.imin =  -100;
-    param.imax =  100;
-    param.kmin = -150;
-    param.kmax =  150;
+    param.ni = 5000;
+    param.nk = 1;
+    param.imin =  -120;
+    param.imax =  120;
+    param.kmin = -120;
+    param.kmax =  120;
 				
     param.w0 = 0.057;
     param.period = 2.0*M_PI/param.w0;
@@ -27,7 +27,7 @@ int main(){
     param.dt_ITP = 0.004;
     param.nt = param.tmax_sim/param.dt;
     param.nt_ITP = 2000;
-    param.nt_diag = 30;
+    param.nt_diag = 100;
 			    
     param.env = SIN2;
     param.w0Ei = 0.057;
@@ -46,7 +46,7 @@ int main(){
     param.phiBk = 0.0;
 
     param.n_probes = 1;
-    param.probe_def = "acc_i,results/acc_i_test_diag.dat";
+    param.probe_def = "dens,results/dens.dat;";
 
     //param.acc_path = "results/acc7.dat";
     //param.dip_path= "results/dip7.dat"; 

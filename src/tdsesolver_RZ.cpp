@@ -233,33 +233,33 @@ void TDSESolver::_propagate_RZ(){
     for(int j=0; j<_param->nt;j++){
         #pragma omp parallel for schedule(dynamic)
         for(int i=0;i<ni;i++){
-            cdouble *wf_ptr; 
+            cdouble **wf_ptr; 
             wf_ptr = _wf->get_buf();
             int id_thread = omp_get_thread_num();
             for(int k=0;k<nk;k++)
-                psi_col[id_thread*nk + k] = wf_ptr[j%_param->nt_diag*ni*nk+i*nk+k];
+                psi_col[id_thread*nk + k] = wf_ptr[j%_param->nt_diag][i*nk+k];
             (_ham->*(_ham->step_k))(&psi_col[id_thread*nk],i,j,0,id_thread);
             _wf->set_col_buf_mask(&psi_col[id_thread*nk],_kmask, i,(j+1)%_param->nt_diag);
         }
         
         #pragma omp parallel for schedule(dynamic)
         for(int k=0;k<nk;k++){
-            cdouble *wf_ptr;
+            cdouble **wf_ptr;
             wf_ptr = _wf->get_buf();
             int id_thread = omp_get_thread_num();
             for(int i=0;i<ni;i++)
-                psi_row[id_thread*ni + i] = wf_ptr[(j+1)%_param->nt_diag*ni*nk+i*nk+k];
+                psi_row[id_thread*ni + i] = wf_ptr[(j+1)%_param->nt_diag][i*nk+k];
             (_ham->*(_ham->step_i))(&psi_row[id_thread*ni],k,j,0,id_thread);
             _wf->set_row_buf_mask(&psi_row[id_thread*ni],_imask,k,(j+1)%_param->nt_diag);
         }
         
         #pragma omp parallel for schedule(dynamic)
         for(int i=0;i<ni;i++){
-            cdouble *wf_ptr;
+            cdouble **wf_ptr;
             wf_ptr = _wf->get_buf();
             int id_thread = omp_get_thread_num();
             for(int k=0;k<nk;k++)
-                psi_col[id_thread*nk + k] = wf_ptr[(j+1)%_param->nt_diag*ni*nk+i*nk+k];
+                psi_col[id_thread*nk + k] = wf_ptr[(j+1)%_param->nt_diag][i*nk+k];
             (_ham->*(_ham->step_k))(&psi_col[id_thread*nk],i,j,0,id_thread);
             _wf->set_col_buf_mask(&psi_col[id_thread*nk],_kmask,i,(j+1)%_param->nt_diag);
         }

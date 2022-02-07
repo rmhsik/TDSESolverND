@@ -6,14 +6,14 @@ ProbeX::ProbeX(): Probe::Probe(){}
 ProbeX::ProbeX(std::string def): Probe::Probe(def){}
 
 void ProbeX::_acc_i(const int idx){
-    cdouble* wf_buf = _wf->get_buf();
+    cdouble** wf_buf = _wf->get_buf();
     //cdouble* dV_i = _ham->get_dpotential_i();
     for(int n=0; n<_param->nt_diag;n++){
         cdouble sum = 0.0;
         cdouble dV_i=0.0;
         for(int i=0; i<_ni; i++){
             dV_i = _ham->dpotential_i(_i[i],0);
-            sum += conj(wf_buf[n*_ni*_nk + i*_nk + 0])*(-1.0*dV_i)*wf_buf[n*_ni*_nk + i*_nk +0]*_di;
+            sum += conj(wf_buf[n][i*_nk + 0])*(-1.0*dV_i)*wf_buf[n][i*_nk +0]*_di;
         }
         _data[idx + n] = sum;
     }
@@ -28,11 +28,11 @@ void ProbeX::_dip_i(const int idx){
     int n_kmax = (_int_kmax - _k[0])/_dk;
 
 
-    cdouble* wf_buf = _wf->get_buf();
+    cdouble** wf_buf = _wf->get_buf();
     for(int n=0; n<_param->nt_diag;n++){
         cdouble sum = 0.0;
         for(int i=n_imin; i<n_imax; i++){
-            sum += conj(wf_buf[n*_ni*_nk + i*_nk + 0])*(-1.0*_i[i])*wf_buf[n*_ni*_nk + i*_nk +0]*_di;
+            sum += conj(wf_buf[n][i*_nk + 0])*(-1.0*_i[i])*wf_buf[n][i*_nk +0]*_di;
         }
         _data[idx + n] = sum;
     }
@@ -47,11 +47,11 @@ void ProbeX::_pop(const int idx){
     int n_kmax = (_int_kmax - _k[0])/_dk;
 
 
-    cdouble* wf_buf = _wf->get_buf();
+    cdouble** wf_buf = _wf->get_buf();
     for(int n=0; n<_param->nt_diag;n++){
         cdouble sum = 0.0;
         for(int i=n_imin; i<n_imax; i++){
-            sum += conj(wf_buf[n*_ni*_nk + i*_nk + 0])*wf_buf[n*_ni*_nk + i*_nk +0]*_di;
+            sum += conj(wf_buf[n][i*_nk + 0])*wf_buf[n][i*_nk +0]*_di;
         }
         _data[idx+n] = sum;
     }
@@ -59,8 +59,17 @@ void ProbeX::_pop(const int idx){
 
 void ProbeX::_dens(const int idx){
     int n = idx/_param->nt_diag;
-    cdouble *wf_buf = _wf->get_buf();
+    cdouble **wf_buf = _wf->get_buf();
     for(int i=0;i<_ni;i++){
-        _data[n*_ni + i] = conj(wf_buf[0*_ni*_nk + i*_nk + 0])*wf_buf[0*_ni*_nk + i*_nk + 0];
+        _data[n*_ni +i] = conj(wf_buf[0][i*_nk + 0])*wf_buf[0][i*_nk + 0];
     }
 }
+
+void ProbeX::_wf_snap(const int idx){
+    int n = idx/_param->nt_diag;
+    cdouble **wf_buf = _wf->get_buf();
+    for(int i=0;i<_ni;i++){
+        _data[n*_ni + i] = wf_buf[0][i*_nk + 0];
+    }
+}
+

@@ -32,7 +32,7 @@ void WF::apply_mask_XZ(cdouble *imask, cdouble *kmask){
 void WF::apply_mask_buf_XZ(cdouble *imask, cdouble *kmask,const int idx){
     for(int i=0; i<_ni; i++){
         for(int k=0; k<_nk;k++)
-            _wf_buf[idx*_ni*_nk + i*_nk + k] *= imask[i]*kmask[k];
+            _wf_buf[idx][i*_nk + k] *= imask[i]*kmask[k];
     }
 }
 
@@ -64,7 +64,7 @@ void WF::_acc_i_buf_XZ(){
         cdouble sum = 0.0;
         for(int i=0; i<_ni; i++){
             for(int k=0; k<_nk; k++){
-                sum += conj(_wf_buf[n*_ni*_nk + i*_nk + k])*(-1.0*_dV_i[i*_nk + k])*_wf_buf[n*_ni*_nk + i*_nk + k]*_di*_dk;
+                sum += conj(_wf_buf[n][i*_nk + k])*(-1.0*_dV_i[i*_nk + k])*_wf_buf[n][i*_nk + k]*_di*_dk;
             }
         }
         _diag_buf[n] = sum;
@@ -77,7 +77,7 @@ void WF::_acc_k_buf_XZ(){
         cdouble sum = 0.0;
         for(int i=0; i<_ni; i++){
             for(int k=0; k<_nk;k++){
-                sum += conj(_wf_buf[n*_ni*_nk + i*_nk + k])*(-1.0*_dV_k[i*_nk + k])*_wf_buf[n*_ni*_nk +i*_nk +k]*_di*_dk;
+                sum += conj(_wf_buf[n][i*_nk + k])*(-1.0*_dV_k[i*_nk + k])*_wf_buf[n][i*_nk +k]*_di*_dk;
             }
         }
         _diag_buf[n] = sum;
@@ -112,7 +112,7 @@ void WF::_pop_buf_XZ(double imin, double imax, double kmin, double kmax){
         cdouble sum = 0.0;
         for(int i=n_imin; i<n_imax; i++){
             for(int k=n_kmin; k<n_kmax; k++){
-                sum += conj(_wf_buf[n*_nk*_ni + i*_nk + k])*_wf_buf[n*_nk*_ni + i*_nk + k]*_di*_dk;
+                sum += conj(_wf_buf[n][i*_nk + k])*_wf_buf[n][i*_nk + k]*_di*_dk;
             }
         }
         _diag_buf[n] = sum;
@@ -145,7 +145,7 @@ void WF::_dip_i_buf_XZ(){
         cdouble sum=0.0;
         for(int i=0; i<_ni;i++){
             for(int k=0;k<_nk;k++){
-                sum += conj(_wf_buf[n*_ni*_nk + i*_nk + k])*_i[i]*_wf_buf[n*_ni*_nk + i*_nk + k]*_di*_dk;
+                sum += conj(_wf_buf[n][i*_nk + k])*_i[i]*_wf_buf[n][i*_nk + k]*_di*_dk;
             }
         }
         _diag_buf[n] = sum;
@@ -158,7 +158,7 @@ void WF::_dip_k_buf_XZ(){
         cdouble sum=0.0;
         for(int i=0; i<_ni;i++){
             for(int k=0;k<_nk;k++){
-                sum += conj(_wf_buf[n*_ni*_nk + i*_nk + k])*_k[i]*_wf_buf[n*_ni*_nk + i*_nk + k]*_di*_dk;
+                sum += conj(_wf_buf[n][i*_nk + k])*_k[i]*_wf_buf[n][i*_nk + k]*_di*_dk;
             }
         }
         _diag_buf[n] = sum;

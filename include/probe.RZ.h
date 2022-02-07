@@ -11,6 +11,7 @@ class ProbeRZ: public Probe{
         void _dip_k(const int idx);
         void _pop(const int idx);
         void _dens(const int idx);
+        void _wf_snap(const int idx);
     public:
         ProbeRZ();
         ProbeRZ(std::string def);

@@ -14,6 +14,7 @@
 #define DIP_K 3
 #define POP   4
 #define DENS  5
+#define WFSNAP 6
 
 class Diagnostics{
     private:

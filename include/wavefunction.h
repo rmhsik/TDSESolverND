@@ -11,7 +11,7 @@
 class WF{
     private:
         cdouble *_wf;
-        cdouble *_wf_buf;
+        cdouble **_wf_buf;
         cdouble *_diag_buf;
         cdouble *_row;
         cdouble *_col;
@@ -94,7 +94,7 @@ class WF{
         void set_col_buf_mask(cdouble* col, cdouble* kmask, const int i, const int idx);
         void set_row_buf_mask(cdouble* row, cdouble* imask, const int k, const int idx);
         void get_from_buf(cdouble* arr, const int idx);
-        cdouble* get_buf();
+        cdouble** get_buf();
         cdouble* get_diag_buf();
         cdouble norm();
         void apply_mask(cdouble* imask, cdouble *kmask);

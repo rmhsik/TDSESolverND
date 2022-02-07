@@ -45,7 +45,7 @@ void WF::_acc_i_buf_X(){
     for(int n=0; n<_param->nt_diag;n++){
         cdouble sum = 0.0;
         for(int i=0; i<_ni; i++){
-            sum += conj(_wf_buf[n*_ni*_nk + i*_nk + 0])*(-1.0*_dV_i[i*_nk + 0])*_wf_buf[n*_ni*_nk + i*_nk +0]*_di;
+            sum += conj(_wf_buf[n][i*_nk + 0])*(-1.0*_dV_i[i*_nk + 0])*_wf_buf[n][i*_nk +0]*_di;
         }
         _diag_buf[n] = sum;
     }
@@ -79,7 +79,7 @@ void WF::_pop_buf_X(double imin, double imax, double kmin, double kmax){
         cdouble sum = 0.0;
         for(int i=n_imin; i<n_imax; i++){
             for(int k=0; k<1; k++){
-                sum += conj(_wf_buf[n*_nk*_ni + i*_nk + k])*_wf_buf[n*_nk*_ni + i*_nk + k]*_di;
+                sum += conj(_wf_buf[n][i*_nk + k])*_wf_buf[n][i*_nk + k]*_di;
             }
         }
         _diag_buf[n] = sum;
@@ -102,7 +102,7 @@ void WF::_dip_i_buf_X(){
     for(int n=0; n<_param->nt_diag; n++){
         cdouble sum = 0.0;
         for(int i=0;i<_ni;i++){
-            sum += conj(_wf_buf[n*_ni*_nk + i*_nk + 0])*_i[i]*_wf_buf[n*_ni*_nk + i*_nk + 0]*_di;
+            sum += conj(_wf_buf[n][i*_nk + 0])*_i[i]*_wf_buf[n][i*_nk + 0]*_di;
         }
         _diag_buf[n] = sum;
     }
