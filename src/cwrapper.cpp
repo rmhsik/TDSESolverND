@@ -39,7 +39,7 @@ extern "C"{
     void Parameters_phiEi(Parameters *p, double val){p->phiEi = val;}
     void Parameters_phiEk(Parameters *p, double val){p->phiEk = val;}
     void Parameters_phiBi(Parameters *p, double val){p->phiBi = val;}
-    void Parameters_phiBk(Parameters *p, double val){p->phiEk = val;}
+    void Parameters_phiBk(Parameters *p, double val){p->phiBk = val;}
     void Parameters_n_probes(Parameters *p, int val){p->n_probes = val;}
     void Parameters_probe_def(Parameters *p, char *val){p->set_probe_def(val);}
 }
