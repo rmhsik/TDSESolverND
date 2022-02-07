@@ -34,7 +34,7 @@ param = {"n_threads": 6,
          "phiEi": 0.5*pi,
          "phiEk": 0.0,
          "phiBi": 0.0,
-         "phiBk": 0.4*pi,
+         "phiBk": -0.2*pi,
          "n_probes": 2,
          "probe_def": ("dens,results/dens6.dat;"
                        "wf,results/wf_snap6.dat")
