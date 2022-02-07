@@ -94,3 +94,4 @@ void ProbeRZ::_pop(const int idx){
 }
 
 void ProbeRZ::_dens(const int idx){}
+void ProbeRZ::_wf_snap(const int idx){}
