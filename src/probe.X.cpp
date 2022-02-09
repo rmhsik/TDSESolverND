@@ -73,3 +73,7 @@ void ProbeX::_wf_snap(const int idx){
     }
 }
 
+ProbeX::~ProbeX(){
+    std::cout<<"Im here\n";
+    delete _data;
+}

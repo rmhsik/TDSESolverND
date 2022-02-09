@@ -12,16 +12,18 @@ class TDSESolver:
         lib.TDSESolver_new.restype = ct.c_void_p
         lib.TDSESolver_ipropagate.argtypes = [ct.c_void_p]
         lib.TDSESolver_ipropagate.restype = ct.c_void_p
-
         lib.TDSESolver_propagate.argtypes = [ct.c_void_p]
         lib.TDSESolver_propagate.restype = ct.c_void_p
-
+        lib.TDSESolver_delete.argtypes = [ct.c_void_p]
+        lib.TDSESolver_delete.restype = None
         self._obj = lib.TDSESolver_new(param_class)
 
     def ipropagate(self):
         lib.TDSESolver_ipropagate(self._obj)
     def propagate(self):
         lib.TDSESolver_propagate(self._obj)
+    def delete(self):
+        lib.TDSESolver_delete(self._obj)
 
 
 class Parameters:

@@ -15,6 +15,7 @@ class ProbeX: public Probe{
     public:
         ProbeX();
         ProbeX(std::string def);
+        ~ProbeX();
 };
 
 #endif

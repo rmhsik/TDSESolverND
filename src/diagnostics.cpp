@@ -87,3 +87,12 @@ void Diagnostics::write_diagnostics(){
         _probe_vec[i]->write_probe();
     }
 }
+
+
+Diagnostics::~Diagnostics(){
+    std::cout<<"Im here lol\n";
+    for(int i=0;i<_n_probes;i++){
+        delete _probe_vec[i];
+    }
+    delete _tempmask;
+}

@@ -15,6 +15,7 @@ class ProbeXZ: public Probe{
     public:
         ProbeXZ();
         ProbeXZ(std::string def);
+        virtual ~ProbeXZ();
 };
 
 #endif

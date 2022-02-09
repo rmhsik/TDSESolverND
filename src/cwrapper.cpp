@@ -5,6 +5,7 @@ extern "C"{
     TDSESolver *TDSESolver_new(Parameters *param){return new TDSESolver(param);}
     void TDSESolver_ipropagate(TDSESolver *tdse){tdse->ipropagate();}
     void TDSESolver_propagate(TDSESolver *tdse){tdse->propagate();}
+    void TDSESolver_delete(TDSESolver *tdse){delete tdse;}
     Parameters *Parameters_new(){ return new Parameters;}
     void Parameters_print(Parameters *p){p->print(); }
     void Parameters_check_param(Parameters *p){p->check_param();}

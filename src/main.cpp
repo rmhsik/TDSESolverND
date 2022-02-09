@@ -52,8 +52,11 @@ int main(){
     //param.dip_path= "results/dip7.dat"; 
     param.check_param();
     param.print();
-    TDSESolver tdse(&param);
-    tdse.ipropagate();
-    tdse.propagate();
-
+    for(int i=0;i<20;i++){
+        TDSESolver *tdse;
+        tdse = new TDSESolver(&param);
+        //tdse.ipropagate();
+        //tdse.propagate();
+        delete tdse;
+    }
 }

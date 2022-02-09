@@ -45,6 +45,8 @@ class Diagnostics{
         void set_tempmask();
         void create_probes();
 
+        ~Diagnostics();
+
 };
 
 #endif

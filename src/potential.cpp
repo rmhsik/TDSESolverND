@@ -6,7 +6,10 @@ cdouble potential( double i, double k, double t, Hamiltonian *ham){
     cdouble omegaB = ham->_param->B0k/(sqrt(8));
     cdouble omega0 = ham->_param->w0;
     cdouble phiBk = ham->_param->phiBk;
-    return 0.5*omegaB*omegaB*i*i - 0.5*omegaB*omegaB*i*i*cos(2.0*omega0*t + phiBk);
+    cdouble phiEk = ham->_param->phiEk;
+    double E0 = ham->_param->E0k;
+    double ti = 1.8*ham->_param->period;
+    return 0.5*omegaB*omegaB*i*i - 0.5*omegaB*omegaB*i*i*cos(2.0*omega0*(t+ti) + phiBk) - E0*sin(omega0*(t+ti)+phiEk)*i;
 }
 
 //cdouble potential(double i, double k, double t, Hamiltonian *ham){
