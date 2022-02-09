@@ -131,11 +131,11 @@ void TDSESolver::propagate(){
 }
 
 TDSESolver::~TDSESolver(){
-    delete _t;
-    delete _i;
-    delete _k;
-    delete _imask;
-    delete _kmask;
+    delete[] _t;
+    delete[] _i;
+    delete[] _k;
+    delete[] _imask;
+    delete[] _kmask;
     delete Afield_i;
     delete Afield_k;
     delete Bfield_i;

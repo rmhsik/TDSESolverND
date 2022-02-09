@@ -273,9 +273,12 @@ void WF::pop_buf(double imin, double imax, double kmin, double kmax){
 }
 
 WF::~WF(){
-    delete _wf;
-    delete _wf_buf;
-    delete _diag_buf;
-    delete _row;
-    delete _col;
+    delete[] _wf;
+    for(int i=0; i<_param->nt_diag;i++){
+        delete[] _wf_buf[i];
+    }
+    delete[] _wf_buf;
+    delete[] _diag_buf;
+    delete[] _row;
+    delete[] _col;
 }

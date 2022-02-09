@@ -85,20 +85,20 @@ void Hamiltonian::tdma(cdouble* aa, cdouble* bb, cdouble* cc, cdouble* dd, cdoub
 }
 
 Hamiltonian::~Hamiltonian(){
-    delete _Mk_du;
-    delete _Mk_d;
-    delete _Mk_dl;
-    delete _Mpk_du;
-    delete _Mpk_d;
-    delete _Mpk_dl;
-    delete _Mi_du;
-    delete _Mi_d;
-    delete _Mi_dl;
-    delete _Mpi_du;
-    delete _Mpi_d;
-    delete _Mpi_dl;
-    delete _lhs_i;
-    delete _lhs_k;
-    delete _res_i;
-    delete _res_k;
+    delete[] _Mk_du;
+    delete[] _Mk_d;
+    delete[] _Mk_dl;
+    delete[] _Mpk_du;
+    delete[] _Mpk_d;
+    delete[] _Mpk_dl;
+    delete[] _Mi_du;
+    delete[] _Mi_d;
+    delete[] _Mi_dl;
+    delete[] _Mpi_du;
+    delete[] _Mpi_d;
+    delete[] _Mpi_dl;
+    delete[] _lhs_i;
+    delete[] _lhs_k;
+    delete[] _res_i;
+    delete[] _res_k;
 }

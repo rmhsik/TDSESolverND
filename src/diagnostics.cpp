@@ -94,5 +94,5 @@ Diagnostics::~Diagnostics(){
     for(int i=0;i<_n_probes;i++){
         delete _probe_vec[i];
     }
-    delete _tempmask;
+    delete[] _tempmask;
 }

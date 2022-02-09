@@ -125,6 +125,6 @@ void Probe::calc(const int idx){
 
 Probe::~Probe(){
     std::cout<<"Im here 2\n";
-    delete _data;
+    delete[] _data;
 }
 

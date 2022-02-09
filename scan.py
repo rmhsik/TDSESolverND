@@ -28,11 +28,11 @@ for i in phiBk:
     parameters.set(_param)
     parameters.print()
     tdse = tdsesolver.TDSESolver(parameters._obj)
-    tdse.ipropagate()
+    #tdse.ipropagate()
     #tdse.propagate()
     #del tdse
     tdse.delete()
-    del tdse
+    #del tdse
     count += 1
     #acc_i = LoadComplexData(f'results/acc_i_temp_{idx}.dat')
     #acc_k = LoadComplexData(f'results/acc_k_temp_{idx}.dat')

@@ -61,7 +61,7 @@ std::tuple<T* ,double> linspace(T xi, T xf, int n){
     double dx = abs(xf -xi)/(double)(n-1); 
     T* grid = new T[n];
     if (n==0){}
-    else if(n==1){ grid[0]==xi;}
+    else if(n==1){ grid[0]=xi;}
     else{
         for(int i=0; i<n-1;i++){
             grid[i] = xi + i*dx;

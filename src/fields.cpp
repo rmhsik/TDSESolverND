@@ -38,7 +38,7 @@ void Field::calc_pot(){
     for(int i=0; i<_nt;i++){
         _field[i] = temp[i];
     }
-    delete temp;
+    delete[] temp;
 }
 
 double Field::operator[](int i){
@@ -81,5 +81,5 @@ double Field::env_trap(double ti){
 }
 
 Field::~Field(){
-    delete _field;
+    delete[] _field;
 }

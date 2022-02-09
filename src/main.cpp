@@ -7,7 +7,7 @@
 
 int main(){
     Parameters param;
-    param.n_threads = 6;
+    param.n_threads = 4;
 
     param.geometry = X;
     param.init_wf = GAUS;
@@ -47,12 +47,11 @@ int main(){
 
     param.n_probes = 1;
     param.probe_def = "dens,results/dens.dat;";
-
     //param.acc_path = "results/acc7.dat";
     //param.dip_path= "results/dip7.dat"; 
     param.check_param();
     param.print();
-    for(int i=0;i<20;i++){
+    for(int i=0;i<200;i++){
         TDSESolver *tdse;
         tdse = new TDSESolver(&param);
         //tdse.ipropagate();
