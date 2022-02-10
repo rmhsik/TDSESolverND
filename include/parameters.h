@@ -7,6 +7,7 @@
 #define X    0
 #define XZ   1
 #define RZ   2
+#define XYZ  3
 
 #define SIN2 0
 #define TRAP 1
@@ -27,6 +28,9 @@
             int ni;  
             double imin;
             double imax;     
+            int nj;
+            double jmin;
+            double jmax;
             int nk;         
             double kmin;     
             double kmax;     
@@ -41,17 +45,23 @@
             int nt_diag ;    
             int env;         
             double w0Ei;     
-            double w0Ek;     
+            double w0Ek;    
+            double w0Ej;
             double w0Bi;     
-            double w0Bk;     
+            double w0Bk;
+            double w0Bj;     
             double E0i;      
-            double E0k;      
+            double E0k;
+            double E0j;      
             double B0i;      
-            double B0k;      
+            double B0k;
+            double B0j;      
             double phiEi;    
-            double phiEk;    
+            double phiEk;
+            double phiEj;    
             double phiBi;    
             double phiBk;
+            double phiBj;
             int n_probes;
             std::string probe_def;
             Parameters();
