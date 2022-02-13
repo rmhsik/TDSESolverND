@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstring>
 #include "debug.h"
+#include "utils.h"
 #include "wavefunction.h"
 
 WF::WF(){
@@ -14,26 +15,32 @@ WF::WF(Parameters *param){
     _param = param;
 }
 
-void WF::set_geometry( double *i, double *k, const double di, const double dk){    
+void WF::set_geometry( double *i, double *j, double *k, const double di, const double dj, const double dk){    
     _ni = _param->ni;
+    _nj = _param->nj;
     _nk = _param->nk;
+    
+    _wf = alloc3d<cdouble>(_ni, _nj, _nk);
+    _wf_buf = alloc4d<cdouble>(_ni, _nj, _nk,_param->nt_diag);
+    _i_row = new cdouble[_ni];
+    _j_row = new cdouble[_nj];
+    _k_row = new cdouble[_nk];
 
-    _wf = new cdouble[_ni*_nk];
-    _row = new cdouble[_ni];
-    _col = new cdouble[_nk];
-    _wf_buf = new cdouble*[_param->nt_diag];
-    for(int i=0;i<_param->nt_diag;i++){
-        _wf_buf[i] = new cdouble[_ni*_nk];
-    }
+    //_wf_buf = new cdouble*[_param->nt_diag];
+    //for(int i=0;i<_param->nt_diag;i++){
+    //    _wf_buf[i] = new cdouble[_ni*_nk];
+    //}
 
     _diag_buf = new cdouble[_param->nt_diag];
     for(int i=0; i<_ni; i++){
-        for(int j=0; j<_nk;j++){
-            _wf[i*_nk + j] = cdouble(0.0,0.0);
+        for(int j=0; j<_nj;j++){
+            for(int k=0;k<_nk;k++){
+                _wf[i][j][k] = 0.0;
+            }
         }
     }
 
-    _i = i; _k = k; _di = di; _dk = dk;
+    _i = i; _j = j; _k = k; _di = di; _dj = dj; _dk = dk;
 
     switch(_param->geometry){
         case X:
@@ -49,60 +56,25 @@ void WF::set_geometry( double *i, double *k, const double di, const double dk){
     }
 }
 
-void WF::gaussian(double i0, double k0, double sigma){
+void WF::gaussian(double i0, double j0, double k0, double sigma){
     for(int i=0; i<_ni; i++){
-        for(int j=0; j<_nk;j++){
-            _wf[i*_nk + j] = exp(-(_i[i]-i0)*(_i[i]-i0)/sigma - (_k[j]-k0)*(_k[j]-k0)/sigma);
+        for(int j=0; j<_nj;j++){
+            for(int k=0; k<_nk; k++){
+                _wf[i][j][k] = exp(-(_i[i]-i0)*(_i[i]-i0)/sigma- (_j[j]-j0)*(_j[j]-j0)/sigma - (_k[k]-k0)*(_k[k]-k0)/sigma);
+            }
         }
     }
 
 }
 
-void WF::exponential(double i0, double k0, double sigma){
+void WF::exponential(double i0, double j0, double k0, double sigma){
     for(int i=0; i<_ni; i++){
-        for(int j=0; j<_nk;j++){
-            _wf[i*_nk + j] = exp(-sqrt((_i[i]-i0)*(_i[i]-i0) + (_k[j]-k0)*(_k[j]-k0)));
-        }
-    }
-}
-
-
-void WF::save_wf(std::string path){
-    std::ofstream outfile;
-    outfile.open(path);
-    if(outfile.is_open()){
-        for(int i=0;i<_ni;i++){
-            for(int j=0; j<_nk; j++){
-                std::stringstream str;
-                str<<std::fixed<<std::setprecision(12);
-                str<<_wf[i*_nk + j];
-                outfile<<str.str();
+        for(int j=0; j<_nj;j++){
+            for(int k=0; k<_nk;k++){
+                _wf[i][j][k] = exp(-sqrt((_i[i]-i0)*(_i[i]-i0) + (_j[j]-j0)*(_j[j]-j0) + (_k[k]-k0)*(_k[k]-k0)));
             }
-            outfile<<std::endl;
         }
     }
-    else{
-        debug1("[WF->save_wf] Error opening output file");
-    }    
-}
-
-void WF::save_wf2(std::string path){
-    std::ofstream outfile;
-    outfile.open(path);
-    if(outfile.is_open()){
-        for(int i=0;i<_ni;i++){
-            for(int j=0; j<_nk; j++){
-                std::stringstream str;
-                str<<std::fixed<<std::setprecision(12);
-                str<<(double)abs(_wf[i*_nk + j]*_wf[i*_nk + j]);
-                outfile<<str.str();
-            }
-            outfile<<std::endl;
-        }
-    }
-    else{
-        debug1("[WF->save_wf2] Error opening output file");
-    }    
 }
 
 cdouble WF::norm(){
@@ -110,20 +82,29 @@ cdouble WF::norm(){
     switch(_param->geometry){
         case X:
             for(int i=0; i<_ni;i++){
-                integral += _wf[i*_nk + 0]*conj(_wf[i*_nk + 0])*_di;
+                integral += _wf[i][0][0]*conj(_wf[i][0][0])*_di;
             }
             break;
         case XZ:
             for(int i=0; i<_ni;i++){
-                for(int j=0;j<_nk;j++){
-                    integral += _wf[i*_nk + j]*conj(_wf[i*_nk + j])*_di*_dk;
+                for(int k=0;k<_nk;k++){
+                    integral += _wf[i][0][k]*conj(_wf[i][0][k])*_di*_dk;
                 }
             }
             break;
         case RZ:
             for(int i=0; i<_ni;i++){
-                for(int j=0;j<_nk;j++){
-                    integral += 2*M_PI*_i[i]*_wf[i*_nk + j]*conj(_wf[i*_nk + j])*_di*_dk;
+                for(int k=0;k<_nk;k++){
+                    integral += 2*M_PI*_i[i]*_wf[i][0][k]*conj(_wf[i][0][k])*_di*_dk;
+                }
+            }
+            break;
+        case XYZ:
+            for(int i=0;i<_ni;i++){
+                for(int j=0;j<_nj;j++){
+                    for(int k=0;k<_nk;k++){
+                        integral += _wf[i][j][k]*conj(_wf[i][j][k])*_di*_dj*_dk;
+                    }
                 }
             }
             break;
@@ -131,79 +112,153 @@ cdouble WF::norm(){
     return sqrt(integral);
 }
 
-void WF::apply_mask(cdouble *imask, cdouble *kmask){
-    (this->*(this->_apply_mask))(imask, kmask);
+void WF::apply_mask(cdouble *imask, cdouble *jmask, cdouble *kmask){
+    (this->*(this->_apply_mask))(imask, jmask, kmask);
 }
 
 
-cdouble* WF::get(){
+cdouble*** WF::get(){
     return _wf;
 }
 
-cdouble* WF::row(int k){
+cdouble* WF::i_row(int j, int k){
     for(int i=0; i<_ni; i++){
-        _row[i] = _wf[i*_nk + k];
+        _i_row[i] = _wf[i][j][k];
     }
-    return _row;
+    return _i_row;
 }
 
-cdouble* WF::col(int i){
-    for(int k=0; k<_nk; k++){
-        _col[k] = _wf[i*_nk + k];
+cdouble* WF::j_row(int i, int k){
+    for(int j=0; j<_nj; j++){
+        _j_row[j] = _wf[i][j][k];
     }
-    return _col;
+    return _j_row;
 }
 
-void WF::set_row(cdouble* row, int k){
-    for(int i=0; i<_ni; i++){
-        _wf[i*_nk + k] = row[i];
-    }
-}
-
-void WF::set_col(cdouble* col, int i){
+cdouble* WF::k_row(int i, int j){
     for(int k=0; k<_nk;k++){
-        _wf[i*_nk + k] = col[k];
+        _k_row[k] = _wf[i][j][k];
+    }
+    return _k_row;
+}
+
+void WF::set_i_row(cdouble* i_row, int j, int k){
+    for(int i=0; i<_ni; i++){
+        _wf[i][j][k] = i_row[i];
     }
 }
 
-void WF::set(cdouble* arr){
+void WF::set_j_row(cdouble* j_row, int i, int k){
+    for(int j=0; j<_nj;j++){
+        _wf[i][j][k] = j_row[j];
+    }
+}
+
+void WF::set_k_row(cdouble* k_row, int i, int j){
+    for(int k=0; k<_nk; k++){
+        _wf[i][j][k] = k_row[k];
+    }
+}
+
+void WF::get_i_row(cdouble* i_row, int j, int k){
+    for(int i=0; i<_ni; i++){
+        i_row[i] = _wf[i][j][k];
+    }
+}
+
+void WF::get_j_row(cdouble* j_row, int i, int k){
+    for(int j=0; j<_nj;j++){
+        j_row[j] = _wf[i][j][k];
+    }
+}
+
+void WF::get_k_row(cdouble* k_row, int i, int j){
+    for(int k=0; k<_nk; k++){
+        k_row[k] = _wf[i][j][k];
+    }
+}
+void WF::set(cdouble*** arr){
     for(int i=0; i<_ni;i++){
-        for(int j=0;j<_nk;j++){
-            _wf[i*_nk + j] = arr[i*_nk + j];
+        for(int j=0;j<_nj;j++){
+            for(int k=0; k<_nk;k++){
+                _wf[i][j][k] = arr[i][j][k];
+            }
         }
     }
 }
 
 void WF::set_to_buf(const int idx){
-    std::memcpy(_wf_buf[idx],_wf,_ni*_nk*sizeof(cdouble));
+    for(int i=0;i<_ni;i++){
+        for(int j=0;j<_nj;j++){
+            for(int k=0;k<_nk;k++){
+                _wf_buf[idx][i][j][k] = _wf[i][j][k];
+            }
+        }
+    }
+    //std::memcpy(_wf_buf[idx],_wf,_ni*_nk*sizeof(cdouble));
 }
 
-void WF::set_col_buf(cdouble* col, const int i, const int idx){
-    for(int k=0; k<_nk; k++)
-        _wf_buf[idx][i*_nk + k] = col[k];
+void WF::set_i_row_buf(cdouble* i_row, const int j, const int k, const int idx){
+    for(int i=0; i<_ni; i++){
+        _wf_buf[idx][i][j][k] = i_row[i];
+    }
 }
 
-void WF::set_row_buf(cdouble *row, const int k, const int idx){
-    for(int i=0;i<_ni;i++)
-        _wf_buf[idx][i*_nk +k] = row[i];
+void WF::set_j_row_buf(cdouble *j_row, const int i, const int k, const int idx){
+    for(int j=0;j<_nj;j++)
+        _wf_buf[idx][i][j][k] = j_row[j];
 }
 
-void WF::set_col_buf_mask(cdouble* col, cdouble* kmask, const int i, const int idx){
-    for(int k=0; k<_nk; k++)
-        _wf_buf[idx][i*_nk + k] = col[k]*kmask[k];
+void WF::set_k_row_buf(cdouble *k_row, const int i, const int j, const int idx){
+    for(int k=0; k<_nk;k++)
+        _wf_buf[idx][i][j][k] = k_row[k];
 }
 
-void WF::set_row_buf_mask(cdouble* row, cdouble* imask, const int k, const int idx){
+void WF::get_i_row_buf(cdouble* i_row, const int j, const int k, const int idx){
+    for(int i=0; i<_ni; i++){
+        i_row[i] = _wf_buf[idx][i][j][k];
+    }
+}
+
+void WF::get_j_row_buf(cdouble *j_row, const int i, const int k, const int idx){
+    for(int j=0;j<_nj;j++)
+        j_row[j] = _wf_buf[idx][i][j][k];
+}
+
+void WF::get_k_row_buf(cdouble *k_row, const int i, const int j, const int idx){
+    for(int k=0; k<_nk;k++)
+        k_row[k] = _wf_buf[idx][i][j][k];
+}
+
+
+void WF::set_i_row_buf_mask(cdouble* i_row, cdouble* imask, const int j, const int k, const int idx){
     for(int i=0; i<_ni; i++)
-        _wf_buf[idx][i*_nk + k] = row[i]*imask[i];
+        _wf_buf[idx][i][j][k] = i_row[i]*imask[i];
+}
+
+void WF::set_j_row_buf_mask(cdouble* j_row, cdouble* jmask, const int i, const int k, const int idx){
+    for(int j=0; j<_nj; j++)
+        _wf_buf[idx][i][j][k] = j_row[j]*jmask[j];
+}
+
+void WF::set_k_row_buf_mask(cdouble* k_row, cdouble* kmask, const int i, const int j, const int idx){
+    for(int k=0; k<_nk; k++)
+        _wf_buf[idx][i][j][k] = k_row[j]*kmask[j];
 }
 
 
-void WF::get_from_buf(cdouble* arr, const int idx){
-    std::memcpy(arr, _wf_buf[idx],_ni*_nk*sizeof(cdouble));
+
+void WF::get_from_buf(cdouble*** arr, const int idx){
+    for(int i=0; i<_ni; i++){
+        for(int j=0; j<_nj; j++){
+            for(int k=0;k<_nk; k++){
+                arr[i][j][k] = _wf_buf[idx][i][j][k];
+            }
+        }
+    }
 }
 
-cdouble** WF::get_buf(){
+cdouble**** WF::get_buf(){
     return _wf_buf;
 }
 
@@ -211,74 +266,25 @@ cdouble* WF::get_diag_buf(){
     return _diag_buf;
 }
 
-cdouble WF::operator()(int i, int j){
-    return _wf[i*_nk + j];
+cdouble WF::operator()(int i, int j, int k){
+    return _wf[i][j][k];
 }
 
 void WF::operator/=(cdouble val){
     for(int i=0; i<_ni;i++){
-        for(int j=0; j<_nk;j++){
-            _wf[i*_nk + j] /= val;
+        for(int j=0; j<_nj;j++){
+            for(int k=0; k<_nk;k++){
+                _wf[i][j][k] /= val;
+            }
         }
     }
 }
 
-cdouble WF::_dip_0(){return 0.0;}
-void WF::_dip_buf_0(){}
-cdouble WF::_acc_0(){return 0.0;}
-void WF::_acc_buf_0(){}
-cdouble WF::_pop_0(double imin, double imax, double kmin, double kmax){return 0.0;}
-void WF::_pop_buf_0(double imin, double imax, double kmin, double kmax){}
-
-cdouble WF::acc_i(){
-    cdouble sum = (this->*(this->_acc_i))();
-    return sum; 
-}
-
-cdouble WF::acc_k(){
-    cdouble sum = (this->*(this->_acc_k))();
-    return sum;
-}
-
-cdouble WF::dip_i(){
-    cdouble sum = (this->*(this->_dip_i))();
-    return sum;
-}  
-
-cdouble WF::dip_k(){
-    cdouble sum = (this->*(this->_dip_k))();
-    return sum;
-}
-
-void WF::acc_i_buf(){
-    (this->*(this->_acc_i_buf))();
-}
-void WF::acc_k_buf(){
-    (this->*(this->_acc_k_buf))();
-}
-
-void WF::dip_i_buf(){
-    (this->*(this->_dip_i_buf))();
-}
-void WF::dip_k_buf(){
-    (this->*(this->_dip_k_buf))();
-}
-
-cdouble WF::pop(double imin, double imax, double kmin, double kmax){
-    return (this->*(this->_pop))(imin, imax, kmin, kmax);
-}
-
-void WF::pop_buf(double imin, double imax, double kmin, double kmax){
-    (this->*(this->_pop_buf))(imin, imax, kmin, kmax);
-}
-
 WF::~WF(){
-    delete[] _wf;
-    for(int i=0; i<_param->nt_diag;i++){
-        delete[] _wf_buf[i];
-    }
-    delete[] _wf_buf;
+    free3d(&_wf,_ni,_nj,_nk);
+    free4d(&_wf_buf,_ni,_nj,_nk,_param->nt_diag);
     delete[] _diag_buf;
-    delete[] _row;
-    delete[] _col;
+    delete[] _i_row;
+    delete[] _j_row;
+    delete[] _k_row;
 }

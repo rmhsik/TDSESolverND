@@ -4,9 +4,9 @@ import numpy as np
 w0 = 0.057
 pi = np.pi
 param = {"n_threads": 6,
-         "init_wf": 1,
-         "use_potential": 1,
-         "geometry": 0,
+         "init_wf": 0,
+         "use_potential": 0,
+         "geometry": 1,
          "ni": 10000,
          "imin": -200.0,
          "imax": 200.0,

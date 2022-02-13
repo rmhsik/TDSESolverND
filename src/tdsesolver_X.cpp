@@ -10,6 +10,7 @@
 
 void TDSESolver::_geom_X(){
     std::tie(_i,_di) = linspace<double>(_param->imin,_param->imax,_param->ni);
+    std::tie(_j,_dj) = linspace<double>(_param->jmin,_param->jmax,_param->nj);
     std::tie(_k,_dk) = linspace<double>(_param->kmin,_param->kmax,_param->nk);
     _propagate = &TDSESolver::_propagate_X;
     _ipropagate = &TDSESolver::_ipropagate_X;
@@ -44,8 +45,11 @@ void TDSESolver::_masks_X(){
         }
     }
     _kmask[0] = 1.0;
+    _jmask[0] = 1.0;
     path = "results/imask.dat";
     write_array(_imask,_param->ni,path);
+    path = "results/jmask.dat";
+    write_array(_jmask,_param->nj,path);
     path = "results/kmask.dat";
     write_array(_kmask,_param->nk,path);
 
@@ -57,10 +61,10 @@ void TDSESolver::_ipropagate_X(){
     std::cout<<"Norm: "<<_wf->norm()<<"\n";   
     for(int i=0; i<_param->nt_ITP; i++){
         cdouble *psi_row;
-        psi_row = _wf->row(0);
+        psi_row = _wf->i_row(0,0);
 
-        (_ham->*(_ham->step_i))(psi_row,0,0,1,0);
-        _wf->set_row(psi_row,0);
+        (_ham->*(_ham->step_i))(psi_row,0,0,0,1,0);
+        _wf->set_i_row(psi_row,0,0);
         norm = _wf->norm();
         (*_wf)/=norm;
         if(i%100 ==0){
@@ -70,7 +74,6 @@ void TDSESolver::_ipropagate_X(){
 
     std::cout<<"Norm: "<<_wf->norm()<<"\n";   
     std::string path = "results/itp_psi2.dat";
-    _wf->save_wf2(path);
     
     debug3("[TDSESolver->ipropagate] End imaginary propagation");
 
@@ -86,10 +89,10 @@ void TDSESolver::_propagate_X(){
     int idx;
     _wf->set_to_buf(0);
     for(int i=0; i<_param->nt; i++){
-        psi_row = _wf->row(0);
-        (_ham->*(_ham->step_i))(psi_row,0,i,0,0);
-        _wf->set_row(psi_row,0);
-        _wf->apply_mask(_imask,_kmask);
+        psi_row = _wf->i_row(0,0);
+        (_ham->*(_ham->step_i))(psi_row,0,0,i,0,0);
+        _wf->set_i_row(psi_row,0,0);
+        _wf->apply_mask(_imask,_jmask,_kmask);
         _wf->set_to_buf(i%_param->nt_diag);
 
         if((i+1)%_param->nt_diag==0 && i<(_param->nt - _param->nt%_param->nt_diag)){

@@ -47,7 +47,7 @@ void Probe::set_param(Parameters *param){
     _param = param;
 }
 
-void Probe::set_geometry(double* i, double *k, const double di, const double dk){
+void Probe::set_geometry(double* i, double *j, double *k, const double di, const double dj, const double dk){
     _i = i; _k = k; _ni = _param->ni; _nk =_param-> nk; 
     _di = di; _dk = dk; 
     _nt_diag = _param->nt_diag; 

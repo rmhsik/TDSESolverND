@@ -24,7 +24,7 @@ void Hamiltonian::_allocate_X(){
 
 }
 
-void Hamiltonian::step_i_X(cdouble *psi, const int j, const int ti, const int imag,const int id_thread){
+void Hamiltonian::step_i_X(cdouble *psi, const int j, const int k, const int ti, const int imag,const int id_thread){
     cdouble H_du;
     cdouble H_d;
     cdouble H_dl;
@@ -36,7 +36,7 @@ void Hamiltonian::step_i_X(cdouble *psi, const int j, const int ti, const int im
     cdouble b = 1.0/(2.0*_di*_di); 
     for(int i=0;i<_ni;i++){
         H_du = -b + I*1.0/(2.0*C*_di)*afield_i;
-        H_d  =  a + _potential_fn(_i[i],0,_t[ti]) + 0.5*afield_i*afield_i/(C*C);
+        H_d  =  a + _potential_fn(_i[i],0,0,_t[ti]) + 0.5*afield_i*afield_i/(C*C);
         H_dl = -b - I*1.0/(2.0*C*_di)*afield_i;
 
         _Mi_du[i] = I*H_du*dt/2.0;
@@ -53,7 +53,7 @@ void Hamiltonian::step_i_X(cdouble *psi, const int j, const int ti, const int im
     }
 }
 
-cdouble Hamiltonian::ener_X(cdouble *psi){
+cdouble Hamiltonian::ener_X(cdouble ***psi){
     cdouble integral=0.0;
 
     cdouble *temp;
@@ -70,20 +70,20 @@ cdouble Hamiltonian::ener_X(cdouble *psi){
     
     for(int i=0;i<_ni;i++){
         H_du[i] = -b;
-        H_d[i]  =  a + _potential_fn(_i[i],0,0);
+        H_d[i]  =  a + _potential_fn(_i[i],0,0,0);
         H_dl[i] = -b;
-        row[i] = psi[i*_nk + 0];
+        row[i] = psi[i][0][0];
     }
     tridot(H_dl, H_d, H_du, row, temp, _ni);
     
     for(int i=0; i<_ni; i++){
         integral += conj(row[i])*temp[i]*_di;
     }
-    delete temp;
-    delete row;
-    delete H_du;
-    delete H_d;
-    delete H_dl; 
+    delete[] temp;
+    delete[] row;
+    delete[] H_du;
+    delete[] H_d;
+    delete[] H_dl; 
     return integral; 
 }
 

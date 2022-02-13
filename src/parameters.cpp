@@ -54,7 +54,7 @@ Parameters::Parameters(){
         phiEj       = 0.0;
         phiEk       = 0.0;
         phiBi       = 0.0;
-        pgiBj       = 0.0;
+        phiBj       = 0.0;
         phiBk       = 0.0;
         
         // Diagnostics selection and parameters

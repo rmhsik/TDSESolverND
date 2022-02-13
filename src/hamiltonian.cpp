@@ -33,29 +33,35 @@ Hamiltonian::Hamiltonian(Parameters *param){
             _potential = &potential;
 }
 
-void Hamiltonian::set_geometry(double *i, double *k, double *t, const double di, const double dk, const double dt){
-    _i = i; _k = k; _t = t; _di = di; _dk = dk; _dt = dt;
+void Hamiltonian::set_geometry(double *i, double *j, double *k, double *t, const double di, const double dj, const double dk, const double dt){
+    _i = i; _j = j; _k = k; _t = t; _di = di; _dj = dj ; _dk = dk; _dt = dt;
 }
 
-void Hamiltonian::set_fields(Field* field1, Field* field2, Field* field3, Field* field4){
+void Hamiltonian::set_fields(Field* field1, Field* field2, Field* field3, Field* field4, Field* field5, Field* field6){
     Afield_i = field1;
-    Afield_k = field2;
-    Bfield_i = field3;
-    Bfield_k = field4;
+    Afield_j = field2;
+    Afield_k = field3;
+    Bfield_i = field4;
+    Bfield_j = field5;
+    Bfield_k = field6;
 
 }
 
-cdouble Hamiltonian::_potential_fn(double i, double k, double t){
-    return (*_potential)(i,k,t,this);
+cdouble Hamiltonian::_potential_fn(double i, double j, double k, double t){
+    return (*_potential)(i,j,k,t,this);
     //return potential(i,k,t, this);
 }
 
-cdouble Hamiltonian::dpotential_i(double i, double k){
-    return (_potential_fn(i + _di,k,0) - _potential_fn(i - _di,k,0))/(2.0*_di);
+cdouble Hamiltonian::dpotential_i(double i, double j, double k){
+    return (_potential_fn(i + _di,j,k,0) - _potential_fn(i - _di,j,k,0))/(2.0*_di);
 }
 
-cdouble Hamiltonian::dpotential_k(double i, double k){
-    return (_potential_fn(i,k + _dk,0) - _potential_fn(i,k - _dk,0))/(2.0*_dk);
+cdouble Hamiltonian::dpotential_j(double i, double j, double k){
+    return (_potential_fn(i,j+_dj,k,0) - _potential_fn(i,j-_dj, k,0))/(2.0*_dj);
+}
+
+cdouble Hamiltonian::dpotential_k(double i, double j, double k){
+    return (_potential_fn(i,j,k + _dk,0) - _potential_fn(i,j,k - _dk,0))/(2.0*_dk);
 }
 
 void Hamiltonian::tridot(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* vec, cdouble* out, const int n){

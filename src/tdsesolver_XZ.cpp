@@ -11,6 +11,7 @@
 
 void TDSESolver::_geom_XZ(){
     std::tie(_i,_di) = linspace<double>(_param->imin,_param->imax,_param->ni);
+    std::tie(_j,_dj) = linspace<double>(_param->jmin,_param->jmax,_param->nj);
     std::tie(_k,_dk) = linspace<double>(_param->kmin,_param->kmax,_param->nk);
     _propagate = &TDSESolver::_propagate_XZ;
     _ipropagate = &TDSESolver::_ipropagate_XZ;
@@ -68,8 +69,11 @@ void TDSESolver::_masks_XZ(){
             _kmask[i] = 1.0;
         }
     }
+    _jmask[0] = 1.0;
     path = "results/imask.dat";
     write_array(_imask,_param->ni,path);
+    path = "results/jmask.dat";
+    write_array(_jmask,_param->nj,path);
     path = "results/kmask.dat";
     write_array(_kmask,_param->nk,path);
 }
@@ -77,172 +81,79 @@ void TDSESolver::_masks_XZ(){
 void TDSESolver::_ipropagate_XZ(){
     cdouble ener = 0.0;
     cdouble norm;
-    cdouble *psi_col, *psi_row;
+    cdouble **psi_i_row, **psi_k_row;
     const int ni = _param->ni;
     const int nk = _param->nk;
-    psi_col = new cdouble [_param->nk*_param->n_threads];
-    psi_row = new cdouble [_param->ni*_param->n_threads];
+    psi_i_row = alloc2d<cdouble>(_param->n_threads, ni);
+    psi_k_row = alloc2d<cdouble>(_param->n_threads, nk);
 
-    for(int j=0; j<_param->nt_ITP;j++){
+    for(int n=0; n<_param->nt_ITP;n++){
         #pragma omp parallel for schedule(dynamic)
         for(int i=0;i<ni;i++){
             int id_thread = omp_get_thread_num();
-            for(int k=0;k<nk;k++)
-                psi_col[id_thread*nk + k] = _wf->get()[i*nk+k];
-            (_ham->*(_ham->step_k))(&psi_col[id_thread*nk],i,0,1,id_thread);
-            _wf->set_col(&psi_col[id_thread*nk],i);
+            _wf->get_k_row(psi_k_row[id_thread],i,0);
+            (_ham->*(_ham->step_k))(psi_k_row[id_thread],i,0,0,1,id_thread);
+            _wf->set_k_row(psi_k_row[id_thread],i,0);
         }
         
         #pragma omp parallel for schedule(dynamic)
         for(int k=0;k<nk;k++){
             int id_thread = omp_get_thread_num();
-            for(int i=0;i<ni;i++)
-                psi_row[id_thread*ni + i] = _wf->get()[i*nk+k];
-            (_ham->*(_ham->step_i))(&psi_row[id_thread*ni],k,0,1,id_thread);
-            _wf->set_row(&psi_row[id_thread*ni],k);
+            _wf->get_i_row(psi_i_row[id_thread],0,k);
+            (_ham->*(_ham->step_i))(psi_i_row[id_thread],0,k,0,1,id_thread);
+            _wf->set_i_row(psi_i_row[id_thread],0,k);
         }
         
         norm = _wf->norm();
         (*_wf) /= norm;
-        if(j%50==0){
+        if(n%50==0){
             ener = (_ham->*(_ham->ener))(_wf->get());
             std::cout<<"Norm: "<< norm<<" Ener: "<<ener<<"\n";
         }
     }
     std::cout<<"Ener: "<<ener<<"\n";
-    delete psi_col;
-    delete psi_row;
+    free2d(&psi_i_row,_param->n_threads,ni);
+    free2d(&psi_k_row,_param->n_threads,nk);
 }
 
-/*
+
 void TDSESolver::_propagate_XZ(){
     cdouble norm, ener;
-    cdouble *acc_i_vec, *acc_k_vec, *dip_vec, *pop_vec;
-    cdouble *psi_col, *psi_row;
-    int idx;
-    const int ni = _param->ni;
-    const int nk = _param->nk;
-    std::string path;
-
-    acc_i_vec = new cdouble [_param->nt];
-    acc_k_vec = new cdouble [_param->nt];
-    dip_vec = new cdouble [_param->nt];
-    pop_vec = new cdouble [_param->nt]; 
-
-    psi_col = new cdouble [_param->nk*_param->n_threads];
-    psi_row = new cdouble [_param->ni*_param->n_threads];
-
-    //wf_ptr = _wf.get_buf();
-    _wf->set_to_buf(0); 
-    for(int j=0; j<_param->nt;j++){
-        #pragma omp parallel for schedule(dynamic)
-        for(int i=0;i<ni;i++){
-            cdouble *wf_ptr;
-            wf_ptr = _wf->get_buf();
-            int id_thread = omp_get_thread_num();
-            for(int k=0;k<nk;k++)
-                psi_col[id_thread*nk + k] = wf_ptr[j%_param->nt_diag*ni*nk+i*nk+k];
-            (_ham->*(_ham->step_k))(&psi_col[id_thread*nk],(*Afield_k)[j],(*Bfield_k)[j],i,0,id_thread);
-            _wf->set_col_buf_mask(&psi_col[id_thread*nk],_kmask, i,(j+1)%_param->nt_diag);
-        }
-        
-        #pragma omp parallel for schedule(dynamic)
-        for(int k=0;k<nk;k++){
-            cdouble *wf_ptr;
-            wf_ptr = _wf->get_buf();
-            int id_thread = omp_get_thread_num();
-            for(int i=0;i<ni;i++)
-                psi_row[id_thread*ni + i] = wf_ptr[(j+1)%_param->nt_diag*ni*nk+i*nk+k];
-            (_ham->*(_ham->step_i))(&psi_row[id_thread*ni],(*Afield_i)[j],(*Bfield_k)[j],k,0,id_thread);
-            _wf->set_row_buf_mask(&psi_row[id_thread*ni],_imask,k,(j+1)%_param->nt_diag);
-        }
-        //_wf.apply_mask_buf_RZ(_imask,_kmask,(j+1)%_param->nt_diag);
-        //_wf.set_to_buf(j%_param->nt_diag);
-        //acc_vec[j] = _wf.acc();
-        //dip_vec[j] = _wf.dipole();
-        if ((j+2)%_param->nt_diag==0 && j<(_param->nt-_param->nt%_param->nt_diag)){ 
-            idx = j - _param->nt_diag + 2;
-            _wf->dip_k_buf();
-            std::memcpy(&dip_vec[idx], _wf->get_diag_buf(), _param->nt_diag*sizeof(cdouble));
-            _wf->acc_k_buf();
-            std::memcpy(&acc_k_vec[idx], _wf->get_diag_buf(), _param->nt_diag*sizeof(cdouble));
-            _wf->acc_i_buf();
-            std::memcpy(&acc_i_vec[idx], _wf->get_diag_buf(), _param->nt_diag*sizeof(cdouble));
-            _wf->pop_buf(_param->pop_imin, _param->pop_imax, _param->pop_kmin, _param->pop_kmax);
-            std::memcpy(&pop_vec[idx], _wf->get_diag_buf(), _param->nt_diag*sizeof(cdouble)); 
-            //norm = _wf.norm();
-            //ener = (_ham->>*(_ham->>ener))(_wf.get());
-            //std::cout<<j<<" ACC: "<< acc_vec[j]<<"\n";
-        }
-    }
-    // Get last batch of diagnostics from last idx up to _paran.nt
-    _wf->dip_k_buf();
-    std::memcpy(&dip_vec[idx+1],_wf->get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
-    _wf->acc_k_buf();
-    std::memcpy(&acc_k_vec[idx+1],_wf->get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
-    _wf->acc_i_buf();
-    std::memcpy(&acc_i_vec[idx+1],_wf->get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
-    _wf->pop_buf(_param->pop_imin, _param->pop_imax, _param->pop_kmin, _param->pop_kmax);
-    std::memcpy(&pop_vec[idx+1],_wf->get_diag_buf(),(_param->nt%_param->nt_diag-1)*sizeof(cdouble));
-    cdouble valaccmask;
-    for(int j=0; j<_param->nt; j++){
-        valaccmask = _accmask[j];
-        acc_i_vec[j] *= valaccmask;
-        acc_k_vec[j] *= valaccmask;
-        dip_vec[j] *= valaccmask;
-    }
-    write_array(acc_i_vec,_param->nt,_param->acc_i_path);
-    write_array(acc_k_vec,_param->nt,_param->acc_k_path);
-    write_array(dip_vec,_param->nt,_param->dip_k_path);
-    write_array(pop_vec,_param->nt,_param->pop_path);
-    delete acc_i_vec;
-    delete acc_k_vec;
-    delete dip_vec;
-    delete pop_vec;
-}
-*/
-void TDSESolver::_propagate_XZ(){
-    cdouble norm, ener;
-    cdouble *acc_i_vec, *acc_k_vec, *dip_vec, *pop_vec;
-    cdouble *psi_col, *psi_row;
+    cdouble **psi_i_row, **psi_k_row;
     int idx;
     const int ni = _param->ni;
     const int nk = _param->nk;
 
-    psi_col = new cdouble [_param->nk*_param->n_threads];
-    psi_row = new cdouble [_param->ni*_param->n_threads];
+    psi_i_row = alloc2d<cdouble>(_param->n_threads, ni);
+    psi_k_row = alloc2d<cdouble>( _param->n_threads, nk);
 
     //wf_ptr = _wf.get_buf();
     _wf->set_to_buf(0); 
-    for(int j=0; j<_param->nt;j++){
+    for(int n=0; n<_param->nt;n++){
         #pragma omp parallel for schedule(dynamic)
         for(int i=0;i<ni;i++){
-            cdouble **wf_ptr;
-            wf_ptr = _wf->get_buf();
             int id_thread = omp_get_thread_num();
-            for(int k=0;k<nk;k++)
-                psi_col[id_thread*nk + k] = wf_ptr[j%_param->nt_diag][i*nk+k];
-            (_ham->*(_ham->step_k))(&psi_col[id_thread*nk],i,j,0,id_thread);
-            _wf->set_col_buf_mask(&psi_col[id_thread*nk],_kmask, i,(j+1)%_param->nt_diag);
+            _wf->get_k_row_buf(psi_k_row[id_thread],i,0,n%_param->nt_diag);
+            (_ham->*(_ham->step_k))(psi_k_row[id_thread],i,0,n,0,id_thread);
+            _wf->set_k_row_buf_mask(psi_k_row[id_thread],_kmask, i,0,(n+1)%_param->nt_diag);
         }
         
         #pragma omp parallel for schedule(dynamic)
         for(int k=0;k<nk;k++){
-            cdouble **wf_ptr;
-            wf_ptr = _wf->get_buf();
             int id_thread = omp_get_thread_num();
-            for(int i=0;i<ni;i++)
-                psi_row[id_thread*ni + i] = wf_ptr[(j+1)%_param->nt_diag][i*nk+k];
-            (_ham->*(_ham->step_i))(&psi_row[id_thread*ni],k,j,0,id_thread);
-            _wf->set_row_buf_mask(&psi_row[id_thread*ni],_imask,k,(j+1)%_param->nt_diag);
+            _wf->get_i_row_buf(psi_i_row[id_thread],0,k,(n+1)%_param->nt_diag);
+            (_ham->*(_ham->step_i))(psi_i_row[id_thread],0,k,n,0,id_thread);
+            _wf->set_i_row_buf_mask(psi_i_row[id_thread],_imask,0,k,(n+1)%_param->nt_diag);
         }
 
-        if ((j+2)%_param->nt_diag==0 && j<(_param->nt-_param->nt%_param->nt_diag)){ 
-             idx = j - _param->nt_diag + 2;
+        if ((n+2)%_param->nt_diag==0 && n<(_param->nt-_param->nt%_param->nt_diag)){ 
+             idx = n - _param->nt_diag + 2;
              _diag->run_diagnostics(idx);
         }
     }
     //TODO: Get last batch of diagnostics from last idx up to _paran.nt
     _diag->write_diagnostics();
+    free2d(&psi_i_row,_param->n_threads,ni);
+    free2d(&psi_k_row,_param->n_threads,nk);
     
 }

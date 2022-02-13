@@ -71,6 +71,78 @@ std::tuple<T* ,double> linspace(T xi, T xf, int n){
     return std::make_tuple(grid, dx);
 }
 
+template <class T>
+T** alloc2d(const int ni, const int nj){
+    T **arr;
+    arr = new T*[ni];
+    for (int i=0; i<ni;i++){
+        arr[i] = new T[nj];
+    }
+    return arr;
+}
+
+template <class T>
+T*** alloc3d(const int ni, const int nj, const int nk){
+    T ***arr; 
+    arr = new T**[ni];
+    for(int i=0;i<ni;i++){
+        arr[i] = new T*[nj];
+        for(int j=0;j<nj;j++){
+            arr[i][j] = new T[nk];
+        }
+    }
+    return arr;
+}
+
+template <class T>
+T**** alloc4d(const int ni, const int nj, const int nk, const int n){
+    T ****arr;
+    arr = new T***[n];
+    for(int p=0; p<n; p++){
+        arr[p] = new T**[ni];
+        for(int i=0; i<ni;i++){
+            arr[p][i] = new T*[nj];
+            for(int j=0;j<nj;j++){
+                arr[p][i][j] = new T[nk];
+            }
+        }
+    }
+    return arr;
+}
+
+template <class T>
+void free2d(T ***arr, const int ni, const int nj){
+    for(int i=0; i<ni;i++){
+        delete[] (*arr)[i];
+    }
+    delete[] (*arr);
+}
+
+template <class T>
+void free3d(T ****arr, const int ni, const int nj, const int nk){
+    for(int i=0; i<ni;i++){
+        for(int j=0; j<nj;j++){
+            delete[] (*arr)[i][j];
+        }
+        delete[] (*arr)[i];
+    }
+    delete[] (*arr);
+}
+
+template <class T>
+void free4d(T *****arr, const int ni, const int nj, const int nk, const int n){
+    for(int p=0; p<n; p++){
+        for(int i=0; i<ni; i++){
+            for(int j=0; j<nj; j++){
+                delete[] (*arr)[p][i][j];
+            }
+            delete[] (*arr)[p][i];
+        }
+        delete[] (*arr)[p];
+    }
+    delete[] (*arr);
+}
+
 template void write_array<int>(int *arr,const int n, const std::string &path);
 template void write_array<double>(double *arr, const int n, const std::string &path);
 template void write_array<std::complex<double>>(std::complex<double> *arr,const int n, const std::string &path);
@@ -78,3 +150,22 @@ template void write_array<std::complex<double>>(std::complex<double> *arr,const 
 template std::tuple<int*,double> linspace<int>(int, int, int);
 template std::tuple<double*,double> linspace<double>(double, double, int);
 template std::tuple<std::complex<double>*,double> linspace<std::complex<double>>(std::complex<double>, std::complex<double>, int);
+
+template int**  alloc2d<int>(const int ni, const int nj);
+template double** alloc2d<double>(const int ni, const int nj);
+template std::complex<double>** alloc2d<std::complex<double>>(const int ni, const int nj);
+template void free2d<int>(int ***arr, const int ni, const int nj);
+template void free2d<double>(double ***arr, const int ni, const int nj);
+template void free2d<std::complex<double>>(std::complex<double> ***arr, const int ni, const int nj);
+template int*** alloc3d<int>(const int ni, const int nj, const int nk);
+template double*** alloc3d<double>(const int ni, const int nj, const int nk);
+template std::complex<double>*** alloc3d<std::complex<double>>(const int ni, const int nj, const int nk);
+template void free3d<int>(int ****arr, const int ni, const int nj, const int nk);
+template void free3d<double>(double ****arr, const int ni, const int nj, const int nk);
+template void free3d<std::complex<double>>(std::complex<double> ****arr, const int ni, const int nj, const int nk);
+template int**** alloc4d<int>(const int ni, const int nj, const int nk, const int n);
+template double**** alloc4d<double>( const int ni, const int nj, const int nk, const int n);
+template std::complex<double>**** alloc4d<std::complex<double>>(const int ni, const int nj, const int nk, const int n);
+template void free4d<int>(int *****arr, const int ni, const int nj, const int nk, const int n);
+template void free4d<double>(double *****arr, const int ni, const int nj, const int nk, const int n);
+template void free4d<std::complex<double>>(std::complex<double> *****arr, const int ni, const int nj, const int nk, const int n);
