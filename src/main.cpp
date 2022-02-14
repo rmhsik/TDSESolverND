@@ -7,10 +7,10 @@
 
 int main(){
     Parameters param;
-    param.n_threads = 4;
+    param.n_threads = 6;
 
-    param.geometry = RZ;
-    param.init_wf = EXPO;
+    param.geometry = XZ;
+    param.init_wf = GAUS;
     param.use_potential = 0;
     param.ni = 600;
     param.nk = 600;

@@ -243,7 +243,7 @@ void WF::set_j_row_buf_mask(cdouble* j_row, cdouble* jmask, const int i, const i
 
 void WF::set_k_row_buf_mask(cdouble* k_row, cdouble* kmask, const int i, const int j, const int idx){
     for(int k=0; k<_nk; k++)
-        _wf_buf[idx][i][j][k] = k_row[j]*kmask[j];
+        _wf_buf[idx][i][j][k] = k_row[k]*kmask[k];
 }
 
 

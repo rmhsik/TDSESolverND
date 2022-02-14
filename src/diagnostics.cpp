@@ -91,7 +91,6 @@ void Diagnostics::write_diagnostics(){
 
 
 Diagnostics::~Diagnostics(){
-    std::cout<<"Im here lol\n";
     for(int i=0;i<_n_probes;i++){
         delete _probe_vec[i];
     }
