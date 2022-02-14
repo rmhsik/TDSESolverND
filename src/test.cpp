@@ -25,6 +25,7 @@ int main(){
     double di = 2.0*imax/ni;
     double dk = 2.0*kmax/nk;
     double dj = 2.0*jmax/nj;
+    double norm;
     i = new double[ni];
     j = new double[nj];
     k = new double[nk];
@@ -58,6 +59,46 @@ int main(){
     }
 
     double integral = 0;
+    for(int ii=0; ii<ni/size_process;ii++){
+        for(int jj=0;jj<nj;jj++){
+            for(int kk=0;kk<nk;kk++){
+                integral += wf[ii][jj][kk]*wf[ii][jj][kk]*di*dj*dk;
+            }
+        }
+    }
+    MPI_Send(&integral,1,MPI_DOUBLE,0,0,MPI_COMM_WORLD);
+    if(num_process ==0){
+        double *integral_arr;
+        integral_arr = new double[size_process];
+        integral_arr[0] = integral;
+        for(int p=1;p<size_process;p++){
+           MPI_Recv(&integral_arr[p],1,MPI_DOUBLE,p,0,MPI_COMM_WORLD,&status); 
+        }
+        double sum = 0;
+        for(int p=0;p<size_process;p++){
+            sum += integral_arr[p];
+        }
+        std::cout<<"Integral: "<<sum<<std::endl;
+        norm = sum;
+        std::cout<<norm<<std::endl;
+    }
+    if(num_process==0){ 
+        for(int p=1;p<size_process;p++){
+            MPI_Send(&norm,1,MPI_DOUBLE,p,1,MPI_COMM_WORLD);
+        }
+    }
+    if(num_process!=0)
+        MPI_Recv(&norm,1,MPI_DOUBLE,0,1,MPI_COMM_WORLD,&status);
+
+    std::cout<<"n: "<<num_process<<" norm: "<<norm<<std::endl;
+    for(int ii=0; ii<ni/size_process;ii++){
+        for(int jj=0;jj<nj;jj++){
+            for(int kk=0;kk<nk;kk++){
+                wf[ii][jj][kk] /= sqrt(norm);
+            }
+        }
+    }
+    integral = 0.0;
     for(int ii=0; ii<ni/size_process;ii++){
         for(int jj=0;jj<nj;jj++){
             for(int kk=0;kk<nk;kk++){
