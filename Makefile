@@ -1,10 +1,15 @@
 detected_OS := $(shell uname)
+use_MPI := $(USE_MPI)
 
 ifeq ($(detected_OS),Linux)
 	CC = g++
 endif
 ifeq ($(detected_OS), Darwin)
 	CC = g++-11
+endif
+
+ifeq ($(use_MPI), Yes)
+	CC =  mpic++
 endif
 
 CFLAGS = -lm -O3 -fopenmp -ffast-math -g -Wall
@@ -20,6 +25,9 @@ SOURCES := $(wildcard $(SRC)*.cpp)
 OBJECTS := $(patsubst $(SRC)%.cpp,$(BUILD)%.o,$(SOURCES))
 
 all: TDSESolver
+
+test: $(SRC)/test.cpp
+	$(CC) -I$(INCLUDE) $(CFLAGS) $(SRC)/test.cpp -o test
 
 TDSESolver: $(LIB)libtdsesolver.so
 	mkdir -p results

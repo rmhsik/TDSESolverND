@@ -8,8 +8,10 @@ lib/
 build/
 __pycache__/
 .DS_Store
+a.out
+test*
 !tdsesolver.py
 !tdsesolver_X.cpp
 !tdsesolver_XZ.cpp
 !tdsesolver_RZ.cpp
-
+!test.cpp
