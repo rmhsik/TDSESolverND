@@ -22,7 +22,7 @@ TDSESolver::TDSESolver(Parameters *param){
     setup_ham();
     setup_wf();
     setup_masks();
-    setup_diagnostics();
+    //setup_diagnostics();
     }
 
 void TDSESolver::setup_time(){
@@ -44,9 +44,9 @@ void TDSESolver::setup_geometry(){
         case RZ:
             _geom_RZ();
             break;
-        //case XYZ:
-        //    _geom_XYZ();
-        //    break;
+        case XYZ:
+            _geom_XYZ();
+            break;
     }
     path = "results/i.dat";
     write_array(_i,_param->ni,path);
@@ -67,8 +67,8 @@ void TDSESolver::setup_fields(){
         case RZ:
             _fields_RZ();
             break;
-        //case XYZ:
-        //    _fields_XYZ();
+        case XYZ:
+            _fields_XYZ();
     }
 }
 
@@ -84,8 +84,13 @@ void TDSESolver::setup_wf(){
             break;
     } 
     cdouble norm = _wf->norm();
+    double tstart, tend;
+    std::cout<<"norm before: "<<norm<<std::endl;
     (*_wf) /= norm;
+    tstart = omp_get_wtime();
     norm = _wf->norm();
+    tend = omp_get_wtime();
+    std::cout<<"norm after: "<<norm<<" Time to calc norm: "<<tend-tstart<<std::endl;
 }
 
 void TDSESolver::setup_ham(){
@@ -112,9 +117,9 @@ void TDSESolver::setup_masks(){
         case RZ:
             _masks_RZ();        
             break;
-        //case XYZ:
-        //    _masks_XYZ();
-        //    break;
+        case XYZ:
+            _masks_XYZ();
+            break;
     }
 
 }
@@ -146,10 +151,10 @@ TDSESolver::~TDSESolver(){
     delete[] _jmask;
     delete[] _kmask;
     delete Afield_i;
-    //delete Afield_j;
+    delete Afield_j;
     delete Afield_k;
     delete Bfield_i;
-    //delete Bfield_j;
+    delete Bfield_j;
     delete Bfield_k;
     delete _wf;
     delete _ham;

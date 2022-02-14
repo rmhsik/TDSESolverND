@@ -71,6 +71,8 @@ class WF{
         void apply_mask_buf_RZ(cdouble* imask, cdouble *jmask, cdouble* kmask, const int idx);
         void apply_mask_XZ(cdouble* imask, cdouble *jmask, cdouble *kmask);
         void apply_mask_buf_XZ(cdouble* imask, cdouble *jmask, cdouble* kmask, const int idx);
+        void apply_mask_XYZ(cdouble* imask, cdouble *jmask, cdouble *kmask);
+        void apply_mask_buf_XYZ(cdouble* imask, cdouble *jmask, cdouble* kmask, const int idx);
         cdouble operator()(int i, int j, int k);
         void operator/= (cdouble val);        
 	~WF();

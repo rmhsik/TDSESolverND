@@ -31,7 +31,6 @@ void ProbeRZ::_acc_k(const int idx){
             for(int k=0; k< _nk; k++){
                 dV_k = _ham->dpotential_k(_i[i],0.0,_k[k]);
                 sum += 2*M_PI*_i[i]*conj(wf_buf[n][i][0][k])*(-1.0*dV_k) * wf_buf[n][i][0][k]*_di*_dk;
-                std::cout<<sum<<std::endl;
             }
         }
         _data[idx + n] = sum*_tempmask[idx+n];

@@ -9,7 +9,7 @@ int main(){
     Parameters param;
     param.n_threads = 6;
 
-    param.geometry = XZ;
+    param.geometry = RZ;
     param.init_wf = GAUS;
     param.use_potential = 0;
     param.ni = 600;
