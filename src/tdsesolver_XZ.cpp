@@ -149,13 +149,6 @@ void TDSESolver::_propagate_XZ(){
         if ((n+2)%_param->nt_diag==0 && n<(_param->nt-_param->nt%_param->nt_diag)){ 
              idx = n - _param->nt_diag + 2;
              _diag->run_diagnostics(idx);
-                cdouble norm = 0.0;
-                for(int i=0;i<ni;i++){
-                    for(int k=0;k<nk;k++){
-                        norm += conj(_wf->get_buf()[0][i][0][k])*_wf->get_buf()[0][i][0][k]*_di*_dk;
-                    }
-                }
-                std::cout<<norm<<std::endl;
         }
     }
     //TODO: Get last batch of diagnostics from last idx up to _paran.nt

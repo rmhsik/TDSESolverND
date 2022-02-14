@@ -13,7 +13,7 @@ int main(){
     param.init_wf = GAUS;
     param.use_potential = 0;
     param.ni = 600;
-    param.nk = 600;
+    param.nk = 1000;
     param.imin =  -120;
     param.imax =  120;
     param.kmin = -120;
@@ -38,7 +38,7 @@ int main(){
     param.E0i = 0.000;
     param.E0k = 0.067;
     param.B0i = 0.000;
-    param.B0k = 0.012;
+    param.B0k = 0.12;
 													
     param.phiEi = 0.0*M_PI;
     param.phiEk = 0.0;
@@ -47,8 +47,6 @@ int main(){
 
     param.n_probes = 2;
     param.probe_def = "acc_i,results/acc_i.dat;acc_k,results/acc_k.dat";
-    //param.acc_path = "results/acc7.dat";
-    //param.dip_path= "results/dip7.dat"; 
     param.check_param();
     param.print();
     TDSESolver *tdse;
