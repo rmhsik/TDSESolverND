@@ -21,7 +21,10 @@ void WF::set_geometry( double *i, double *j, double *k, const double di, const d
     _nk = _param->nk;
     
     _wf = alloc3d<cdouble>(_ni, _nj, _nk);
-    _wf_buf = alloc4d<cdouble>(_ni, _nj, _nk,_param->nt_diag);
+    if(_param->geometry == XYZ)
+        _wf_buf = alloc4d<cdouble>(_ni, _nj, _nk, 1);
+    else
+        _wf_buf = alloc4d<cdouble>(_ni, _nj, _nj, _param->nt_diag);
     _i_row = new cdouble[_ni];
     _j_row = new cdouble[_nj];
     _k_row = new cdouble[_nk];
@@ -101,7 +104,7 @@ cdouble WF::norm(){
             }
             break;
         case XYZ:
-            double sum;
+            double sum = 0.0;
             #pragma omp parallel for reduction(+:sum)
             for(int i=0;i<_ni;i++){
                 for(int j=0;j<_nj;j++){
@@ -304,7 +307,10 @@ void WF::operator/=(cdouble val){
 
 WF::~WF(){
     free3d(&_wf,_ni,_nj,_nk);
-    free4d(&_wf_buf,_ni,_nj,_nk,_param->nt_diag);
+    if(_param->geometry == XYZ)
+        free4d(&_wf_buf,_ni,_nj,_nk, 1);
+    else
+        free4d(&_wf_buf, _ni, _nj, _nk, _param->nt_diag);
     delete[] _diag_buf;
     delete[] _i_row;
     delete[] _j_row;

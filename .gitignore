@@ -14,4 +14,5 @@ test*
 !tdsesolver_X.cpp
 !tdsesolver_XZ.cpp
 !tdsesolver_RZ.cpp
+!tdsesolver_XYZ.cpp
 !test.cpp
