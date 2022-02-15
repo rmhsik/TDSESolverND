@@ -112,7 +112,9 @@ void TDSESolver::_ipropagate_XYZ(){
     psi_k_row = alloc2d<cdouble>(_param->n_threads,nk);
 
     for(int n=0; n<_param->nt_ITP;n++){
-        #pragma omp parallel for collapse(2) schedule(dynamic)
+        double tstart, tend;
+        tstart = omp_get_wtime();
+        #pragma omp parallel for collapse(1) schedule(dynamic)
         for(int j=0;j<nj;j++){
             for(int k=0;k<nk;k++){
                 int id = omp_get_thread_num();
@@ -122,7 +124,7 @@ void TDSESolver::_ipropagate_XYZ(){
             }
         }
 
-        #pragma omp parallel for collapse(2) schedule(dynamic)
+        #pragma omp parallel for collapse(1) schedule(dynamic)
         for(int i=0;i<ni;i++){
             for(int k=0;k<nk;k++){
                 int id = omp_get_thread_num();
@@ -132,7 +134,7 @@ void TDSESolver::_ipropagate_XYZ(){
             }
         }
 
-        #pragma omp parallel for collapse(2) schedule(dynamic)
+        #pragma omp parallel for collapse(1) schedule(dynamic)
         for(int i=0;i<ni;i++){
             for(int j=0;j<nj;j++){
                 int id = omp_get_thread_num();
@@ -141,11 +143,11 @@ void TDSESolver::_ipropagate_XYZ(){
                 _wf->set_k_row(psi_k_row[id],i,j);
             }
         }
-
         norm = _wf->norm();
         (*_wf) /= norm;
-        std::cout<<n<<std::endl;
-        if(n%200==0){
+        tend = omp_get_wtime();
+        std::cout<<"n: "<<n<<" timestep: "<<tend-tstart<<"\n";
+        if(n%5==0){
             ener = (_ham->*(_ham->ener))(_wf->get());
             std::cout<<"Norm: "<< norm<<" Ener: "<<ener<<"\n";
         }

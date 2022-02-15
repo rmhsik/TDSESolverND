@@ -296,6 +296,7 @@ cdouble WF::operator()(int i, int j, int k){
 }
 
 void WF::operator/=(cdouble val){
+    #pragma omp parallel for collapse(2) schedule(dynamic)
     for(int i=0; i<_ni;i++){
         for(int j=0; j<_nj;j++){
             for(int k=0; k<_nk;k++){
