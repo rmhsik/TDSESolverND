@@ -152,15 +152,33 @@ void WF::set_i_row(cdouble* i_row, int j, int k){
     }
 }
 
+void WF::set_i_row_mask(cdouble* i_row, cdouble* imask, int j, int k){
+    for(int i=0; i<_ni; i++){
+        _wf[i][j][k] = i_row[i]*imask[i];
+    }
+}
+
 void WF::set_j_row(cdouble* j_row, int i, int k){
     for(int j=0; j<_nj;j++){
         _wf[i][j][k] = j_row[j];
     }
 }
 
+void WF::set_j_row_mask(cdouble* j_row, cdouble *jmask, int i, int k){
+    for(int j=0; j<_nj;j++){
+        _wf[i][j][k] = j_row[j]*jmask[j];
+    }
+}
+
 void WF::set_k_row(cdouble* k_row, int i, int j){
     for(int k=0; k<_nk; k++){
         _wf[i][j][k] = k_row[k];
+    }
+}
+
+void WF::set_k_row_mask(cdouble* k_row, cdouble *kmask, int i, int j){
+    for(int k=0; k<_nk; k++){
+        _wf[i][j][k] = k_row[k]*kmask[k];
     }
 }
 

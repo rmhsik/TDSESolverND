@@ -4,7 +4,7 @@ import numpy as np
 w0 = 0.057
 pi = np.pi
 param = {"n_threads": 6,
-         "init_wf": 0,
+         "init_wf": 1,
          "use_potential": 0,
          "geometry": 3,
          "ni": 600,
@@ -13,7 +13,7 @@ param = {"n_threads": 6,
          "nj": 600,
          "jmin": -120.0,
          "jmax": 120.0,
-         "nk": 600,
+         "nk": 1000,
          "kmin": -120.0,
          "kmax": 120.0,
          "w0": w0,

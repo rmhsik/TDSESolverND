@@ -8,6 +8,7 @@ Hamiltonian::Hamiltonian(){
 Hamiltonian::Hamiltonian(Parameters *param){
     _param = param;
     _ni = _param->ni;
+    _nj = _param->nj;
     _nk = _param->nk;
     _nt = _param->nt;
 
@@ -28,6 +29,10 @@ Hamiltonian::Hamiltonian(Parameters *param){
             if(_param->use_potential == 0)
                 _potential = &potential_RZ;
             break;
+        case XYZ:
+            _allocate_XYZ();
+            if(_param->use_potential == 0)
+                _potential = &potential_XYZ;
     }    
     if(_param->use_potential != 0 )
             _potential = &potential;

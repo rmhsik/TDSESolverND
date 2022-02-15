@@ -41,8 +41,11 @@ class WF{
         cdouble* k_row(int i, int j);
         void set(cdouble*** arr);
         void set_i_row(cdouble* i_row, int j, int k);
+        void set_i_row_mask(cdouble* i_row, cdouble *imask, int j, int k);
         void set_j_row(cdouble* j_row, int i, int k);
+        void set_j_row_mask(cdouble* j_row, cdouble *jmask, int i, int k);
         void set_k_row(cdouble* k_row, int i, int j);
+        void set_k_row_mask(cdouble* k_row, cdouble *kmask, int i, int j);
         void get_i_row(cdouble* i_row, int j, int k);
         void get_j_row(cdouble* j_row, int i, int k);
         void get_k_row(cdouble* k_row, int i, int j);

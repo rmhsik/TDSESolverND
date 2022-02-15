@@ -26,3 +26,6 @@ cdouble potential_XZ( double i, double j, double k, double ti, Hamiltonian *ham)
 cdouble potential_RZ( double i, double j, double k, double ti, Hamiltonian *ham){
     return -1.0/sqrt(i*i + k*k );
 }
+cdouble potential_XYZ( double i, double j, double k, double ti, Hamiltonian *ham){
+    return -1.0/sqrt(i*i + k*k + j*j);
+}
