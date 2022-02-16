@@ -231,8 +231,8 @@ cdouble Hamiltonian::ener_XYZ(cdouble ***psi){
     cdouble a = 1.0/(_dj*_dj);
     cdouble b = 1.0/(2.0*_dj*_dj); 
     #pragma omp parallel for schedule(dynamic) collapse(1) reduction(+: integral_y)
-    for(int k=0;k<_nk;k++){
-        for(int i=0;i<_ni;i++){
+    for(int i=0;i<_ni;i++){
+        for(int k=0;k<_nk;k++){
             int id = omp_get_thread_num();
             for(int j=0;j<_nj;j++){
                 Hy_du[id*_nj + j] = -b;
