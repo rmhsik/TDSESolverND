@@ -160,5 +160,50 @@ void TDSESolver::_ipropagate_XYZ(){
 }
 
 void TDSESolver::_propagate_XYZ(){
-    std::cout<<"Someday this might be working :("<<std::endl;
+    cdouble **psi_i_row, **psi_j_row, **psi_k_row;
+    const int ni = _param->ni;
+    const int nj = _param->nj;
+    const int nk = _param->nk;
+    psi_i_row = alloc2d<cdouble>(_param->n_threads,ni);
+    psi_j_row = alloc2d<cdouble>(_param->n_threads,nj);
+    psi_k_row = alloc2d<cdouble>(_param->n_threads,nk);
+
+    for(int n=0; n<_param->nt;n++){
+        double tstart, tend;
+        tstart = omp_get_wtime();
+        #pragma omp parallel for collapse(1) schedule(dynamic)
+        for(int j=0;j<nj;j++){
+            for(int k=0;k<nk;k++){
+                int id = omp_get_thread_num();
+                _wf->get_i_row(psi_i_row[id],j,k);
+                (_ham->*(_ham->step_i))(psi_i_row[id],j,k,n,0,id);
+                _wf->set_i_row_mask(psi_i_row[id],_imask,j,k);
+            }
+        }
+
+        #pragma omp parallel for collapse(1) schedule(dynamic)
+        for(int i=0;i<ni;i++){
+            for(int k=0;k<nk;k++){
+                int id = omp_get_thread_num();
+                _wf->get_j_row(psi_j_row[id],i,k);
+                (_ham->*(_ham->step_j))(psi_j_row[id],i,k,n,0,id);
+                _wf->set_j_row_mask(psi_j_row[id],_jmask,i,k);
+            }
+        }
+
+        #pragma omp parallel for collapse(1) schedule(dynamic)
+        for(int i=0;i<ni;i++){
+            for(int j=0;j<nj;j++){
+                int id = omp_get_thread_num();
+                _wf->get_k_row(psi_k_row[id],i,j);
+                (_ham->*(_ham->step_k))(psi_k_row[id],i,j,n,0,id);
+                _wf->set_k_row_mask(psi_k_row[id],_kmask,i,j);
+            }
+        }
+        tend = omp_get_wtime();
+        std::cout<<"n: "<<n<<"Time step: "<<tend-tstart<<std::endl;
+    }
+    free2d(&psi_i_row,_param->n_threads,ni);
+    free2d(&psi_j_row,_param->n_threads,nj);
+    free2d(&psi_k_row,_param->n_threads,nk);
 }
