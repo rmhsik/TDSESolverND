@@ -8,14 +8,6 @@
 #include "parameters.h"
 #include "probe_factory.h"
 
-#define ACC_I 0
-#define ACC_K 1
-#define DIP_I 2
-#define DIP_K 3
-#define POP   4
-#define DENS  5
-#define WFSNAP 6
-
 class Diagnostics{
     private:
         std::vector<Probe*> _probe_vec;

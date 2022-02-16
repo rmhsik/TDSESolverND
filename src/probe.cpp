@@ -111,12 +111,12 @@ void Probe::_parse_def(){
         _data_path = parsed[5];
     }
 
-    std::cout<<"type: "<<_type<<std::endl;   
-    std::cout<<"int_imin: "<<_int_imin<<std::endl;   
-    std::cout<<"int_imax: "<<_int_imax<<std::endl;   
-    std::cout<<"int_kmin: "<<_int_kmin<<std::endl;   
-    std::cout<<"int_kmax: "<<_int_kmax<<std::endl;   
-    std::cout<<"data_path: "<<_data_path<<std::endl;   
+    std::cout<<"\ttype: "<<_type<<std::endl;   
+    std::cout<<"\tint_imin: "<<_int_imin<<std::endl;   
+    std::cout<<"\tint_imax: "<<_int_imax<<std::endl;   
+    std::cout<<"\tint_kmin: "<<_int_kmin<<std::endl;   
+    std::cout<<"\tint_kmax: "<<_int_kmax<<std::endl;   
+    std::cout<<"\tdata_path: "<<_data_path<<std::endl;   
 }
 
 void Probe::calc(const int idx){
