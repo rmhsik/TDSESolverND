@@ -7,7 +7,6 @@ void Hamiltonian::_allocate_XYZ(){
     step_j = &Hamiltonian::step_j_XYZ;
     ener = &Hamiltonian::ener_XYZ;
 
-    std::cout<<"here\n";
     _Mk_du = new cdouble[_param->n_threads*_nk];
     _Mk_d  = new cdouble[_param->n_threads*_nk];
     _Mk_dl = new cdouble[_param->n_threads*_nk];

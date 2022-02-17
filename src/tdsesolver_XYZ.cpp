@@ -200,9 +200,11 @@ void TDSESolver::_propagate_XYZ(){
                 _wf->set_k_row_mask(psi_k_row[id],_kmask,i,j);
             }
         }
+        _diag->run_diagnostics(n);
         tend = omp_get_wtime();
         std::cout<<"n: "<<n<<"Time step: "<<tend-tstart<<std::endl;
     }
+    _diag->write_diagnostics();
     free2d(&psi_i_row,_param->n_threads,ni);
     free2d(&psi_j_row,_param->n_threads,nj);
     free2d(&psi_k_row,_param->n_threads,nk);

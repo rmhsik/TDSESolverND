@@ -1,4 +1,5 @@
 #include "probe.XYZ.h"
+#include <iostream>
 
 ProbeXYZ::ProbeXYZ(): Probe(){}
 
