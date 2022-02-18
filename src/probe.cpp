@@ -15,11 +15,17 @@ Probe::Probe(std::string def){
         case ACC_I:
             _calc = &Probe::_acc_i;
             break;
+        case ACC_J:
+            _calc = &Probe::_acc_j;
+            break;
         case ACC_K:
             _calc = &Probe::_acc_k;
             break;
         case DIP_I:
             _calc = &Probe::_dip_i;
+            break;
+        case DIP_J:
+            _calc = &Probe::_dip_j;
             break;
         case DIP_K:
             _calc = &Probe::_dip_k;
@@ -32,6 +38,7 @@ Probe::Probe(std::string def){
             break;
         case WFSNAP:
             _calc = &Probe::_wf_snap;
+            break;
     } 
 }
 
