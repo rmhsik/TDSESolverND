@@ -46,10 +46,10 @@ void Hamiltonian::step_i_XYZ(cdouble *psi_i_row, const int j, const int k, const
 
     cdouble a = 1.0/(_di*_di) + 0.5*afield_i*afield_i/(C*C);
     cdouble b = 1.0/(2.0*_di*_di);
-    Hx_du = -b - I*1.0/(2.0*C*_di)*afield_i;
-    Hx_dl = -b + I*1.0/(2.0*C*_di)*afield_i;
+    Hx_du = -b - I*1.0/(2.0*C*_di)*afield_i + I/(2.0*_di)*bfield_k*_j[j];
+    Hx_dl = -b + I*1.0/(2.0*C*_di)*afield_i - I/(2.0*_di)*bfield_k*_j[j];
     for(int i=0;i<_ni;i++){
-        Hx_d  =  a + 1.0/3.0*_potential_fn(_i[i],_j[j],_k[k],_t[ti]) + 1.0/3.0*0.125*bfield_k*bfield_k*_i[i]*_i[i];
+        Hx_d  =  a + 1.0/3.0*_potential_fn(_i[i],_j[j],_k[k],_t[ti]) + 1.0/3.0*0.125*bfield_k*bfield_k*(_i[i]*_i[i]+_j[j]*_j[j]);
 
         _Mi_du[id_thread*_ni + i] = I*Hx_du*dt/2.0;
         _Mi_d[id_thread*_ni + i]  = 1.0 + I*Hx_d*dt/2.0;
@@ -82,10 +82,10 @@ void Hamiltonian::step_j_XYZ(cdouble *psi_j_row, const int i, const int k, const
 
     cdouble a = 1.0/(_dj*_dj)+0.5*afield_j*afield_j/(C*C);
     cdouble b = 1.0/(2.0*_dj*_dj);
-    Hy_du = -b - I*1.0/(2.0*C*_dj)*afield_j;
-    Hy_dl = -b + I*1.0/(2.0*C*_dj)*afield_j;
+    Hy_du = -b - I*1.0/(2.0*C*_dj)*afield_j-I/(2.0*_dj)*bfield_k*_i[i];
+    Hy_dl = -b + I*1.0/(2.0*C*_dj)*afield_j+I/(2.0*_dj)*bfield_k*_i[i];
     for(int j=0;j<_nj;j++){
-        Hy_d  =  a + 1.0/3.0*_potential_fn(_i[i],_j[j],_k[k],_t[ti]) + 1.0/3.0*0.125*bfield_k*bfield_k*_i[i]*_i[i];
+        Hy_d  =  a + 1.0/3.0*_potential_fn(_i[i],_j[j],_k[k],_t[ti]) + 1.0/3.0*0.125*bfield_k*bfield_k*(_i[i]*_i[i]+_j[j]*_j[j]);
 
         _Mj_du[id_thread*_nj + j] = I*Hy_du*dt/2.0;
         _Mj_d[id_thread*_nj + j]  = 1.0 + I*Hy_d*dt/2.0;
@@ -120,7 +120,7 @@ void Hamiltonian::step_k_XYZ(cdouble *psi_k_row, const int i, const int j, const
     Hz_du = -b - I*1.0/(2.0*C*_dk)*afield_k;
     Hz_dl = -b + I*1.0/(2.0*C*_dk)*afield_k;
     for(int k=0;k<_nk;k++){
-        Hz_d  =  a + 1.0/3.0*_potential_fn(_i[i],_j[j],_k[k],_t[ti]) + 1.0/3.0*0.125*bfield_k*bfield_k*_i[i]*_i[i];
+        Hz_d  =  a + 1.0/3.0*_potential_fn(_i[i],_j[j],_k[k],_t[ti]) + 1.0/3.0*0.125*bfield_k*bfield_k*(_i[i]*_i[i]+_j[j]*_j[j]);
 
         _Mk_du[id_thread*_nk + k] = I*Hz_du*dt/2.0;
         _Mk_d[id_thread*_nk + k]  = 1.0 + I*Hz_d*dt/2.0;
