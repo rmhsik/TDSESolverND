@@ -33,18 +33,19 @@ param = {"n_threads": 6,
          "w0Bj": w0,
          "w0Bk": w0,
          "E0i": 0.000,
-         "E0j": 0.000,
-         "E0k": 0.067,
+         "E0j": 0.067,
+         "E0k": 0.000,
          "B0i": 0.00,
          "B0j": 0.00,
-         "B0k": 0.12,
+         "B0k": 0.,
          "phiEi": 0.0*pi,
          "phiEj": 0.0*pi,
          "phiEk": 0.0*pi,
          "phiBi": 0.0*pi,
          "phiBj": 0.0*pi,
          "phiBk": 0.0*pi,
-         "n_probes": 2,
+         "n_probes": 3,
          "probe_def": ("acc_i,results/acc_i.dat;"
+                       "acc_j,results/acc_j.dat;"
                        "acc_k,results/acc_k.dat")
         }

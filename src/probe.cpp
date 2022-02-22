@@ -90,6 +90,8 @@ void Probe::_parse_def(){
     }
     if(parsed[0] == "acc_i") 
         _type = ACC_I;
+    else if(parsed[0] == "acc_j")
+        _type = ACC_J;
     else if(parsed[0] == "acc_k")
         _type = ACC_K;
     else if(parsed[0] == "dip_i")
@@ -103,7 +105,7 @@ void Probe::_parse_def(){
     else if(parsed[0] == "wf")
         _type = WFSNAP;
 
-    if (_type == ACC_I || _type == ACC_K || _type == DENS || _type == WFSNAP){
+    if (_type == ACC_I || _type == ACC_K || _type == ACC_J || _type == DENS || _type == WFSNAP){
         _data_path = parsed[1];
         _int_imin = 0.0;
         _int_imax = 0.0;
