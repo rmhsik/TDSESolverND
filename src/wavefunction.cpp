@@ -24,7 +24,7 @@ void WF::set_geometry( double *i, double *j, double *k, const double di, const d
     if(_param->geometry == XYZ)
         _wf_buf = alloc4d<cdouble>(_ni, _nj, _nk, 1);
     else
-        _wf_buf = alloc4d<cdouble>(_ni, _nj, _nj, _param->nt_diag);
+        _wf_buf = alloc4d<cdouble>(_ni, _nj, _nk, _param->nt_diag);
     _i_row = new cdouble[_ni];
     _j_row = new cdouble[_nj];
     _k_row = new cdouble[_nk];
