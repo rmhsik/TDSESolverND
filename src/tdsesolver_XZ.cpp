@@ -33,6 +33,8 @@ void TDSESolver::_fields_XZ(){
     write_array(Bfield_i->get(),_param->nt,path);
     path = "results/Bfield_k.dat";
     write_array(Bfield_k->get(),_param->nt,path);
+    Afield_j = NULL;
+    Bfield_j = NULL;
 }
 
 void TDSESolver::_masks_XZ(){

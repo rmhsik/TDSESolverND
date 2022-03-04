@@ -24,8 +24,10 @@ void TDSESolver::_fields_X(){
     path = "results/Afield_i.dat";
     write_array(Afield_i->get(),_param->nt,path);
     Afield_k = NULL;
+    Afield_j = NULL;
     Bfield_i = NULL;
     Bfield_k = NULL;
+    Bfield_j = NULL;
 }
 
 void TDSESolver::_masks_X(){
