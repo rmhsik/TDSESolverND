@@ -31,6 +31,7 @@ test: $(SRC)/test.cpp
 
 TDSESolver: $(LIB)libtdsesolver.so
 	mkdir -p results
+	mkdir -p data
 	$(CC) -L$(LIB) -ltdsesolver -I$(INCLUDE) $(CFLAGS) $(SRC)/main.cpp -o TDSESolver
 
 $(LIB)libtdsesolver.so: $(OBJECTS)

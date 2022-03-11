@@ -10,6 +10,8 @@ __pycache__/
 .DS_Store
 a.out
 test*
+data.txt
+data.txt.bak
 !tdsesolver.py
 !tdsesolver_X.cpp
 !tdsesolver_XZ.cpp
