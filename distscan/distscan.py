@@ -52,6 +52,7 @@ def main():
             phiidx = str(format(data[0],".8f")).replace('.','')
             _param["phiBk"] = data[0]
             _param["E0j"] = data[1]
+            _param["n_probes"] = 3
             _param["probe_def"] = (f"acc_i,results/acc_i_Es{Esidx}_Phi{phiidx}.dat;"
                                   f"acc_j,results/acc_j_Es{Esidx}_Phi{phiidx}.dat;"
                                   f"acc_k,results/acc_k_Es{Esidx}_Phi{phiidx}.dat")
@@ -59,6 +60,10 @@ def main():
             parameters = tdsesolver.Parameters()
             parameters.set(_param)
             parameters.print()
+            tdse = tdsesolver.TDSESolver(parameters._obj)
+
+            tdse.ipropagate()
+            tdse.propagate()
 
             f = h5py.File(f'data/hhg_circular_Es{Esidx}_Phi{phiidx}.hdf5','a')
             acc_i = LoadComplexData(f'results/acc_i_Es{Esidx}_Phi{phiidx}.dat')
@@ -71,7 +76,6 @@ def main():
             f.create_dataset(f'es', data=data[1])
             f.close()
             
-        time.sleep(0.2)
         comm.barrier()
         if rank == 0:
             for i in range(size):

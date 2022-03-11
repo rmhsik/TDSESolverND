@@ -3,7 +3,7 @@ import numpy as np
 
 w0 = 0.057
 pi = np.pi
-param = {"n_threads": 16,
+param = {"n_threads": 4,
          "init_wf": 1,
          "use_potential": 0,
          "geometry": 2,
@@ -32,19 +32,19 @@ param = {"n_threads": 16,
          "w0Bi": w0,
          "w0Bj": w0,
          "w0Bk": w0,
-         "E0i": 0.000,
+         "E0i": 0.067,
          "E0j": 0.000,
-         "E0k": 0.034,
+         "E0k": 0.067,
          "B0i": 0.00,
          "B0j": 0.00,
          "B0k": 0.00,
-         "phiEi": 0.0*pi,
+         "phiEi": 0.5*pi,
          "phiEj": 0.0*pi,
          "phiEk": 0.0*pi,
          "phiBi": 0.0*pi,
          "phiBj": 0.0*pi,
          "phiBk": 0.0*pi,
-         "n_probes": 2,
+         "n_probes": 3,
          "probe_def": ("dip_k,0,60,-100,100,results/dip_k_1.dat;"
                        "dip_k,0,10,-10,10,results/dip_k_2.dat;")
         }
