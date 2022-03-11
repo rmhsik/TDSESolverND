@@ -24,6 +24,14 @@ void Hamiltonian::_allocate_RZ(){
     _lhs_i = new cdouble[_param->n_threads*_ni];
     _res_i = new cdouble[_param->n_threads*_ni];
 
+    _Mj_du = new cdouble[_nj];
+    _Mj_d  = new cdouble[_nj];
+    _Mj_dl = new cdouble[_nj];
+    _Mpj_du = new cdouble[_nj];
+    _Mpj_d  = new cdouble[_nj];
+    _Mpj_dl = new cdouble[_nj];
+    _lhs_j = new cdouble[_nj];
+    _res_j = new cdouble[_nj];
 }
 
 

@@ -3,19 +3,19 @@ import numpy as np
 
 w0 = 0.057
 pi = np.pi
-param = {"n_threads": 4,
+param = {"n_threads": 16,
          "init_wf": 1,
          "use_potential": 0,
-         "geometry": 2,
-         "ni": 600,
-         "imin": 00.0,
-         "imax": 150.0,
-         "nj": 600,
+         "geometry": 3,
+         "ni": 100,
+         "imin": 100.0,
+         "imax": 100.0,
+         "nj": 100,
          "jmin": -100.0,
          "jmax": 100.0,
-         "nk": 600,
-         "kmin": -150.0,
-         "kmax": 150.0,
+         "nk": 100,
+         "kmin": -100.0,
+         "kmax": 100.0,
          "w0": w0,
          "period": 2*pi/w0,
          "tmax_ev": 4*2*pi/w0,
@@ -45,6 +45,7 @@ param = {"n_threads": 4,
          "phiBj": 0.0*pi,
          "phiBk": 0.0*pi,
          "n_probes": 3,
-         "probe_def": ("dip_k,0,60,-100,100,results/dip_k_1.dat;"
-                       "dip_k,0,10,-10,10,results/dip_k_2.dat;")
+         "probe_def": ("acc_i,results/acc_i_1.dat;"
+                       "acc_j,results/acc_j_1.dat;"
+                       "acc_k,results/acc_k_1.dat;")
         }

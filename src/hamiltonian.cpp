@@ -108,8 +108,16 @@ Hamiltonian::~Hamiltonian(){
     delete[] _Mpi_du;
     delete[] _Mpi_d;
     delete[] _Mpi_dl;
+    delete[] _Mj_du;
+    delete[] _Mj_d;
+    delete[] _Mj_dl;
+    delete[] _Mpj_du;
+    delete[] _Mpj_d;
+    delete[] _Mpj_dl;
     delete[] _lhs_i;
+    delete[] _lhs_j;
     delete[] _lhs_k;
     delete[] _res_i;
+    delete[] _res_j;
     delete[] _res_k;
 }

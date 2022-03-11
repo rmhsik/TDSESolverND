@@ -13,6 +13,14 @@ void Hamiltonian::_allocate_X(){
     _Mpi_dl = new cdouble[_ni];
     _lhs_i = new cdouble[_ni];
     _res_i = new cdouble[_ni];
+    _Mj_du = new cdouble[_nj];
+    _Mj_d  = new cdouble[_nj];
+    _Mj_dl = new cdouble[_nj];
+    _Mpj_du = new cdouble[_nj];
+    _Mpj_d  = new cdouble[_nj];
+    _Mpj_dl = new cdouble[_nj];
+    _lhs_j = new cdouble[_nj];
+    _res_j = new cdouble[_nj];
     _Mk_du = new cdouble[_nk];
     _Mk_d  = new cdouble[_nk];
     _Mk_dl = new cdouble[_nk];
