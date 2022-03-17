@@ -33,6 +33,9 @@ Probe::Probe(std::string def){
         case POP:
             _calc = &Probe::_pop;
             break;
+        case POP_0:
+            _calc = &Probe::_pop_0;
+	    break;
         case DENS:
             _calc = &Probe::_dens;
             break;
@@ -100,12 +103,14 @@ void Probe::_parse_def(){
         _type = DIP_K;
     else if(parsed[0] == "pop")
         _type = POP;
+    else if(parsed[0] == "pop_0")
+        _type = POP_0;
     else if(parsed[0] == "dens")
         _type = DENS;
     else if(parsed[0] == "wf")
         _type = WFSNAP;
 
-    if (_type == ACC_I || _type == ACC_K || _type == ACC_J || _type == DENS || _type == WFSNAP){
+    if (_type == ACC_I || _type == ACC_K || _type == ACC_J || _type == DENS || _type == WFSNAP || _type == POP_0){
         _data_path = parsed[1];
         _int_imin = 0.0;
         _int_imax = 0.0;

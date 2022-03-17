@@ -93,6 +93,22 @@ void ProbeXZ::_pop(const int idx){
     }
 }
 
+void ProbeXZ::_pop_0(const int idx){
+    cdouble*** wf_0 = _wf->get_ground();
+    cdouble**** wf_buf = _wf->get_buf();
+    
+    #pragma omp parallel for schedule(dynamic) 
+    for(int n=0; n<_nt_diag; n++){
+        cdouble sum=0.0;
+        for(int i=0;i<_ni;i++){
+            for(int k=0; k<_nk; k++){
+                sum += conj(wf_buf[n][i][0][k])*wf_0[i][0][k]*_di*_dk;
+            }
+        }
+        _data[idx + n] = sum;
+    }
+}
+
 void ProbeXZ::_dens(const int idx){}
 void ProbeXZ::_wf_snap(const int idx){}
 

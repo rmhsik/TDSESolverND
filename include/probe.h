@@ -11,6 +11,7 @@ enum t_probe {ACC_I,
 	      DIP_J, 
 	      DIP_K, 
 	      POP, 
+          POP_0,
 	      DENS, 
 	      WFSNAP};
 
@@ -35,12 +36,13 @@ class Probe{
         void _parse_def();
 
         virtual void _acc_i(const int idx){};
-	virtual void _acc_j(const int idx){};
+    	virtual void _acc_j(const int idx){};
         virtual void _acc_k(const int idx){};
         virtual void _dip_i(const int idx){};
-	virtual void _dip_j(const int idx){};
+	    virtual void _dip_j(const int idx){};
         virtual void _dip_k(const int idx){};
         virtual void _pop(const int idx){};
+        virtual void _pop_0(const int idx){};
         virtual void _dens(const int idx){};
         virtual void _wf_snap(const int idx){};
         void (Probe::*_calc)(const int idx);

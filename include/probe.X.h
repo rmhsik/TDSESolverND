@@ -10,6 +10,7 @@ class ProbeX: public Probe{
         void _dip_i(const int idx);
         void _dip_k(const int idx);
         void _pop(const int idx);
+        void _pop_0(const int idx);
         void _dens(const int idx);
         void _wf_snap(const int idx);
     public:

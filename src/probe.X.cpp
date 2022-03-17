@@ -57,6 +57,19 @@ void ProbeX::_pop(const int idx){
     }
 }
 
+void ProbeX::_pop_0(const int idx){
+
+    cdouble*** wf_0 = _wf->get_ground();
+    cdouble**** wf_buf = _wf->get_buf();
+    for (int n=0; n<_param->nt_diag; n++ ){
+        cdouble sum=0.0;
+        for(int i=0; i<_ni; i++){
+            sum += conj(wf_buf[n][i][0][0])*wf_0[i][0][0]*_di;
+        }
+        _data[idx+n] = sum;
+    }
+}
+
 void ProbeX::_dens(const int idx){
     int n = idx/_param->nt_diag;
     cdouble ****wf_buf = _wf->get_buf();

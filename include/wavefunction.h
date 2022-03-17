@@ -11,6 +11,7 @@
 class WF{
     private:
         cdouble ***_wf;
+	cdouble ***_wf_0;
         cdouble ****_wf_buf;
         cdouble *_diag_buf;
         cdouble *_i_row;
@@ -66,6 +67,9 @@ class WF{
 
         cdouble**** get_buf();
         cdouble* get_diag_buf();
+
+	void set_to_ground();
+	cdouble ***get_ground();
 
         cdouble norm();
         void apply_mask(cdouble* imask, cdouble *jmask, cdouble *kmask);

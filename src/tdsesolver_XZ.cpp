@@ -131,6 +131,7 @@ void TDSESolver::_propagate_XZ(){
 
     //wf_ptr = _wf.get_buf();
     _wf->set_to_buf(0); 
+    _wf->set_to_ground();
     for(int n=0; n<_param->nt;n++){
         #pragma omp parallel for schedule(dynamic)
         for(int i=0;i<ni;i++){
