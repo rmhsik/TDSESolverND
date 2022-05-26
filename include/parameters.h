@@ -14,6 +14,7 @@
 
 #define GAUS 0
 #define EXPO 1
+#define GAUS_ANTI 2
 
 #define C  137.04
 

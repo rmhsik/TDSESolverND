@@ -33,8 +33,10 @@ Hamiltonian::Hamiltonian(Parameters *param){
             _allocate_XYZ();
             if(_param->use_potential == 0)
                 _potential = &potential_XYZ;
+            if(_param->use_potential == 2)
+                _potential = &potential_argon_XYZ;
     }    
-    if(_param->use_potential != 0 )
+    if(_param->use_potential == 1 )
             _potential = &potential;
 }
 

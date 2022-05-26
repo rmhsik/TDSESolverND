@@ -11,7 +11,7 @@
 class WF{
     private:
         cdouble ***_wf;
-	cdouble ***_wf_0;
+	cdouble ****_eigen_wf;
         cdouble ****_wf_buf;
         cdouble *_diag_buf;
         cdouble *_i_row;
@@ -35,6 +35,7 @@ class WF{
         void set_geometry(double *i, double *j, double *k, const double di, const double dj, const double dk);
         void set_diagnostics();
         void gaussian(double i0, double j0, double k0, double sigma);
+        void gaussian_anti(double i0, double j0, double k0, double sigma);
         void exponential(double i0, double j0, double k0, double sigma);
         cdouble*** get();
         cdouble* i_row(int j, int k);
@@ -65,11 +66,16 @@ class WF{
         void set_k_row_buf_mask(cdouble* k_row, cdouble* kmask, const int i, const int j, const int idx);
         void get_from_buf(cdouble*** arr, const int idx);
 
+	void anti_sym_k();
+
         cdouble**** get_buf();
         cdouble* get_diag_buf();
 
 	void set_to_ground();
 	cdouble ***get_ground();
+
+	void set_to_eigen(int n);
+	cdouble ***get_eigen(int n);
 
         cdouble norm();
         void apply_mask(cdouble* imask, cdouble *jmask, cdouble *kmask);
@@ -80,8 +86,11 @@ class WF{
         void apply_mask_buf_XZ(cdouble* imask, cdouble *jmask, cdouble* kmask, const int idx);
         void apply_mask_XYZ(cdouble* imask, cdouble *jmask, cdouble *kmask);
         void apply_mask_buf_XYZ(cdouble* imask, cdouble *jmask, cdouble* kmask, const int idx);
+        cdouble project(cdouble ***phi);
+        void grand_schmidt();
         cdouble operator()(int i, int j, int k);
         void operator/= (cdouble val);        
+	void save_wf2(std::string name);
 	~WF();
 };
 

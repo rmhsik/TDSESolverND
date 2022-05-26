@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <cmath>
 #include <cstring>
+#include <vector>
 #include "debug.h"
 #include "utils.h"
 #include "wavefunction.h"
@@ -26,10 +27,7 @@ void WF::set_geometry( double *i, double *j, double *k, const double di, const d
     else
         _wf_buf = alloc4d<cdouble>(_ni, _nj, _nk, _param->nt_diag);
 
-    if(_param->geometry != XYZ)
-        _wf_0 = alloc3d<cdouble>(_ni,_nj,_nk);
-    else
-        _wf_0 = alloc3d<cdouble>(1,1,1);
+    _eigen_wf = alloc4d<cdouble>(_ni,_nj,_nk,5);
 
     _i_row = new cdouble[_ni];
     _j_row = new cdouble[_nj];
@@ -41,6 +39,18 @@ void WF::set_geometry( double *i, double *j, double *k, const double di, const d
         for(int j=0; j<_nj;j++){
             for(int k=0;k<_nk;k++){
                 _wf[i][j][k] = 0.0;
+            }
+        }
+    }
+
+
+    for(int n=0;n<5;n++){
+        for(int i=0;i<_ni;i++){
+            for(int j=0;j<_nj;j++){
+                for(int k=0;k<_nk;k++){
+                    //std::cout<<i<<" "<<k<<std::endl;
+                    _eigen_wf[n][i][j][k] = 0.0;
+                }
             }
         }
     }
@@ -73,7 +83,17 @@ void WF::gaussian(double i0, double j0, double k0, double sigma){
             }
         }
     }
+}
 
+void WF::gaussian_anti(double i0, double j0, double k0, double sigma){
+    #pragma omp parallel for schedule(dynamic)
+    for(int i=0; i<_ni; i++){
+        for(int j=0; j<_nj;j++){
+            for(int k=0; k<_nk; k++){
+                _wf[i][j][k] = _k[k]*exp(-(_i[i]-i0)*(_i[i]-i0)/sigma- (_j[j]-j0)*(_j[j]-j0)/sigma - (_k[k]-k0)*(_k[k]-k0)/sigma);
+            }
+        }
+    }
 }
 
 void WF::exponential(double i0, double j0, double k0, double sigma){
@@ -111,7 +131,7 @@ cdouble WF::norm(){
             break;
         case XYZ:
             double sum = 0.0;
-            #pragma omp parallel for reduction(+:sum)
+            //#pragma omp parallel for reduction(+:sum)
             for(int i=0;i<_ni;i++){
                 for(int j=0;j<_nj;j++){
                     for(int k=0;k<_nk;k++){
@@ -289,6 +309,17 @@ void WF::get_from_buf(cdouble*** arr, const int idx){
     }
 }
 
+void WF::anti_sym_k(){
+    for(int i=0; i<_ni; i++){
+        for(int j=0; j<_nj; j++){
+            for(int k=0;k<_nk/2;k++){
+                _wf[i][j][k] = (_wf[i][j][k] - _wf[i][j][_nk-k-1])/2.0;           
+                _wf[i][j][_nk-k-1] = -_wf[i][j][k];
+            }
+        }
+    }
+}
+
 cdouble**** WF::get_buf(){
     return _wf_buf;
 }
@@ -297,23 +328,94 @@ cdouble* WF::get_diag_buf(){
     return _diag_buf;
 }
 
-void WF::set_to_ground(){
+void WF::set_to_eigen(int n){
     for(int i=0; i<_ni; i++ ){
         for(int j=0; j<_nj; j++){
             for(int k=0; k<_nk; k++){
-                _wf_0[i][j][k] = _wf[i][j][k];
+                _eigen_wf[n][i][j][k] = _wf[i][j][k];
+            }
+        }
+    }
+}
+
+cdouble*** WF::get_eigen(int n){
+    return _eigen_wf[n];
+}
+
+
+void WF::set_to_ground(){
+    for(int i=0;i<_ni;i++){
+        for(int j=0;j<_nj;j++){
+            for(int k=0;k<_nk;k++){
+                _eigen_wf[0][i][j][k] = _wf[i][j][k];
             }
         }
     }
 }
 
 cdouble*** WF::get_ground(){
-    return _wf_0;
+    return _eigen_wf[0];
 }
 
 cdouble WF::operator()(int i, int j, int k){
     return _wf[i][j][k];
 }
+
+cdouble WF::project(cdouble ***phi){
+    cdouble integral = 0.0;
+    switch(_param->geometry){
+        case X:
+            for(int i=0; i<_ni;i++){
+                integral += _wf[i][0][0]*conj(phi[i][0][0])*_di;
+            }
+            break;
+        case XZ:
+            for(int i=0; i<_ni;i++){
+                for(int k=0;k<_nk;k++){
+                    integral += _wf[i][0][k]*conj(phi[i][0][k])*_di*_dk;
+                }
+            }
+            break;
+        case RZ:
+            for(int i=0; i<_ni;i++){
+                for(int k=0;k<_nk;k++){
+                    integral += 2*M_PI*_i[i]*_wf[i][0][k]*conj(phi[i][0][k])*_di*_dk;
+                }
+            }
+            break;
+        case XYZ:
+            //#pragma omp parallel for reduction(+:sum)
+            for(int i=0;i<_ni;i++){
+                for(int j=0;j<_nj;j++){
+                    for(int k=0;k<_nk;k++){
+                        integral += (_wf[i][j][k]*conj(phi[i][j][k]))*_di*_dk*_dj;
+                    }
+                }
+            }
+            break;
+    }
+    return integral;
+}
+
+void WF::grand_schmidt(){
+    std::vector<cdouble> proj;
+    for(int i=0;i<5;i++){
+        proj.push_back(project(_eigen_wf[i]));
+    }
+
+
+    std::cout<<"Projection: "<<proj[0]<<" "<<proj[1]<<" "<<proj[2]<<" "<<proj[3]<<std::endl;
+    for (int i=0; i<_ni; i++){
+        for (int j=0; j<_nj; j++){
+            for (int k=0; k<_nk; k++){
+                for(int n=0; n<5; n++){
+                    _wf[i][j][k] -= proj[n]*_eigen_wf[n][i][j][k];
+                } 
+            }
+        }
+    }
+}
+
 
 void WF::operator/=(cdouble val){
     #pragma omp parallel for collapse(2) schedule(dynamic)
@@ -326,16 +428,65 @@ void WF::operator/=(cdouble val){
     }
 }
 
+void WF::save_wf2(std::string name){
+
+    switch(_param->geometry){
+        case XYZ:
+            cdouble value;
+            std::ofstream outfile_X;
+            std::ofstream outfile_Y;
+            std::ofstream outfile_Z;
+            outfile_X.open("results/" + name + "_X.dat");
+            outfile_Y.open("results/" + name + "_Y.dat");
+            outfile_Z.open("results/" + name + "_Z.dat");
+
+            for(int j=0;j<_nj;j++){
+                for(int k=0; k<_nk;k++){
+                    value = _wf[_ni/2][j][k]*conj(_wf[_ni/2][j][k]);
+                    std::ostringstream doubleStr;
+                    doubleStr<<std::fixed<<std::setprecision(12);
+                    doubleStr<<std::real(value);
+                    outfile_X<<doubleStr.str()<<std::endl;
+                }
+            }
+
+            for(int i=0;i<_ni;i++){
+                for(int k=0; k<_nk;k++){
+                    value = _wf[i][_nj/2][k]*conj(_wf[i][_nj/2][k]);
+                    std::ostringstream doubleStr;
+                    doubleStr<<std::fixed<<std::setprecision(12);
+                    doubleStr<<std::real(value);
+                    outfile_Y<<doubleStr.str()<<std::endl;
+                }
+            }
+
+            for(int i=0;i<_ni;i++){
+                for(int j=0; j<_nj;j++){
+                    value = _wf[i][j][_nk/2]*conj(_wf[i][j][_nk/2]);
+                    std::ostringstream doubleStr;
+                    doubleStr<<std::fixed<<std::setprecision(12);
+                    doubleStr<<std::real(value);
+                    outfile_Z<<doubleStr.str()<<std::endl;
+                }
+            }
+            outfile_X.close();
+            outfile_Y.close();
+            outfile_Z.close();                 
+            break;
+    }
+}
+
 WF::~WF(){
     free3d(&_wf,_ni,_nj,_nk);
     if(_param->geometry == XYZ)
         free4d(&_wf_buf,_ni,_nj,_nk, 1);
     else
         free4d(&_wf_buf, _ni, _nj, _nk, _param->nt_diag);
-    if(_param->geometry != XYZ)
-        free3d(&_wf_0,_ni,_nk,_nk);
-    else
-        free3d(&_wf_0,1,1,1);
+    free4d(&_eigen_wf, 3, _ni, _nj, _nk);
+    //if(_param->geometry != XYZ)
+    //    free3d(&_wf_0,_ni,_nk,_nk);
+    //else
+    //    free3d(&_wf_0,1,1,1);
     delete[] _diag_buf;
     delete[] _i_row;
     delete[] _j_row;

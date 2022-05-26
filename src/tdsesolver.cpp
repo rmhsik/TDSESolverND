@@ -136,7 +136,8 @@ void TDSESolver::setup_diagnostics(){
 
 void TDSESolver::ipropagate(){
     (this->*(this->_ipropagate))();
-    _wf->set_to_ground();
+	//_wf->save_wf2();
+    //_wf->set_to_ground();
 }
 
 void TDSESolver::propagate(){

@@ -102,7 +102,11 @@ void TDSESolver::_masks_XYZ(){
 
 void TDSESolver::_ipropagate_XYZ(){
     cdouble ener = 0.0;
+    cdouble ener_old=0.0;
+    double eps=10000.0;
+    int counter =0;
     cdouble norm;
+    cdouble proj=0.0;
     cdouble **psi_i_row, **psi_j_row, **psi_k_row;
     const int ni = _param->ni;
     const int nj = _param->nj;
@@ -111,49 +115,70 @@ void TDSESolver::_ipropagate_XYZ(){
     psi_j_row = alloc2d<cdouble>(_param->n_threads,nj);
     psi_k_row = alloc2d<cdouble>(_param->n_threads,nk);
 
-    for(int n=0; n<_param->nt_ITP;n++){
-        double tstart, tend;
-        tstart = omp_get_wtime();
-        #pragma omp parallel for collapse(1) schedule(dynamic)
-        for(int j=0;j<nj;j++){
-            for(int k=0;k<nk;k++){
-                int id = omp_get_thread_num();
-                _wf->get_i_row(psi_i_row[id],j,k);
-                (_ham->*(_ham->step_i))(psi_i_row[id],j,k,0,1,id);
-                _wf->set_i_row(psi_i_row[id],j,k);
-            }
-        }
+    _wf->gaussian_anti(0.0,0.0,0.0,0.1);
+    for(int m=0; m<2; m++){
+        ener =0.0;
+        ener_old=0.0;
+        eps = 1000;
+        
 
-        #pragma omp parallel for collapse(1) schedule(dynamic)
-        for(int i=0;i<ni;i++){
-            for(int k=0;k<nk;k++){
-                int id = omp_get_thread_num();
-                _wf->get_j_row(psi_j_row[id],i,k);
-                (_ham->*(_ham->step_j))(psi_j_row[id],i,k,0,1,id);
-                _wf->set_j_row(psi_j_row[id],i,k);
-            }
-        }
-
-        #pragma omp parallel for collapse(1) schedule(dynamic)
-        for(int i=0;i<ni;i++){
-            for(int j=0;j<nj;j++){
-                int id = omp_get_thread_num();
-                _wf->get_k_row(psi_k_row[id],i,j);
-                (_ham->*(_ham->step_k))(psi_k_row[id],i,j,0,1,id);
-                _wf->set_k_row(psi_k_row[id],i,j);
-            }
-        }
-        norm = _wf->norm();
+        cdouble norm = _wf->norm();
         (*_wf) /= norm;
-        tend = omp_get_wtime();
-        std::cout<<"n: "<<n<<" timestep: "<<tend-tstart<<"\n";
-        if(n%5==0){
-            ener = (_ham->*(_ham->ener))(_wf->get());
-            std::cout<<"Norm: "<< norm<<" Ener: "<<ener<<"\n";
-        }
 
+        //for(int n=0; n<_param->nt_ITP;n++){
+        while((eps > 1e-4)){ // || (counter<_param->nt_ITP)){
+            double tstart, tend;
+            tstart = omp_get_wtime();
+            #pragma omp parallel for collapse(1) schedule(dynamic)
+            for(int j=0;j<nj;j++){
+                for(int k=0;k<nk;k++){
+                    int id = omp_get_thread_num();
+                    _wf->get_i_row(psi_i_row[id],j,k);
+                    (_ham->*(_ham->step_i))(psi_i_row[id],j,k,0,1,id);
+                    _wf->set_i_row(psi_i_row[id],j,k);
+                }
+            }
+
+            #pragma omp parallel for collapse(1) schedule(dynamic)
+            for(int i=0;i<ni;i++){
+                for(int k=0;k<nk;k++){
+                    int id = omp_get_thread_num();
+                    _wf->get_j_row(psi_j_row[id],i,k);
+                    (_ham->*(_ham->step_j))(psi_j_row[id],i,k,0,1,id);
+                    _wf->set_j_row(psi_j_row[id],i,k);
+                }
+            }
+
+            #pragma omp parallel for collapse(1) schedule(dynamic)
+            for(int i=0;i<ni;i++){
+                for(int j=0;j<nj;j++){
+                    int id = omp_get_thread_num();
+                    _wf->get_k_row(psi_k_row[id],i,j);
+                    (_ham->*(_ham->step_k))(psi_k_row[id],i,j,0,1,id);
+                    _wf->set_k_row(psi_k_row[id],i,j);
+                }
+            }
+            _wf->anti_sym_k();
+            norm = _wf->norm();
+            (*_wf) /= norm;
+            tend = omp_get_wtime();
+            std::cout<<"n: "<<counter<<" timestep: "<<tend-tstart<<"\n";
+
+            if(counter%5==0){
+                _wf->grand_schmidt(); 
+                ener = (_ham->*(_ham->ener))(_wf->get());
+	        eps = std::abs((std::real(ener)-std::real(ener_old))/std::real(ener));
+                std::cout<<"State: "<<m<<" Norm: "<< norm<<" Ener: "<<ener<<" Eps: "<<eps<<"\n";
+                ener_old = ener;
+            }
+            counter++;
+
+        }
+        std::cout<<"Ener: "<<ener<<"\n";
+        _wf->set_to_eigen(m);
+	std::string name = "argon_"+ std::to_string(m);
+	_wf->save_wf2(name);
     }
-    std::cout<<"Ener: "<<ener<<"\n";
     free2d(&psi_i_row,_param->n_threads,ni);
     free2d(&psi_j_row,_param->n_threads,nj);
     free2d(&psi_k_row,_param->n_threads,nk);
