@@ -107,6 +107,7 @@ void WF::exponential(double i0, double j0, double k0, double sigma){
     }
 }
 
+
 cdouble WF::norm(){
     cdouble integral = 0.0;
     switch(_param->geometry){

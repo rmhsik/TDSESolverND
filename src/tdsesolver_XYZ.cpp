@@ -115,12 +115,12 @@ void TDSESolver::_ipropagate_XYZ(){
     psi_j_row = alloc2d<cdouble>(_param->n_threads,nj);
     psi_k_row = alloc2d<cdouble>(_param->n_threads,nk);
 
-    _wf->gaussian_anti(0.0,0.0,0.0,0.1);
-    for(int m=0; m<2; m++){
+    for(int m=0; m<1; m++){
         ener =0.0;
         ener_old=0.0;
         eps = 1000;
         
+        _wf->gaussian_anti(0.0,0.0,0.0,0.1);
 
         cdouble norm = _wf->norm();
         (*_wf) /= norm;
