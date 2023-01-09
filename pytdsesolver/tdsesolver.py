@@ -48,12 +48,6 @@ class Parameters:
         lib.Parameters_imin.restype = ct.c_void_p
         lib.Parameters_imax.argtypes = [ct.c_void_p, ct.c_double]
         lib.Parameters_imax.restype = ct.c_void_p
-        lib.Parameters_nj.argtypes = [ct.c_void_p, ct.c_int]
-        lib.Parameters_nj.restype = ct.c_void_p
-        lib.Parameters_jmin.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_jmin.restype = ct.c_void_p
-        lib.Parameters_jmax.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_jmax.restype = ct.c_void_p
         lib.Parameters_nk.argtypes = [ct.c_void_p, ct.c_int]
         lib.Parameters_nk.restype = ct.c_void_p
         lib.Parameters_kmin.argtypes = [ct.c_void_p, ct.c_double]
@@ -82,40 +76,16 @@ class Parameters:
         lib.Parameters_env.restype = ct.c_void_p
         lib.Parameters_w0Ei.argtypes = [ct.c_void_p, ct.c_double]
         lib.Parameters_w0Ei.restype = ct.c_void_p
-        lib.Parameters_w0Ej.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_w0Ej.restype = ct.c_void_p
         lib.Parameters_w0Ek.argtypes = [ct.c_void_p, ct.c_double]
         lib.Parameters_w0Ek.restype = ct.c_void_p
-        lib.Parameters_w0Bi.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_w0Bi.restype = ct.c_void_p
-        lib.Parameters_w0Bj.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_w0Bj.restype = ct.c_void_p
-        lib.Parameters_w0Bk.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_w0Bk.restype = ct.c_void_p
         lib.Parameters_E0i.argtypes = [ct.c_void_p, ct.c_double]
         lib.Parameters_E0i.restype = ct.c_void_p
-        lib.Parameters_E0j.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_E0j.restype = ct.c_void_p
         lib.Parameters_E0k.argtypes = [ct.c_void_p, ct.c_double]
         lib.Parameters_E0k.restype = ct.c_void_p
-        lib.Parameters_B0i.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_B0i.restype = ct.c_void_p
-        lib.Parameters_B0j.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_B0j.restype = ct.c_void_p
-        lib.Parameters_B0k.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_B0k.restype = ct.c_void_p
         lib.Parameters_phiEi.argtypes = [ct.c_void_p, ct.c_double]
         lib.Parameters_phiEi.restype = ct.c_void_p
-        lib.Parameters_phiEj.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_phiEj.restype = ct.c_void_p
         lib.Parameters_phiEk.argtypes = [ct.c_void_p, ct.c_double]
         lib.Parameters_phiEk.restype = ct.c_void_p
-        lib.Parameters_phiBi.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_phiBi.restype = ct.c_void_p
-        lib.Parameters_phiBj.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_phiBj.restype = ct.c_void_p
-        lib.Parameters_phiBk.argtypes = [ct.c_void_p, ct.c_double]
-        lib.Parameters_phiBk.restype = ct.c_void_p
         lib.Parameters_n_probes.argtypes = [ct.c_void_p, ct.c_int]
         lib.Parameters_n_probes.restype = ct.c_void_p
         lib.Parameters_probe_def.argtypes = [ct.c_void_p, ct.c_char_p]
@@ -136,9 +106,6 @@ class Parameters:
         self.ni(param["ni"])
         self.imin(param["imin"])
         self.imax(param["imax"])
-        self.nj(param["nj"])
-        self.jmin(param["jmin"])
-        self.jmax(param["jmax"])
         self.nk(param["nk"])
         self.kmin(param["kmin"])
         self.kmax(param["kmax"])
@@ -153,23 +120,11 @@ class Parameters:
         self.nt_diag(param["nt_diag"])
         self.env(param["env"])
         self.w0Ei(param["w0Ei"])
-        self.w0Ej(param["w0Ej"])
         self.w0Ek(param["w0Ek"])
-        self.w0Bi(param["w0Bi"])
-        self.w0Bj(param["w0Bj"])
-        self.w0Bk(param["w0Bk"])
         self.E0i(param["E0i"])
-        self.E0j(param["E0j"])
         self.E0k(param["E0k"])
-        self.B0i(param["B0i"])
-        self.B0j(param["B0j"])
-        self.B0k(param["B0k"])
         self.phiEi(param["phiEi"])
-        self.phiEj(param["phiEj"])
         self.phiEk(param["phiEk"])
-        self.phiBi(param["phiBi"])
-        self.phiBj(param["phiBj"])
-        self.phiBk(param["phiBk"])
         self.n_probes(param["n_probes"])
         self.probe_def(param["probe_def"])
         
@@ -189,12 +144,6 @@ class Parameters:
         lib.Parameters_imin(self._obj, val)
     def imax(self, val):
         lib.Parameters_imax(self._obj, val)
-    def nj(self, val):
-        lib.Parameters_nj(self._obj, val)
-    def jmin(self, val):
-        lib.Parameters_jmin(self._obj, val)
-    def jmax(self, val):
-        lib.Parameters_jmax(self._obj, val)
     def nk(self, val):
         lib.Parameters_nk(self._obj, val)
     def kmin(self, val):
@@ -223,42 +172,16 @@ class Parameters:
         lib.Parameters_env(self._obj, val)
     def w0Ei(self, val):
         lib.Parameters_w0Ei(self._obj, val)
-    def w0Ej(self, val):
-        lib.Parameters_w0Ej(self._obj, val)
     def w0Ek(self, val):
         lib.Parameters_w0Ek(self._obj, val)
-    def w0Bi(self, val):
-        lib.Parameters_w0Bi(self._obj, val)
-    def w0Bj(self, val):
-        lib.Parameters_w0bj(self._obj, val)
-    def w0Bk(self, val):
-        lib.Parameters_w0Bk(self._obj, val)
-    def w0Bj(self, val):
-        lib.Parameters_w0Bj(self._obj, val)
     def E0i(self, val):
         lib.Parameters_E0i(self._obj, val)
-    def E0j(self, val):
-        lib.Parameters_E0j(self._obj, val)
     def E0k(self, val):
         lib.Parameters_E0k(self._obj, val)
-    def B0i(self, val):
-        lib.Parameters_B0i(self._obj, val)
-    def B0j(self, val):
-        lib.Parameters_B0j(self._obj, val)
-    def B0k(self, val):
-        lib.Parameters_B0k(self._obj, val)
     def phiEi(self, val):
         lib.Parameters_phiEi(self._obj, val)
-    def phiEj(self, val):
-        lib.Parameters_phiEj(self._obj, val)
     def phiEk(self, val):
         lib.Parameters_phiEk(self._obj, val)
-    def phiBi(self, val):
-        lib.Parameters_phiBi(self._obj, val)
-    def phiBj(self, val):
-        lib.Parameters_phiBj(self._obj, val)
-    def phiBk(self, val):
-        lib.Parameters_phiBk(self._obj, val)
     def n_probes(self, val):
         lib.Parameters_n_probes(self._obj, val)
     def probe_def(self, val):

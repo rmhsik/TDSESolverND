@@ -17,9 +17,9 @@ class Diagnostics{
         Parameters *_param;
         cdouble *_tempmask;
         
-        int _ni,_nj ,_nk;
-        double _di,_dj ,_dk; 
-        double *_i, *_j, *_k, *_t;
+        int _ni,_nk;
+        double _di,_dk; 
+        double *_i, *_k, *_t;
         Hamiltonian *_ham;
         WF *_wf;
         
@@ -31,7 +31,7 @@ class Diagnostics{
         void run_diagnostics(const int idx);
         void write_diagnostics();
         void set_parameters(Parameters *param);
-        void set_geometry(double *i, double *j, double *k, double *t, const double di, const double dj, const double dk);
+        void set_geometry(double *i, double *k, double *t, const double di, const double dk);
         void set_ham(Hamiltonian *ham);
         void set_wf(WF *wf); 
         void set_tempmask();

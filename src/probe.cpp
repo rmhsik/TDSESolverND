@@ -15,17 +15,11 @@ Probe::Probe(std::string def){
         case ACC_I:
             _calc = &Probe::_acc_i;
             break;
-        case ACC_J:
-            _calc = &Probe::_acc_j;
-            break;
         case ACC_K:
             _calc = &Probe::_acc_k;
             break;
         case DIP_I:
             _calc = &Probe::_dip_i;
-            break;
-        case DIP_J:
-            _calc = &Probe::_dip_j;
             break;
         case DIP_K:
             _calc = &Probe::_dip_k;
@@ -57,9 +51,9 @@ void Probe::set_param(Parameters *param){
     _param = param;
 }
 
-void Probe::set_geometry(double* i, double *j, double *k, const double di, const double dj, const double dk){
-    _i = i; _j = j; _k = k; _ni = _param->ni; _nj = _param->nj; _nk =_param-> nk; 
-    _di = di; _dj=dj; _dk = dk; 
+void Probe::set_geometry(double* i, double *k, const double di, const double dk){
+    _i = i; _k = k; _ni = _param->ni; _nk =_param-> nk; 
+    _di = di; _dk = dk; 
     _nt_diag = _param->nt_diag; 
     _nt = _param->nt;
     if (_type != DENS && _type != WFSNAP){
@@ -80,7 +74,8 @@ void Probe::write_probe(){
     if(_type == DENS || _type == WFSNAP)
         write_array(_data,_nt/_nt_diag*_ni*_nk, _data_path);
     else
-        write_array(_data,_nt, _data_path); 
+        std::cout<<sizeof(_data)<<std::endl;
+        write_array(_data, _nt, _data_path); 
 }
 
 void Probe::_parse_def(){
@@ -93,8 +88,6 @@ void Probe::_parse_def(){
     }
     if(parsed[0] == "acc_i") 
         _type = ACC_I;
-    else if(parsed[0] == "acc_j")
-        _type = ACC_J;
     else if(parsed[0] == "acc_k")
         _type = ACC_K;
     else if(parsed[0] == "dip_i")
@@ -110,7 +103,7 @@ void Probe::_parse_def(){
     else if(parsed[0] == "wf")
         _type = WFSNAP;
 
-    if (_type == ACC_I || _type == ACC_K || _type == ACC_J || _type == DENS || _type == WFSNAP || _type == POP_0){
+    if (_type == ACC_I || _type == ACC_K ||  _type == DENS || _type == WFSNAP || _type == POP_0){
         _data_path = parsed[1];
         _int_imin = 0.0;
         _int_imax = 0.0;

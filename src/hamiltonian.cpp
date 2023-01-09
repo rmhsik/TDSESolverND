@@ -8,67 +8,40 @@ Hamiltonian::Hamiltonian(){
 Hamiltonian::Hamiltonian(Parameters *param){
     _param = param;
     _ni = _param->ni;
-    _nj = _param->nj;
     _nk = _param->nk;
     _nt = _param->nt;
 
     switch(_param->geometry){
-        case X:
-            _allocate_X();
-            if(_param->use_potential == 1)
-                _potential = &potential_X;
-            break;
         case XZ:
             _allocate_XZ();
             if(_param->use_potential == 1)
                 _potential = &potential_XZ;
             break;
-
-        case RZ:
-            _allocate_RZ();
-            if(_param->use_potential == 1)
-                _potential = &potential_RZ;
-            break;
-        case XYZ:
-            _allocate_XYZ();
-            if(_param->use_potential == 1)
-                _potential = &potential_XYZ;
-            if(_param->use_potential == 2)
-                _potential = &potential_argon_XYZ;
     }    
     if(_param->use_potential == 0 )
             _potential = &potential;
 }
 
-void Hamiltonian::set_geometry(double *i, double *j, double *k, double *t, const double di, const double dj, const double dk, const double dt){
-    _i = i; _j = j; _k = k; _t = t; _di = di; _dj = dj ; _dk = dk; _dt = dt;
+void Hamiltonian::set_geometry(double *i,  double *k, double *t, const double di, const double dk, const double dt){
+    _i = i; _k = k; _t = t; _di = di; _dk = dk; _dt = dt;
 }
 
-void Hamiltonian::set_fields(Field* field1, Field* field2, Field* field3, Field* field4, Field* field5, Field* field6){
+void Hamiltonian::set_fields(Field* field1, Field* field2){
     Afield_i = field1;
-    Afield_j = field2;
-    Afield_k = field3;
-    Bfield_i = field4;
-    Bfield_j = field5;
-    Bfield_k = field6;
-
+    Afield_k = field2;
 }
 
-cdouble Hamiltonian::_potential_fn(double i, double j, double k, double t){
-    return (*_potential)(i,j,k,t,this);
+cdouble Hamiltonian::_potential_fn(double i, double k, double t){
+    return (*_potential)(i,k,t,this);
     //return potential(i,k,t, this);
 }
 
-cdouble Hamiltonian::dpotential_i(double i, double j, double k){
-    return (_potential_fn(i + _di,j,k,0) - _potential_fn(i - _di,j,k,0))/(2.0*_di);
+cdouble Hamiltonian::dpotential_i(double i, double k){
+    return (_potential_fn(i + _di,k,0) - _potential_fn(i - _di,k,0))/(2.0*_di);
 }
 
-cdouble Hamiltonian::dpotential_j(double i, double j, double k){
-    return (_potential_fn(i,j+_dj,k,0) - _potential_fn(i,j-_dj, k,0))/(2.0*_dj);
-}
-
-cdouble Hamiltonian::dpotential_k(double i, double j, double k){
-    return (_potential_fn(i,j,k + _dk,0) - _potential_fn(i,j,k - _dk,0))/(2.0*_dk);
+cdouble Hamiltonian::dpotential_k(double i, double k){
+    return (_potential_fn(i,k + _dk,0) - _potential_fn(i,k - _dk,0))/(2.0*_dk);
 }
 
 void Hamiltonian::tridot(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* vec, cdouble* out, const int n){
@@ -110,16 +83,8 @@ Hamiltonian::~Hamiltonian(){
     delete[] _Mpi_du;
     delete[] _Mpi_d;
     delete[] _Mpi_dl;
-    delete[] _Mj_du;
-    delete[] _Mj_d;
-    delete[] _Mj_dl;
-    delete[] _Mpj_du;
-    delete[] _Mpj_d;
-    delete[] _Mpj_dl;
     delete[] _lhs_i;
-    delete[] _lhs_j;
     delete[] _lhs_k;
     delete[] _res_i;
-    delete[] _res_j;
     delete[] _res_k;
 }

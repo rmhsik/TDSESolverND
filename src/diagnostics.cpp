@@ -27,10 +27,9 @@ void Diagnostics::set_parameters(Parameters *param){
     
 }
 
-void Diagnostics::set_geometry(double *i, double *j, double *k, double *t, const double di, const double dj, const double dk){
-    _i = i; _j = j; _k = k; _di = di; _dj = dj; _dk = dk, _t = t;
+void Diagnostics::set_geometry(double *i, double *k, double *t, const double di, const double dk){
+    _i = i; _k = k; _di = di; _dk = dk, _t = t;
    _ni = _param->ni;
-   _nj = _param->nj;
    _nk = _param->nk;
 }
 
@@ -72,7 +71,7 @@ void Diagnostics::create_probes(){
         _probe_vec[i]->set_wf(_wf);
         _probe_vec[i]->set_ham(_ham);
         _probe_vec[i]->set_param(_param);
-        _probe_vec[i]->set_geometry(_i,_j,_k,_di,_dj,_dk);
+        _probe_vec[i]->set_geometry(_i,_k,_di,_dk);
         _probe_vec[i]->set_tempmask(_tempmask);
     } 
 }

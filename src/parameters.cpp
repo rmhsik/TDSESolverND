@@ -19,9 +19,6 @@ Parameters::Parameters(){
         nk          = 500;
         kmin        = -120.0;
         kmax        = 120.0;
-        nj          = 500;
-        jmin        = -100.0;
-        jmax        = 100.0;
 
         // Time
         w0          = 0.057;
@@ -37,25 +34,13 @@ Parameters::Parameters(){
         //Fields
         env         = SIN2;
         w0Ei        = w0;
-        w0Ej        = w0;
         w0Ek        = w0;
-        w0Bi        = w0;
-        w0Bk        = w0;
-        w0Bj        = w0;
         
         E0i         = 0.067;
-        E0j         = 0.000;
         E0k         = 0.067;
-        B0i         = 0.0;
-        B0j         = 0.0;
-        B0k         = 0.12;
 
         phiEi       = 0.5*M_PI;
-        phiEj       = 0.0;
         phiEk       = 0.0;
-        phiBi       = 0.0;
-        phiBj       = 0.0;
-        phiBk       = 0.0;
         
         // Diagnostics selection and parameters
         n_probes    = 2;
@@ -67,26 +52,6 @@ Parameters::Parameters(){
 }
 
 void Parameters::check_param(){
-    if(geometry==X){
-        nk = 1;
-        nj = 1;
-        kmin = 0.0;
-        kmax = 0.0;
-        jmin = 0.0;
-        jmax = 0.0;
-        //nt_diag = 1;
-    }
-    if(geometry==XZ){
-        nj = 1;
-        jmin = 0.0;
-        jmax = 0.0;
-    }
-    else if(geometry == RZ){
-        nj = 1;
-        jmin = 0.0;
-        jmax = 0.0;
-        imin = 0.0;
-    }
 }
 
 void Parameters::set_probe_def(char *val){
@@ -104,9 +69,6 @@ void Parameters::print(){
     std::cout<<"\tni: "<<ni<<std::endl;
     std::cout<<"\timin: "<<imin<<std::endl;
     std::cout<<"\timax: "<<imax<<std::endl;
-    std::cout<<"\tnj: "<<nj<<std::endl;
-    std::cout<<"\tjmin: "<<jmin<<std::endl;
-    std::cout<<"\tjmax: "<<jmax<<std::endl;
     std::cout<<"\tnk: "<<nk<<std::endl;
     std::cout<<"\tkmin: "<<kmin<<std::endl;
     std::cout<<"\tkmax: "<<kmax<<std::endl;
@@ -121,23 +83,11 @@ void Parameters::print(){
     std::cout<<"\tnt_diag: "<<nt_diag<<std::endl;
     std::cout<<"\tenv: "<<env<<std::endl;
     std::cout<<"\tw0Ei: "<<w0Ei<<std::endl;
-    std::cout<<"\tw0Ej: "<<w0Ej<<std::endl;
     std::cout<<"\tw0Ek: "<<w0Ek<<std::endl;
-    std::cout<<"\tw0Bi: "<<w0Bi<<std::endl;
-    std::cout<<"\tw0Bj: "<<w0Bj<<std::endl;
-    std::cout<<"\tw0Bk: "<<w0Bk<<std::endl;
     std::cout<<"\tE0i: "<<E0i<<std::endl;
-    std::cout<<"\tE0j: "<<E0j<<std::endl;
     std::cout<<"\tE0k: "<<E0k<<std::endl;
-    std::cout<<"\tB0i: "<<B0i<<std::endl;
-    std::cout<<"\tB0j: "<<B0j<<std::endl;
-    std::cout<<"\tB0k: "<<B0k<<std::endl;
     std::cout<<"\tphiEi: "<<phiEi<<std::endl;
-    std::cout<<"\tphiEj: "<<phiEj<<std::endl;
     std::cout<<"\tphiEk: "<<phiEk<<std::endl;
-    std::cout<<"\tphiBi: "<<phiBi<<std::endl;
-    std::cout<<"\tphiBj: "<<phiBj<<std::endl;
-    std::cout<<"\tphiBk: "<<phiBk<<std::endl;
     std::cout<<"\tn_probes: "<<n_probes<<std::endl;
     std::cout<<"\tprobe_def: "<<probe_def<<std::endl;
     std::cout<<std::endl;

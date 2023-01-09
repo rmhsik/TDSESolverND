@@ -4,10 +4,7 @@
 #include <cmath>
 #include <string>
 
-#define X    0
 #define XZ   1
-#define RZ   2
-#define XYZ  3
 
 #define SIN2 0
 #define TRAP 1
@@ -27,14 +24,11 @@
 	    //Inital WF
 	    int n_threads;
 	    int init_wf;	 
-        int use_potential;
+            int use_potential;
             int geometry;           
             int ni;  
             double imin;
             double imax;     
-            int nj;
-            double jmin;
-            double jmax;
             int nk;         
             double kmin;     
             double kmax;     
@@ -50,22 +44,10 @@
             int env;         
             double w0Ei;     
             double w0Ek;    
-            double w0Ej;
-            double w0Bi;     
-            double w0Bk;
-            double w0Bj;     
             double E0i;      
             double E0k;
-            double E0j;      
-            double B0i;      
-            double B0k;
-            double B0j;      
             double phiEi;    
             double phiEk;
-            double phiEj;    
-            double phiBi;    
-            double phiBk;
-            double phiBj;
             int n_probes;
             std::string probe_def;
             Parameters();

@@ -5,10 +5,8 @@
 #include "parameters.h"
 
 enum t_probe {ACC_I, 
-	      ACC_J, 
 	      ACC_K, 
 	      DIP_I, 
-	      DIP_J, 
 	      DIP_K, 
 	      POP, 
           POP_0,
@@ -24,22 +22,19 @@ class Probe{
         Hamiltonian *_ham;
         Parameters *_param;
         cdouble *_tempmask;
-        double *_i, *_j, *_k;
-        int _ni, _nj, _nk, _nt, _nt_diag;
-        double _di, _dj, _dk;
+        double *_i, *_k;
+        int _ni, _nk, _nt, _nt_diag;
+        double _di, _dk;
 
         enum t_probe _type;
         std::string _data_path;
         double _int_imin, _int_imax;
         double _int_kmin, _int_kmax;
-        double _int_jmin, _int_jmax;
         void _parse_def();
 
         virtual void _acc_i(const int idx){};
-    	virtual void _acc_j(const int idx){};
         virtual void _acc_k(const int idx){};
         virtual void _dip_i(const int idx){};
-	    virtual void _dip_j(const int idx){};
         virtual void _dip_k(const int idx){};
         virtual void _pop(const int idx){};
         virtual void _pop_0(const int idx){};
@@ -53,7 +48,7 @@ class Probe{
         void set_wf(WF *wf);
         void set_ham(Hamiltonian *ham);
         void set_param(Parameters *param);
-        void set_geometry(double* i, double *j, double* k, const double di, const double dj, const double dk);
+        void set_geometry(double* i, double* k, const double di, const double dk);
         void set_tempmask(cdouble* tempmask);
 
         void write_probe();

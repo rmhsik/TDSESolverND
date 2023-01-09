@@ -40,7 +40,7 @@ $(LIB)libtdsesolver.so: $(OBJECTS)
 
 $(BUILD)%.o: $(SRC)/%.cpp
 	mkdir -p ./build/
-	$(CC) -c -fPIC -I$(INCLUDE) $(CFLAGS) $< -o $@
+	$(CC) -c -g -fPIC -I$(INCLUDE) $(CFLAGS) $< -o $@
 
 #$(BUILD)fields.o: $(SRC)/fields.cpp
 #	mkdir -p ./build/
