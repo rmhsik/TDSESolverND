@@ -30,13 +30,17 @@ class HHGSpectrum:
         self.accF2 = np.conj(self.accF)*self.accF
         self.accF2 = self.accF2.real
         self.accF2 = np.fft.fftshift(self.accF2)
+        if len(self.accF2) > len(self.w):
+            self.accF2 = self.accF2[:-1]
         
         
-    def plot(self):
+    def plot(self,compare=None):
         fig = plt.figure(figsize=(9,4))
         self.ax = fig.add_subplot(111)
         print(np.ceil(len(self.w)/2))
-        self.ax.plot(self.w[int(np.ceil(len(self.w)/2)):]/self.w0_,self.accF2[int(np.ceil(len(self.t)/2)):])
+        self.ax.plot(self.w/self.w0_,self.accF2)
+        if compare != None:
+            self.ax.plot(compare.w/compare.w0_,compare.accF2)
         self.ax.set_yscale('log')
         self.ax.set_xlim(-2,70)
         #ax.set_ylim(1E-11,1E1)

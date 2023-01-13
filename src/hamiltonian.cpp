@@ -26,9 +26,10 @@ void Hamiltonian::set_geometry(double *i,  double *k, double *t, const double di
     _i = i; _k = k; _t = t; _di = di; _dk = dk; _dt = dt;
 }
 
-void Hamiltonian::set_fields(Field* field1, Field* field2){
-    Afield_i = field1;
-    Afield_k = field2;
+void Hamiltonian::set_fields(Field* field1){
+    //Afield_i = field1;
+    //Afield_k = field2;
+    Afield_k = field1;
 }
 
 cdouble Hamiltonian::_potential_fn(double i, double k, double t){

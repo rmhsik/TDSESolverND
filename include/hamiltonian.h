@@ -12,7 +12,6 @@ class Hamiltonian{
     private:
         Parameters *_param;
 
-        Field *Afield_i;
         Field *Afield_k;
 
         double *_i, *_k, *_t;
@@ -39,7 +38,7 @@ class Hamiltonian{
         Hamiltonian();
         Hamiltonian(Parameters *param);
         void set_geometry(double *i, double *k, double *t, const double di, const double dk, const double dt);
-        void set_fields(Field* field1, Field* field2);
+        void set_fields(Field* field2);
         cdouble dpotential_i(double i, double k);
         cdouble dpotential_k(double i, double k); 
 

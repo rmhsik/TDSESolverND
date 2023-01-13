@@ -48,6 +48,7 @@
             double E0k;
             double phiEi;    
             double phiEk;
+            double kk;
             int n_probes;
             std::string probe_def;
             Parameters();

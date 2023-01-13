@@ -18,14 +18,16 @@ void TDSESolver::_geom_XZ(){
 
 void TDSESolver::_fields_XZ(){
     std::string path;
-    Afield_i = new Field(_param->E0i, _param->w0Ei, _param->phiEi, _param->env, _param->tmax_ev, _t, _param->nt);
-    Afield_k = new Field(_param->E0k, _param->w0Ek, _param->phiEk, _param->env, _param->tmax_ev, _t, _param->nt);
-    Afield_i->calc_pot();
-    Afield_k->calc_pot();
-    path = "results/Afield_i.dat";
-    write_array(Afield_i->get(),_param->nt,path);
-    path = "results/Afield_k.dat";
-    write_array(Afield_k->get(),_param->nt,path);
+    //Afield_i = new Field(_param->E0i, _param->w0Ei, _param->phiEi, _param->env, _param->tmax_ev, _t, _param->nt);
+    Afield_k = new Field(_param->E0k, _param->w0Ek, _param->kk, _param->phiEk, _param->env, _param->tmax_ev, _t, _param->nt);
+    Afield_k->set_params(_param);
+    Afield_k->set_geometry(_i,_k,_di,_dk);
+    //Afield_i->calc_pot();
+    //Afield_k->calc_pot();
+    //path = "results/Afield_i.dat";
+    //write_array(Afield_i->get(),_param->nt,path);
+    //path = "results/Afield_k.dat";
+    //write_array(Afield_k->get(),_param->nt,path);
 }
 
 void TDSESolver::_masks_XZ(){
@@ -112,6 +114,8 @@ void TDSESolver::_propagate_XZ(){
     int idx;
     const int ni = _param->ni;
     const int nk = _param->nk;
+    double *vecpot;
+    vecpot = new double[_param->nt];
 
     psi_i_row = alloc2d<cdouble>(_param->n_threads, ni);
     psi_k_row = alloc2d<cdouble>( _param->n_threads, nk);
@@ -119,6 +123,8 @@ void TDSESolver::_propagate_XZ(){
     //wf_ptr = _wf.get_buf();
     _wf->set_to_buf(0); 
     for(int n=0; n<_param->nt;n++){
+        Afield_k->calc_field(_t[n]);
+        Afield_k->calc_pot();
         #pragma omp parallel for schedule(dynamic)
         for(int i=0;i<ni;i++){
             int id_thread = omp_get_thread_num();
@@ -134,17 +140,19 @@ void TDSESolver::_propagate_XZ(){
             (_ham->*(_ham->step_i))(psi_i_row[id_thread],k,n,0,id_thread);
             _wf->set_i_row_buf_mask(psi_i_row[id_thread],_imask,k,(n+1)%_param->nt_diag);
         }
-
+        
         if ((n+2)%_param->nt_diag==0 && n<(_param->nt-_param->nt%_param->nt_diag)){ 
              idx = n - _param->nt_diag + 2;
              _diag->run_diagnostics(idx);
-	     norm = _wf->norm_buf(_param->nt_diag-1);
-             std::cout<<"ti: "<< n<<" Norm: "<< norm<<std::endl;
+             norm = _wf->norm_buf(_param->nt_diag-1);
+             std::cout<<"ti: "<< n<<" adield: "<< norm<<std::endl;
         }
+        vecpot[n] = Afield_k->get(_param->ni/2,_param->nk/2); 
     }
     //TODO: Get last batch of diagnostics from last idx up to _paran.nt
+    //
     _diag->write_diagnostics();
     free2d(&psi_i_row,_param->n_threads,ni);
     free2d(&psi_k_row,_param->n_threads,nk);
-    
+    write_array(vecpot,_param->nt,"results/vecpot.dat");
 }

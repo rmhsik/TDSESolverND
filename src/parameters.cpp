@@ -42,6 +42,7 @@ Parameters::Parameters(){
         phiEi       = 0.5*M_PI;
         phiEk       = 0.0;
         
+        kk          = 0.0; 
         // Diagnostics selection and parameters
         n_probes    = 2;
 
@@ -88,6 +89,7 @@ void Parameters::print(){
     std::cout<<"\tE0k: "<<E0k<<std::endl;
     std::cout<<"\tphiEi: "<<phiEi<<std::endl;
     std::cout<<"\tphiEk: "<<phiEk<<std::endl;
+    std::cout<<"\tkk: "<<kk<<std::endl;
     std::cout<<"\tn_probes: "<<n_probes<<std::endl;
     std::cout<<"\tprobe_def: "<<probe_def<<std::endl;
     std::cout<<std::endl;

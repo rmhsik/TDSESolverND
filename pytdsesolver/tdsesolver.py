@@ -86,6 +86,8 @@ class Parameters:
         lib.Parameters_phiEi.restype = ct.c_void_p
         lib.Parameters_phiEk.argtypes = [ct.c_void_p, ct.c_double]
         lib.Parameters_phiEk.restype = ct.c_void_p
+        lib.Parameters_kk.argtypes = [ct.c_void_p, ct.c_double]
+        lib.Parameters_kk.restype = ct.c_void_p
         lib.Parameters_n_probes.argtypes = [ct.c_void_p, ct.c_int]
         lib.Parameters_n_probes.restype = ct.c_void_p
         lib.Parameters_probe_def.argtypes = [ct.c_void_p, ct.c_char_p]
@@ -125,6 +127,7 @@ class Parameters:
         self.E0k(param["E0k"])
         self.phiEi(param["phiEi"])
         self.phiEk(param["phiEk"])
+        self.kk(param["kk"])
         self.n_probes(param["n_probes"])
         self.probe_def(param["probe_def"])
         
@@ -182,6 +185,8 @@ class Parameters:
         lib.Parameters_phiEi(self._obj, val)
     def phiEk(self, val):
         lib.Parameters_phiEk(self._obj, val)
+    def kk(self, val):
+        lib.Parameters_kk(self._obj, val)
     def n_probes(self, val):
         lib.Parameters_n_probes(self._obj, val)
     def probe_def(self, val):

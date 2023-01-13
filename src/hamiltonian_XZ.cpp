@@ -31,7 +31,7 @@ void Hamiltonian::step_i_XZ(cdouble *psi_i_row, const int k, const int ti, const
     cdouble Hx_dl;
     cdouble dt = imag==0 ? cdouble(1.0,0.0)*_param->dt: cdouble(0.0,-1.0)*_param->dt_ITP;
 
-    cdouble afield_i = (*Afield_i)[ti];
+    cdouble afield_i =0.0;// (*Afield_i)[ti];
 
     cdouble a = 1.0/(_di*_di) + 0.5*afield_i*afield_i/(C*C);
     cdouble b = 1.0/(2.0*_di*_di);
@@ -64,15 +64,16 @@ void Hamiltonian::step_k_XZ(cdouble *psi_k_row, const int i, const int ti, const
     cdouble Hz_d;
     cdouble Hz_dl;
     cdouble dt = imag==0 ? cdouble(1.0,0.0)*_param->dt: cdouble(0.0,-1.0)*_param->dt_ITP;
-    
-    cdouble afield_k = (*Afield_k)[ti];
+    //cdouble afield_k = (*Afield_k)[ti];
 
-    cdouble a = 1.0/(_dk*_dk)+0.5*afield_k*afield_k/(C*C);
-    cdouble b = 1.0/(2.0*_dk*_dk);
-    Hz_du = -b - I*1.0/(2.0*C*_dk)*afield_k;
-    Hz_dl = -b + I*1.0/(2.0*C*_dk)*afield_k;
     for(int k=0;k<_nk;k++){
+        cdouble afield_k = Afield_k->get(i,k);
+        cdouble a = 1.0/(_dk*_dk)+0.5*afield_k*afield_k/(C*C);
+        cdouble b = 1.0/(2.0*_dk*_dk);
+        Hz_du = -b - I*1.0/(2.0*C*_dk)*afield_k;
+        Hz_dl = -b + I*1.0/(2.0*C*_dk)*afield_k;
         Hz_d  =  a + 0.5*_potential_fn(_i[i],_k[k],_t[ti]);
+
         _Mk_du[id_thread*_nk + k] = I*Hz_du*dt/2.0;
         _Mk_d[id_thread*_nk + k]  = 1.0 + I*Hz_d*dt/2.0;
         _Mk_dl[id_thread*_nk + k] = I*Hz_dl*dt/2.0;
