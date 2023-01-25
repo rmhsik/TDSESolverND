@@ -7,6 +7,7 @@
 #include "hamiltonian.h"
 #include "parameters.h"
 #include "probe_factory.h"
+#include "mpi_grid.h"
 
 class Diagnostics{
     private:
@@ -14,6 +15,7 @@ class Diagnostics{
         std::vector<std::string> _def_vec;
         int _n_probes;
 
+        mpi_grid *_mpi_grid;
         Parameters *_param;
         cdouble *_tempmask;
         
@@ -35,6 +37,7 @@ class Diagnostics{
         void set_ham(Hamiltonian *ham);
         void set_wf(WF *wf); 
         void set_tempmask();
+        void set_mpi(mpi_grid *grid);
         void create_probes();
 
         ~Diagnostics();

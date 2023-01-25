@@ -16,20 +16,24 @@ WF::WF(Parameters *param){
     _param = param;
 }
 
+void WF::set_mpi(mpi_grid *grid){
+    _mpi_grid = grid;
+}
+
 void WF::set_geometry( double *i,double *k, const double di, const double dk){    
     _ni = _param->ni;
     _nk = _param->nk;
     
-    _wf = alloc2d<cdouble>(_ni, _nk);
-    _wf_buf = alloc3d<cdouble>(_param->nt_diag,_ni, _nk);
+    _wf = alloc2d<cdouble>(_ni/_mpi_grid->dims[0], _nk/_mpi_grid->dims[1]);
+    _wf_buf = alloc3d<cdouble>(_param->nt_diag,_ni/_mpi_grid->dims[0], _nk/_mpi_grid->dims[1]);
 
     _i_row = new cdouble[_ni];
     _k_row = new cdouble[_nk];
 
     _diag_buf = new cdouble[_param->nt_diag];
 
-    for(int i=0; i<_ni; i++){
-        for(int k=0;k<_nk;k++){
+    for(int i=0; i<_ni/_mpi_grid->dims[0]; i++){
+        for(int k=0;k<_nk/_mpi_grid->dims[1];k++){
             _wf[i][k] = 0.0;
         }
     }
@@ -44,28 +48,34 @@ void WF::set_geometry( double *i,double *k, const double di, const double dk){
 }
 
 void WF::gaussian(double i0, double k0, double sigma){
-    #pragma omp parallel for schedule(dynamic)
-    for(int i=0; i<_ni; i++){
-    	for(int k=0; k<_nk; k++){
-        	_wf[i][k] = exp(-(_i[i]-i0)*(_i[i]-i0)/sigma - (_k[k]-k0)*(_k[k]-k0)/sigma);
+    //#pragma omp parallel for schedule(dynamic)
+    for(int i=0; i<_ni/_mpi_grid->dims[0]; i++){
+    	for(int k=0; k<_nk/_mpi_grid->dims[1]; k++){
+            int idx_i = _mpi_grid->coords[0]*_ni/_mpi_grid->dims[0] + i;
+            int idx_k = _mpi_grid->coords[1]*_nk/_mpi_grid->dims[1] + k;
+        	_wf[i][k] = exp(-(_i[idx_i]-i0)*(_i[idx_i]-i0)/sigma - (_k[idx_k]-k0)*(_k[idx_k]-k0)/sigma);
         }
     }
 }
 
 void WF::gaussian_anti(double i0, double k0, double sigma){
-    #pragma omp parallel for schedule(dynamic)
-    for(int i=0; i<_ni; i++){
-		for(int k=0; k<_nk; k++){
-     		_wf[i][k] = _k[k]*exp(-(_i[i]-i0)*(_i[i]-i0)/sigma- (_k[k]-k0)*(_k[k]-k0)/sigma);
+    //#pragma omp parallel for schedule(dynamic)
+    for(int i=0; i<_ni/_mpi_grid->dims[0]; i++){
+		for(int k=0; k<_nk/_mpi_grid->dims[1]; k++){
+            int idx_i = _mpi_grid->coords[0]*_ni/_mpi_grid->dims[0] + i;
+            int idx_k = _mpi_grid->coords[1]*_nk/_mpi_grid->dims[1] + k;
+     		_wf[i][k] = _k[idx_k]*exp(-(_i[idx_i]-i0)*(_i[idx_i]-i0)/sigma- (_k[idx_k]-k0)*(_k[idx_k]-k0)/sigma);
         }
     }
 }
 
 void WF::exponential(double i0, double k0, double sigma){
-    #pragma omp parallel for schedule(dynamic)
-    for(int i=0; i<_ni; i++){
-        for(int k=0; k<_nk;k++){
-            _wf[i][k] = exp(-sqrt((_i[i]-i0)*(_i[i]-i0) + (_k[k]-k0)*(_k[k]-k0)));
+    //#pragma omp parallel for schedule(dynamic)
+    for(int i=0; i<_ni/_mpi_grid->dims[0]; i++){
+        for(int k=0; k<_nk/_mpi_grid->dims[1];k++){
+            int idx_i = _mpi_grid->coords[0]*_ni/_mpi_grid->dims[0] + i;
+            int idx_k = _mpi_grid->coords[1]*_nk/_mpi_grid->dims[1] + k;
+            _wf[i][k] = exp(-sqrt((_i[idx_i]-i0)*(_i[idx_i]-i0) + (_k[idx_k]-k0)*(_k[idx_k]-k0)));
         }
     }
 }
@@ -73,15 +83,34 @@ void WF::exponential(double i0, double k0, double sigma){
 
 cdouble WF::norm(){
     cdouble integral = 0.0;
-    switch(_param->geometry){
-        case XZ:
-            for(int i=0; i<_ni;i++){
-                for(int k=0;k<_nk;k++){
-                    integral += _wf[i][k]*conj(_wf[i][k])*_di*_dk;
-                }
-            }
-            break;
+    cdouble tmp_integral = 0.0;
+    for(int i=0; i<_ni/_mpi_grid->dims[0];i++){
+        for(int k=0;k<_nk/_mpi_grid->dims[1];k++){
+            tmp_integral += _wf[i][k]*conj(_wf[i][k])*_di*_dk;
+        }
     }
+    if (_mpi_grid->rank != 0){
+        MPI_Send(&tmp_integral,1,MPI_DOUBLE_COMPLEX,0,42,_mpi_grid->comm);
+    }
+    
+    if (_mpi_grid->rank == 0){
+        cdouble sum_array[_mpi_grid->size];
+        sum_array[0] = tmp_integral;
+        for(int i=1; i<_mpi_grid->size;i++){
+            MPI_Recv(&sum_array[i],1,MPI_DOUBLE_COMPLEX,i,42,_mpi_grid->comm,MPI_STATUS_IGNORE);
+        }
+        for(int i=0; i<_mpi_grid->size;i++){
+            integral += sum_array[i];
+        }
+        for(int i=1; i<_mpi_grid->size;i++){
+            MPI_Send(&integral,1,MPI_DOUBLE_COMPLEX,i,42,_mpi_grid->comm);
+        }
+    }
+    
+    if (_mpi_grid->rank != 0){
+        MPI_Recv(&integral,1,MPI_DOUBLE_COMPLEX,0,42,_mpi_grid->comm,MPI_STATUS_IGNORE);
+    }
+    
     return sqrt(integral);
 }
 
@@ -235,20 +264,25 @@ cdouble WF::operator()(int i, int k){
 }
 
 void WF::operator/=(cdouble val){
-    #pragma omp parallel for collapse(2) schedule(dynamic)
-    for(int i=0; i<_ni;i++){
-        for(int k=0; k<_nk;k++){
+    //#pragma omp parallel for collapse(2) schedule(dynamic)
+    for(int i=0; i<_ni/_mpi_grid->dims[0];i++){
+        for(int k=0; k<_nk/_mpi_grid->dims[1];k++){
             _wf[i][k] /= val;
         }
     }
+}
+
+
+void WF::get_i_rows_from_mpi(const int ni, const int nf){
+     
 }
 
 void WF::save_wf2(std::string name){
 }
 
 WF::~WF(){
-    free2d(&_wf,_ni,_nk);
-    free3d(&_wf_buf, _param->nt_diag, _ni, _nk);
+    free2d(&_wf,_ni/_mpi_grid->dims[0],_nk/_mpi_grid->dims[1]);
+    free3d(&_wf_buf, _param->nt_diag, _ni/_mpi_grid->dims[0], _nk/_mpi_grid->dims[1]);
     //if(_param->geometry != XYZ)
     //    free3d(&_wf_0,_ni,_nk,_nk);
     //else

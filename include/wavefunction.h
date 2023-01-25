@@ -7,6 +7,7 @@
 #include <complex>
 #include <string>
 #include "parameters.h"
+#include "mpi_grid.h"
 
 class WF{
     private:
@@ -17,7 +18,9 @@ class WF{
         cdouble *_k_row;
         cdouble *_dV_i;
         cdouble *_dV_k;
+        cdouble **_mpi_buff;
         Parameters *_param;
+        mpi_grid *_mpi_grid;
         int _ni, _nk;
         double *_i, *_k, _di, _dk;
         void (WF::*_apply_mask)(cdouble*,cdouble*);
@@ -27,6 +30,7 @@ class WF{
     public:
         WF();
         WF(Parameters *param);
+        void set_mpi(mpi_grid *grid);
         void set_geometry(double *i, double *k, const double di, const double dk);
         void set_diagnostics();
         void gaussian(double i0, double k0, double sigma);
@@ -54,12 +58,15 @@ class WF{
         void set_k_row_buf_mask(cdouble* k_row, cdouble* kmask, const int i, const int idx);
         void get_from_buf(cdouble** arr, const int idx);
 
-	void anti_sym_k();
+        void get_i_rows_from_mpi(const int ni, const int nf);
+        void get_k_rows_from_mpi(const int ni, const int nf);
+
+        void anti_sym_k();
 
         cdouble*** get_buf();
 
         cdouble norm();
-	cdouble norm_buf(const int idx);
+        cdouble norm_buf(const int idx);
         void apply_mask(cdouble* imask, cdouble *kmask);
         void apply_mask_XZ(cdouble* imask, cdouble *kmask);
         void apply_mask_buf_XZ(cdouble* imask, cdouble* kmask, const int idx);

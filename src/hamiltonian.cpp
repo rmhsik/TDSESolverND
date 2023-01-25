@@ -27,14 +27,11 @@ void Hamiltonian::set_geometry(double *i,  double *k, double *t, const double di
 }
 
 void Hamiltonian::set_fields(Field* field1){
-    //Afield_i = field1;
-    //Afield_k = field2;
     Afield_k = field1;
 }
 
 cdouble Hamiltonian::_potential_fn(double i, double k, double t){
     return (*_potential)(i,k,t,this);
-    //return potential(i,k,t, this);
 }
 
 cdouble Hamiltonian::dpotential_i(double i, double k){
@@ -46,7 +43,6 @@ cdouble Hamiltonian::dpotential_k(double i, double k){
 }
 
 void Hamiltonian::tridot(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* vec, cdouble* out, const int n){
-    // aa-> lower diagonal; bb-> main diagonal; cc-> upper diagonal
     out[0] = bb[0]*vec[0] + cc[0]*vec[1];
     out[n-1] = aa[n-1]*vec[n-2] + bb[n-1]*vec[n-1];
     for(int i=1;i<n-1;i++){
@@ -55,7 +51,6 @@ void Hamiltonian::tridot(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* vec, cd
 }
 
 void Hamiltonian::tdma(cdouble* aa, cdouble* bb, cdouble* cc, cdouble* dd, cdouble* out, const int n){
-    // aa-> lower diagonal; bb-> main diagonal; cc-> upper diagonal
     
     cdouble wc;
     for(int i = 1; i<=n-1;i++){

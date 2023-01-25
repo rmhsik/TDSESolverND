@@ -41,6 +41,10 @@ void Diagnostics::set_ham(Hamiltonian *ham){
     _ham = ham;
 }
 
+void Diagnostics::set_mpi(mpi_grid *grid){
+    _mpi_grid = grid;
+}
+
 void Diagnostics::set_tempmask(){
     _tempmask = new cdouble[_param->nt];
     double tmax_mask; 
@@ -68,11 +72,13 @@ void Diagnostics::create_probes(){
     ProbeFactory factory;
     for(int i=0; i<_n_probes;i++){
         _probe_vec.push_back(factory.create(_param->geometry,_def_vec[i]));    
+        _probe_vec[i]->set_mpi(_mpi_grid);
         _probe_vec[i]->set_wf(_wf);
         _probe_vec[i]->set_ham(_ham);
         _probe_vec[i]->set_param(_param);
         _probe_vec[i]->set_geometry(_i,_k,_di,_dk);
         _probe_vec[i]->set_tempmask(_tempmask);
+        _probe_vec[i]->print();
     } 
 }
 

@@ -71,40 +71,43 @@ void TDSESolver::_masks_XZ(){
 }
 
 void TDSESolver::_ipropagate_XZ(){
-    cdouble ener = 0.0;
-    cdouble norm;
-    cdouble **psi_i_row, **psi_k_row;
-    const int ni = _param->ni;
-    const int nk = _param->nk;
-    psi_i_row = alloc2d<cdouble>(_param->n_threads, ni);
-    psi_k_row = alloc2d<cdouble>(_param->n_threads, nk);
-    for(int n=0; n<_param->nt_ITP;n++){
-        #pragma omp parallel for schedule(dynamic)
-        for(int i=0;i<ni;i++){
-            int id_thread = omp_get_thread_num();
-            _wf->get_k_row(psi_k_row[id_thread],i);
-            (_ham->*(_ham->step_k))(psi_k_row[id_thread],i,0,1,id_thread);
-            _wf->set_k_row(psi_k_row[id_thread],i);
+
+    if (_mpi_grid->rank == 0){
+        cdouble ener = 0.0;
+        cdouble norm;
+        cdouble **psi_i_row, **psi_k_row;
+        const int ni = _param->ni;
+        const int nk = _param->nk;
+        psi_i_row = alloc2d<cdouble>(_param->n_threads, ni);
+        psi_k_row = alloc2d<cdouble>(_param->n_threads, nk);
+        for(int n=0; n<_param->nt_ITP;n++){
+            //#pragma omp parallel for schedule(dynamic)
+            for(int i=0;i<ni;i++){
+                int id_thread = 0;//omp_get_thread_num();
+                _wf->get_k_row_mpi(psi_k_row[id_thread],i);
+                (_ham->*(_ham->step_k))(psi_k_row[id_thread],i,0,1,id_thread);
+                _wf->set_k_row(psi_k_row[id_thread],i);
+            }
+            
+            //#pragma omp parallel for schedule(dynamic)
+            for(int k=0;k<nk;k++){
+                int id_thread = 0;//omp_get_thread_num();
+                _wf->get_i_row(psi_i_row[id_thread],k);
+                (_ham->*(_ham->step_i))(psi_i_row[id_thread],k,0,1,id_thread);
+                _wf->set_i_row(psi_i_row[id_thread],k);
+            }
+            
+            norm = _wf->norm();
+            (*_wf) /= norm;
+            if(n%50==0){
+                ener = (_ham->*(_ham->ener))(_wf->get());
+                std::cout<<"Norm: "<< norm<<" Ener: "<<ener<<std::endl;
+            }
         }
-        
-        #pragma omp parallel for schedule(dynamic)
-        for(int k=0;k<nk;k++){
-            int id_thread = omp_get_thread_num();
-            _wf->get_i_row(psi_i_row[id_thread],k);
-            (_ham->*(_ham->step_i))(psi_i_row[id_thread],k,0,1,id_thread);
-            _wf->set_i_row(psi_i_row[id_thread],k);
-        }
-        
-        norm = _wf->norm();
-        (*_wf) /= norm;
-        if(n%50==0){
-            ener = (_ham->*(_ham->ener))(_wf->get());
-            std::cout<<"Norm: "<< norm<<" Ener: "<<ener<<std::endl;
-        }
+        std::cout<<"Ener: "<<ener<<std::endl;
+        free2d(&psi_i_row,_param->n_threads,ni);
+        free2d(&psi_k_row,_param->n_threads,nk);
     }
-    std::cout<<"Ener: "<<ener<<std::endl;
-    free2d(&psi_i_row,_param->n_threads,ni);
-    free2d(&psi_k_row,_param->n_threads,nk);
 }
 
 
@@ -125,7 +128,7 @@ void TDSESolver::_propagate_XZ(){
     for(int n=0; n<_param->nt;n++){
         Afield_k->calc_field(_t[n]);
         Afield_k->calc_pot();
-        #pragma omp parallel for schedule(dynamic)
+        //#pragma omp parallel for schedule(dynamic)
         for(int i=0;i<ni;i++){
             int id_thread = omp_get_thread_num();
             _wf->get_k_row_buf(psi_k_row[id_thread],i,n%_param->nt_diag);
@@ -133,7 +136,7 @@ void TDSESolver::_propagate_XZ(){
             _wf->set_k_row_buf_mask(psi_k_row[id_thread],_kmask,i,(n+1)%_param->nt_diag);
         }
         
-        #pragma omp parallel for schedule(dynamic)
+        //#pragma omp parallel for schedule(dynamic)
         for(int k=0;k<nk;k++){
             int id_thread = omp_get_thread_num();
             _wf->get_i_row_buf(psi_i_row[id_thread],k,(n+1)%_param->nt_diag);

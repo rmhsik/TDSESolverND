@@ -51,17 +51,30 @@ void Probe::set_param(Parameters *param){
     _param = param;
 }
 
+void Probe::set_mpi(mpi_grid *grid){
+    _mpi_grid = grid;
+}
+
+void Probe::print(){
+    if(_mpi_grid->rank==0){
+        std::cout<<"\ttype: "<<_type<<std::endl;   
+        std::cout<<"\tint_imin: "<<_int_imin<<std::endl;   
+        std::cout<<"\tint_imax: "<<_int_imax<<std::endl;   
+        std::cout<<"\tint_kmin: "<<_int_kmin<<std::endl;   
+        std::cout<<"\tint_kmax: "<<_int_kmax<<std::endl;   
+        std::cout<<"\tdata_path: "<<_data_path<<std::endl;   
+    }
+
+}
 void Probe::set_geometry(double* i, double *k, const double di, const double dk){
     _i = i; _k = k; _ni = _param->ni; _nk =_param-> nk; 
     _di = di; _dk = dk; 
     _nt_diag = _param->nt_diag; 
     _nt = _param->nt;
     if (_type != DENS && _type != WFSNAP){
-        std::cout<<"here \n";
         _data = new cdouble[_nt];
     }
     else{ 
-        std::cout<<"here 2\n";
         _data = new cdouble[_nt/_nt_diag*_ni*_nk];
     }
 }
@@ -73,9 +86,10 @@ void Probe::set_tempmask(cdouble* tempmask){
 void Probe::write_probe(){
     if(_type == DENS || _type == WFSNAP)
         write_array(_data,_nt/_nt_diag*_ni*_nk, _data_path);
-    else
+    else{
         std::cout<<sizeof(_data)<<std::endl;
-        write_array(_data, _nt, _data_path); 
+        write_array(_data, _nt, _data_path);
+    }
 }
 
 void Probe::_parse_def(){
@@ -118,12 +132,7 @@ void Probe::_parse_def(){
         _data_path = parsed[5];
     }
 
-    std::cout<<"\ttype: "<<_type<<std::endl;   
-    std::cout<<"\tint_imin: "<<_int_imin<<std::endl;   
-    std::cout<<"\tint_imax: "<<_int_imax<<std::endl;   
-    std::cout<<"\tint_kmin: "<<_int_kmin<<std::endl;   
-    std::cout<<"\tint_kmax: "<<_int_kmax<<std::endl;   
-    std::cout<<"\tdata_path: "<<_data_path<<std::endl;   
+    
 }
 
 void Probe::calc(const int idx){

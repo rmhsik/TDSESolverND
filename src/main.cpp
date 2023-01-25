@@ -7,7 +7,7 @@
 
 int main(){
     Parameters param;
-    param.n_threads = 16;
+    param.n_threads = 1;
 
     param.geometry = XZ;
     param.init_wf = EXPO;
@@ -41,11 +41,11 @@ int main(){
 
     param.n_probes = 2;
     param.probe_def = "acc_i,results/acc_i.dat;acc_k,results/acc_k.dat";
-    param.check_param();
-    param.print();
+    //param.check_param();
+    //param.print();
     TDSESolver *tdse;
     tdse = new TDSESolver(&param);
-    tdse->ipropagate();
-    tdse->propagate();
+    //tdse->ipropagate();
+    //tdse->propagate();
     delete tdse;
 }

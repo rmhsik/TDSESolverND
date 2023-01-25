@@ -33,7 +33,7 @@ void Field::set_params(Parameters *param){
     _field = alloc2d<double>(_param->ni, _param->nk);
     _vecpot = alloc2d<double>(_param->ni, _param->nk);
 
-    #pragma omp parallel for collapse(1) schedule(dynamic)
+    //#pragma omp parallel for collapse(1) schedule(dynamic)
     for(int i=0; i<_param->ni; i++){
         for(int k=0; k<_param->nk; k++){
             _vecpot[i][k] = 0.0;
@@ -48,7 +48,7 @@ void Field::set_geometry(double *i, double *k, const double di, const double dk)
 
 void Field::calc_field(double t){
     double env = env_sin2(t);
-    #pragma omp parallel for collapse(1) schedule(dynamic) 
+    //#pragma omp parallel for collapse(1) schedule(dynamic) 
     for(int i = 0; i < _param->ni; i++){
         for(int k = 0; k < _param->nk; k++){
             _field[i][k] = env*plane_wave(_i[i], _k[k], t); 
@@ -57,29 +57,12 @@ void Field::calc_field(double t){
 }
 
 void Field::calc_pot(){
-    #pragma omp parallel for collapse(1) schedule(dynamic)
+    //#pragma omp parallel for collapse(1) schedule(dynamic)
     for(int i=0;i<_param->ni; i++){
         for(int k=0; k<_param->nk; k++){
             _vecpot[i][k] += -C*_field[i][k]*_dt;
         }
     }
-
-    /*
-    double *temp;
-    temp = new double[_nt];
-    
-    for(int i=0; i<_nt;i++){
-        temp[i] = 0.0;
-        for (int j=0; j<=i; j++){
-            temp[i] += _field[j];
-        }
-        temp[i] *= -C*_dt;
-    }
-    for(int i=0; i<_nt;i++){
-        _field[i] = temp[i];
-    }
-    delete[] temp;
-    */
 }
 
 double Field::operator()(int i, int k){
@@ -129,7 +112,6 @@ double Field::env_trap(double ti){
 }
 
 Field::~Field(){
-    delete[] _field;
     free2d<double>(&_field, _param->ni, _param->nk);
     free2d<double>(&_vecpot, _param->ni, _param->nk);
 }

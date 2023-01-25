@@ -14,16 +14,49 @@ TDSESolver::TDSESolver(){
 TDSESolver::TDSESolver(Parameters *param){
     std::string path;
     _param = param;
+    _param->check_param();
+
     setup_time();
 
     omp_set_num_threads(_param->n_threads);
+    setup_mpi();
+    MPI_Barrier(_mpi_grid->comm);
+    if(_mpi_grid->rank==0){
+        _param->print();
+    }
     setup_geometry();
+    setup_wf();
     setup_fields();
     setup_ham();
-    setup_wf();
     setup_masks();
     setup_diagnostics();
     }
+
+void TDSESolver::setup_mpi(){
+    MPI_Init(NULL,NULL);
+    _mpi_grid = new mpi_grid;
+    _mpi_grid->dims[0] = 3;
+    _mpi_grid->dims[1] = 2;
+    _mpi_grid->period[0] = 0;
+    _mpi_grid->period[1] = 0;
+    _mpi_grid->reorder = 0;
+
+    MPI_Comm_size(MPI_COMM_WORLD,
+                  &_mpi_grid->size);
+    MPI_Dims_create(_mpi_grid->size,2,_mpi_grid->dims);
+    MPI_Cart_create(MPI_COMM_WORLD, 2,
+                    _mpi_grid->dims,
+                    _mpi_grid->period,
+                    _mpi_grid->reorder,
+                    &_mpi_grid->comm);
+    MPI_Comm_rank(_mpi_grid->comm,&_mpi_grid->rank);
+    MPI_Cart_coords(_mpi_grid->comm, _mpi_grid->rank, 2, _mpi_grid->coords);
+    if(_mpi_grid->rank==0){ 
+        std::cout<<"[MPI] Size: "<<_mpi_grid->size<<std::endl;
+    }
+    std::cout<<"[MPI] Node number: "<<_mpi_grid->rank<<". Coords=("<<_mpi_grid->coords[0]<<","<<_mpi_grid->coords[1]<<")"<<std::endl;
+
+}
 
 void TDSESolver::setup_time(){
     std::string path;
@@ -54,6 +87,7 @@ void TDSESolver::setup_fields(){
 
 void TDSESolver::setup_wf(){
     _wf = new WF(_param);
+    _wf->set_mpi(_mpi_grid);
     _wf->set_geometry(_i,_k,_di,_dk);
     switch(_param->init_wf){
     	case GAUS:
@@ -65,12 +99,16 @@ void TDSESolver::setup_wf(){
     } 
     cdouble norm = _wf->norm();
     double tstart, tend;
-    std::cout<<"norm before: "<<norm<<std::endl;
+    if(_mpi_grid->rank==0){
+        std::cout<<"norm before: "<<norm<<std::endl;
+    }
     (*_wf) /= norm;
     tstart = omp_get_wtime();
     norm = _wf->norm();
     tend = omp_get_wtime();
-    std::cout<<"norm after: "<<norm<<" Time to calc norm: "<<tend-tstart<<std::endl;
+    if(_mpi_grid->rank==0){
+        std::cout<<"norm after: "<<norm<<" Time to calc norm: "<<tend-tstart<<std::endl;
+    }
 }
 
 void TDSESolver::setup_ham(){
@@ -94,6 +132,7 @@ void TDSESolver::setup_masks(){
 
 void TDSESolver::setup_diagnostics(){
     _diag = new Diagnostics(_param->n_probes, _param->probe_def);
+    _diag->set_mpi(_mpi_grid);
     _diag->set_parameters(_param);
     _diag->set_geometry(_i,_k,_t,_di,_dk);
     _diag->set_ham(_ham);
@@ -113,6 +152,8 @@ void TDSESolver::propagate(){
 }
 
 TDSESolver::~TDSESolver(){
+    MPI_Barrier(_mpi_grid->comm);
+    std::cout<<"[MPI] Deleting node: "<<_mpi_grid->rank<<std::endl;
     delete[] _t;
     delete[] _i;
     delete[] _k;
@@ -123,4 +164,5 @@ TDSESolver::~TDSESolver(){
     delete _wf;
     delete _ham;
     delete _diag;
+    MPI_Finalize();
 }

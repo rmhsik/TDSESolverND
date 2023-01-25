@@ -6,7 +6,7 @@ ProbeXZ::ProbeXZ(std::string def): Probe::Probe(def){}
 
 void ProbeXZ::_acc_i(const int idx){
     cdouble*** wf_buf = _wf->get_buf();
-    #pragma omp parallel for schedule(dynamic)
+    //#pragma omp parallel for schedule(dynamic)
     for(int n=0;n<_nt_diag;n++){
         cdouble sum = 0.0; 
         cdouble dV_i;
@@ -22,7 +22,7 @@ void ProbeXZ::_acc_i(const int idx){
 
 void ProbeXZ::_acc_k(const int idx){
     cdouble*** wf_buf = _wf->get_buf();
-    #pragma omp parallel for schedule(dynamic)
+    //#pragma omp parallel for schedule(dynamic)
     for(int n=0;n<_nt_diag;n++){
         cdouble sum = 0.0; 
         cdouble dV_k;
@@ -43,7 +43,7 @@ void ProbeXZ::_dip_i(const int idx){
     int n_kmax = (_int_kmax - _k[0])/_dk;
 
     cdouble*** wf_buf = _wf->get_buf();
-    #pragma omp parallel for schedule(dynamic)
+    //#pragma omp parallel for schedule(dynamic)
     for(int n=0;n<_nt_diag;n++){
         cdouble sum = 0.0; 
         for(int i=n_imin; i<n_imax; i++){
@@ -62,7 +62,7 @@ void ProbeXZ::_dip_k(const int idx){
     int n_kmax = (_int_kmax - _k[0])/_dk;
 
     cdouble*** wf_buf = _wf->get_buf();
-    #pragma omp parallel for schedule(dynamic)
+    //#pragma omp parallel for schedule(dynamic)
     for(int n=0;n<_nt_diag;n++){
         cdouble sum = 0.0; 
         for(int i=n_imin; i<n_imax; i++){
@@ -81,7 +81,7 @@ void ProbeXZ::_pop(const int idx){
     int n_kmax = (_int_kmax - _k[0])/_dk;
 
     cdouble*** wf_buf = _wf->get_buf();
-    #pragma omp parallel for schedule(dynamic)
+    //#pragma omp parallel for schedule(dynamic)
     for(int n=0;n<_nt_diag;n++){
         cdouble sum = 0.0; 
         for(int i=n_imin; i<n_imax; i++){

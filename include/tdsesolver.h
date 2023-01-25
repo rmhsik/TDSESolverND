@@ -10,10 +10,14 @@
 #include "wavefunction.h"
 #include "hamiltonian.h"
 #include "diagnostics.h"
+#include "mpi_grid.h"
 
     class TDSESolver{
         private:
             Parameters *_param;
+
+            mpi_grid *_mpi_grid;
+
 
             Field *Afield_i;
             Field *Afield_k;
@@ -48,6 +52,7 @@
             void setup_diagnostics();
             void setup_wf();
             void setup_ham();
+            void setup_mpi();
             void propagate();
             void ipropagate();
             

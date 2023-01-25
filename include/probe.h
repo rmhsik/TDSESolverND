@@ -3,6 +3,7 @@
 #include "wavefunction.h"
 #include "hamiltonian.h"
 #include "parameters.h"
+#include "mpi_grid.h"
 
 enum t_probe {ACC_I, 
 	      ACC_K, 
@@ -21,6 +22,7 @@ class Probe{
         WF *_wf;
         Hamiltonian *_ham;
         Parameters *_param;
+        mpi_grid *_mpi_grid;
         cdouble *_tempmask;
         double *_i, *_k;
         int _ni, _nk, _nt, _nt_diag;
@@ -48,8 +50,10 @@ class Probe{
         void set_wf(WF *wf);
         void set_ham(Hamiltonian *ham);
         void set_param(Parameters *param);
+        void set_mpi(mpi_grid *grid);
         void set_geometry(double* i, double* k, const double di, const double dk);
         void set_tempmask(cdouble* tempmask);
+        void print();
 
         void write_probe();
         cdouble* get_data();
