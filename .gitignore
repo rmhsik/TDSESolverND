@@ -15,6 +15,7 @@ test*
 data/
 data.txt
 data.txt.bak
+slurm*
 !tdsesolver.py
 !tdsesolver_X.cpp
 !tdsesolver_XZ.cpp
