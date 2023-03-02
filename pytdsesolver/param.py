@@ -1,6 +1,5 @@
 import numpy as np
 
-
 w0 = 0.0117
 pi = np.pi
 c = 137.04
@@ -32,7 +31,6 @@ param = {"n_threads": 72,
          "E0k": 0.067,
          "phiEi": 0.0*pi,
          "phiEk": 0.0*pi,
-         "kk": 0.0, #w0/c,
          "n_probes": 2,
          "probe_def": ("acc_i,results/acc_i_3900_D_E0.067_2.dat;"
                        "acc_k,results/acc_k_3900_D_E0.067_2.dat;"
