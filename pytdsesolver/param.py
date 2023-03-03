@@ -1,6 +1,5 @@
 import numpy as np
 
-
 w0 = 0.057
 pi = np.pi
 dt = 0.02
@@ -21,8 +20,8 @@ param = {"n_threads": 16,
          "dt": dt,
          "dt_ITP": 0.005,
          "nt": int(5*2*pi/w0/dt),
-         "nt_ITP": 5000,
-         "nt_diag": 100,
+         "nt_ITP": 100,
+         "nt_diag": 10,
          "env": 0, #SIN2
          "w0Ei": w0,
          "w0Ek": w0,
@@ -30,7 +29,6 @@ param = {"n_threads": 16,
          "E0k": 0.067,
          "phiEi": 0.0*pi,
          "phiEk": 0.0*pi,
-         "kk": w0/137.04,
          "n_probes": 2,
          "probe_def": ("acc_i,results/acc_i_800_ND_helium.dat;"
                        "acc_k,results/acc_k_800_ND_helium.dat;"
