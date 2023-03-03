@@ -1,19 +1,19 @@
 import numpy as np
 
 
-w0 = 0.057/3
+w0 = 0.057
 pi = np.pi
-dt = 0.04
+dt = 0.02
 param = {"n_threads": 16,
          "init_wf": 1, #EXPO
-         "use_potential": 1,
+         "use_potential": 2,
          "geometry": 1, #XZ
          "ni": 2048,
-         "imin": -256.0,
-         "imax": 256.0,
+         "imin": -512.0,
+         "imax": 512.0,
          "nk": 4096,
-         "kmin": -512.0,
-         "kmax": 512.0,
+         "kmin": -1200.0,
+         "kmax": 1200.0,
          "w0": w0,
          "period": 2*pi/w0,
          "tmax_ev": 4*2*pi/w0,
@@ -32,7 +32,7 @@ param = {"n_threads": 16,
          "phiEk": 0.0*pi,
          "kk": w0/137.04,
          "n_probes": 2,
-         "probe_def": ("acc_i,results/acc_i_3_ND.dat;"
-                       "acc_k,results/acc_k_3_ND.dat;"
+         "probe_def": ("acc_i,results/acc_i_800_ND_helium.dat;"
+                       "acc_k,results/acc_k_800_ND_helium.dat;"
                        )
         }

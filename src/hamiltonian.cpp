@@ -14,8 +14,10 @@ Hamiltonian::Hamiltonian(Parameters *param){
     switch(_param->geometry){
         case XZ:
             _allocate_XZ();
-            if(_param->use_potential == 1)
-                _potential = &potential_XZ;
+            if(_param->use_potential == HYDROGEN)
+                _potential = &potential_hydrogen_XZ;
+            else if(_param->use_potential == HELIUM)
+                _potential = &potential_helium_XZ;
             break;
     }    
     if(_param->use_potential == 0 )

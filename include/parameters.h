@@ -15,7 +15,7 @@
 
 #define USER_DEFINED 0
 #define HYDROGEN 1
-#define ARGON 2
+#define HELIUM 2
 #define C  137.04
 
     class Parameters{
