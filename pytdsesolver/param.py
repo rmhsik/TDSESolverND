@@ -3,6 +3,7 @@ import numpy as np
 w0 = 0.057
 pi = np.pi
 dt = 0.02
+c = 137.04
 param = {"n_threads": 16,
          "init_wf": 1, #EXPO
          "use_potential": 2,
@@ -27,6 +28,7 @@ param = {"n_threads": 16,
          "w0Ek": w0,
          "E0i": 0.000,
          "E0k": 0.067,
+         "kk": w0/c,
          "phiEi": 0.0*pi,
          "phiEk": 0.0*pi,
          "n_probes": 2,

@@ -128,26 +128,32 @@ void TDSESolver::_propagate_XZ(){
         #pragma omp parallel for schedule(dynamic)
         for(int i=0;i<ni;i++){
             int id_thread = omp_get_thread_num();
-            _wf->get_k_row_buf(psi_k_row[id_thread],i,n%_param->nt_diag);
+            _wf->get_k_row(psi_k_row[id_thread],i);
             (_ham->*(_ham->step_k))(psi_k_row[id_thread],i,n,0,id_thread);
-            _wf->set_k_row_buf_mask(psi_k_row[id_thread],_kmask,i,(n+1)%_param->nt_diag);
+            _wf->set_k_row_mask(psi_k_row[id_thread],_kmask,i);
         }
         
         #pragma omp parallel for schedule(dynamic)
         for(int k=0;k<nk;k++){
             int id_thread = omp_get_thread_num();
-            _wf->get_i_row_buf(psi_i_row[id_thread],k,(n+1)%_param->nt_diag);
+            _wf->get_i_row(psi_i_row[id_thread],k);
             (_ham->*(_ham->step_i))(psi_i_row[id_thread],k,n,0,id_thread);
-            _wf->set_i_row_buf_mask(psi_i_row[id_thread],_imask,k,(n+1)%_param->nt_diag);
+            _wf->set_i_row_mask(psi_i_row[id_thread],_imask,k);
         }
-        
+        _diag->run_diagnostics(n);
+        vecpot[n] = Afield_k->get(_param->ni/2,_param->nk/2); 
+        if(n%50 == 0){
+            std::cout<<"ti: "<<n<<" Norm: "<<_wf->norm()<<" Vecpot: "<<vecpot[n]<<std::endl;
+        }
+
+        /*
         if ((n+2)%_param->nt_diag==0 && n<(_param->nt-_param->nt%_param->nt_diag)){ 
              idx = n - _param->nt_diag + 2;
              _diag->run_diagnostics(idx);
              norm = _wf->norm_buf(_param->nt_diag-1);
              std::cout<<"ti: "<< n<<" adield: "<< norm<<std::endl;
         }
-        vecpot[n] = Afield_k->get(_param->ni/2,_param->nk/2); 
+        */
     }
     //TODO: Get last batch of diagnostics from last idx up to _paran.nt
     //
