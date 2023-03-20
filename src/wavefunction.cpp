@@ -235,7 +235,7 @@ cdouble WF::operator()(int i, int k){
 }
 
 void WF::operator/=(cdouble val){
-    #pragma omp parallel for collapse(2) schedule(dynamic)
+    #pragma omp parallel for collapse(2) schedule(static)
     for(int i=0; i<_ni;i++){
         for(int k=0; k<_nk;k++){
             _wf[i][k] /= val;

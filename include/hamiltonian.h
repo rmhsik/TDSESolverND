@@ -24,6 +24,8 @@ class Hamiltonian{
         cdouble *_Mpi_du, *_Mpi_d, *_Mpi_dl;
         cdouble *_lhs_i, *_res_i;
         cdouble *_lhs_k, *_res_k; 
+        cdouble **_dpotential_i;
+        cdouble **_dpotential_k;
         void _allocate_XZ();
 
         void tridot(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* vec, cdouble* out, const int n);
@@ -31,6 +33,8 @@ class Hamiltonian{
 
         cdouble (*_potential)(double i, double k, double ti, Hamiltonian *ham);
         cdouble _potential_fn(double i, double k, double ti);
+        cdouble _dpotential_i_fn(double i, double k);
+        cdouble _dpotential_k_fn(double i, double k); 
 
     public:
         friend cdouble potential(double i, double k, double ti, Hamiltonian *ham);
@@ -39,8 +43,9 @@ class Hamiltonian{
         Hamiltonian(Parameters *param);
         void set_geometry(double *i, double *k, double *t, const double di, const double dk, const double dt);
         void set_fields(Field* field2);
-        cdouble dpotential_i(double i, double k);
-        cdouble dpotential_k(double i, double k); 
+        void set_dpotential();
+        cdouble dpotential_i(int i, int k);
+        cdouble dpotential_k(int i, int k);
 
         void (Hamiltonian::*step_i)(cdouble*, const int, const int, const int, const int);
         void (Hamiltonian::*step_k)(cdouble*, const int, const int, const int, const int);

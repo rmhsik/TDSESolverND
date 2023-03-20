@@ -15,11 +15,11 @@ void ProbeXZ::_acc_i(const int idx){
         sum_tmp[i] = cdouble(0.0,0.0);
     }
 
-	#pragma omp parallel for schedule(dynamic) collapse(1)
+	#pragma omp parallel for schedule(static) collapse(2)
     for(int i=0; i<_ni; i++){
         for(int k=0; k< _nk; k++){
             int idthread = omp_get_thread_num();
-            cdouble dV_i = _ham->dpotential_i(_i[i],_k[k]);
+            cdouble dV_i = _ham->dpotential_i(i,k);
             sum_tmp[idthread] += conj(wf[i][k])*(-1.0*dV_i) * wf[i][k]*_di*_dk;
         }
     }
@@ -30,7 +30,7 @@ void ProbeXZ::_acc_i(const int idx){
     }
 
     _data[idx] = sum*_tempmask[idx];
-    std::cout<<"acc_i: "<<_data[idx]<<std::endl;
+    //std::cout<<"acc_i: "<<_data[idx]<<std::endl;
 }
 
 void ProbeXZ::_acc_k(const int idx){
@@ -42,11 +42,11 @@ void ProbeXZ::_acc_k(const int idx){
         sum_tmp[i] = cdouble(0.0,0.0);
     }
 
-    #pragma omp parallel for schedule(dynamic) collapse(1)
+	#pragma omp parallel for schedule(static) collapse(2)
     for(int i=0; i<_ni; i++){
         for(int k=0; k< _nk; k++){
             int idthread = omp_get_thread_num();
-            cdouble dV_k = _ham->dpotential_k(_i[i],_k[k]);
+            cdouble dV_k = _ham->dpotential_k(i,k);
             sum_tmp[idthread] += conj(wf[i][k])*(-1.0*dV_k) * wf[i][k]*_di*_dk;
         }
     }
@@ -57,7 +57,7 @@ void ProbeXZ::_acc_k(const int idx){
     }
 
     _data[idx] = sum*_tempmask[idx];
-    std::cout<<"acc_k: "<<_data[idx]<<std::endl;
+    //std::cout<<"acc_k: "<<_data[idx]<<std::endl;
     
 }
 

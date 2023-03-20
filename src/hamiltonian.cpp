@@ -1,7 +1,7 @@
 #include <iostream>
 #include "hamiltonian.h"
 #include "potential.h"
-
+#include "utils.h"
 Hamiltonian::Hamiltonian(){
 }
 
@@ -22,6 +22,9 @@ Hamiltonian::Hamiltonian(Parameters *param){
     }    
     if(_param->use_potential == 0 )
             _potential = &potential;
+
+    _dpotential_i = alloc2d<cdouble>(_ni,_nk);
+    _dpotential_k = alloc2d<cdouble>(_ni,_nk);
 }
 
 void Hamiltonian::set_geometry(double *i,  double *k, double *t, const double di, const double dk, const double dt){
@@ -39,12 +42,34 @@ cdouble Hamiltonian::_potential_fn(double i, double k, double t){
     //return potential(i,k,t, this);
 }
 
-cdouble Hamiltonian::dpotential_i(double i, double k){
+cdouble Hamiltonian::_dpotential_i_fn(double i, double k){
     return (_potential_fn(i + _di,k,0) - _potential_fn(i - _di,k,0))/(2.0*_di);
 }
 
-cdouble Hamiltonian::dpotential_k(double i, double k){
+cdouble Hamiltonian::_dpotential_k_fn(double i, double k){
     return (_potential_fn(i,k + _dk,0) - _potential_fn(i,k - _dk,0))/(2.0*_dk);
+}
+
+void Hamiltonian::set_dpotential(){
+    for(int i=0; i<_ni; i++){
+        for(int k=0; k<_nk; k++){
+            _dpotential_i[i][k] = _dpotential_i_fn(_i[i],_k[k]);
+        }
+    }
+
+    for(int i=0; i<_ni; i++){
+        for(int k=0; k<_nk; k++){
+            _dpotential_k[i][k] = _dpotential_k_fn(_i[i],_k[k]);
+        }
+    }
+}
+
+cdouble Hamiltonian::dpotential_i(int i, int k){
+    return _dpotential_i[i][k];
+}
+
+cdouble Hamiltonian::dpotential_k(int i, int k){
+    return _dpotential_k[i][k];
 }
 
 void Hamiltonian::tridot(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* vec, cdouble* out, const int n){
@@ -90,4 +115,6 @@ Hamiltonian::~Hamiltonian(){
     delete[] _lhs_k;
     delete[] _res_i;
     delete[] _res_k;
+    free2d(&_dpotential_i,_ni,_nk);
+    free2d(&_dpotential_k,_ni,_nk);
 }
