@@ -44,8 +44,8 @@ class Hamiltonian{
         void set_geometry(double *i, double *k, double *t, const double di, const double dk, const double dt);
         void set_fields(Field* field2);
         void set_dpotential();
-        cdouble dpotential_i(int i, int k);
-        cdouble dpotential_k(int i, int k);
+        cdouble** dpotential_i();
+        cdouble** dpotential_k();
 
         void (Hamiltonian::*step_i)(cdouble*, const int, const int, const int, const int);
         void (Hamiltonian::*step_k)(cdouble*, const int, const int, const int, const int);

@@ -64,12 +64,12 @@ void Hamiltonian::set_dpotential(){
     }
 }
 
-cdouble Hamiltonian::dpotential_i(int i, int k){
-    return _dpotential_i[i][k];
+cdouble** Hamiltonian::dpotential_i(){
+    return _dpotential_i;
 }
 
-cdouble Hamiltonian::dpotential_k(int i, int k){
-    return _dpotential_k[i][k];
+cdouble** Hamiltonian::dpotential_k(){
+    return _dpotential_k;
 }
 
 void Hamiltonian::tridot(cdouble* aa, cdouble *bb, cdouble* cc, cdouble* vec, cdouble* out, const int n){
