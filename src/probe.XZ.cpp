@@ -16,7 +16,7 @@ void ProbeXZ::_acc_i(const int idx){
         sum_tmp[i] = cdouble(0.0,0.0);
     }
     
-	#pragma omp parallel for schedule(static) collapse(2)
+    #pragma omp parallel for schedule(dynamic) collapse(1)
     for(int i=0; i<_ni; i++){
         for(int k=0; k< _nk; k++){
             int idthread = omp_get_thread_num();
@@ -31,7 +31,7 @@ void ProbeXZ::_acc_i(const int idx){
     }
 
     _data[idx] = sum*_tempmask[idx];
-    std::cout<<"acc_i: "<<_data[idx]<<std::endl;
+    //std::cout<<"acc_i: "<<_data[idx]<<std::endl;
 }
 
 void ProbeXZ::_acc_k(const int idx){
@@ -44,7 +44,7 @@ void ProbeXZ::_acc_k(const int idx){
         sum_tmp[i] = cdouble(0.0,0.0);
     }
 
-	#pragma omp parallel for schedule(static) collapse(2)
+    #pragma omp parallel for schedule(dynamic) collapse(1)
     for(int i=0; i<_ni; i++){
         for(int k=0; k< _nk; k++){
             int idthread = omp_get_thread_num();
@@ -59,7 +59,7 @@ void ProbeXZ::_acc_k(const int idx){
     }
 
     _data[idx] = sum*_tempmask[idx];
-    std::cout<<"acc_k: "<<_data[idx]<<std::endl;
+    //std::cout<<"acc_k: "<<_data[idx]<<std::endl;
     
 }
 
